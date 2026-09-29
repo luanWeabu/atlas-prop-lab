@@ -15,6 +15,8 @@ constexpr uint32_t SpecialCooldownMs = 4000;
 }
 
 struct ButtonState {
+  explicit ButtonState(uint8_t buttonPin) : pin(buttonPin) {}
+
   uint8_t pin;
   bool stable = HIGH;
   bool previousReading = HIGH;
@@ -120,4 +122,3 @@ void loop() {
 
   delay(2);
 }
-
