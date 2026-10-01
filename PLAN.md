@@ -21,7 +21,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - Target arena: 6 × 8 m minimum play zone; 8 × 8 m preferred.
 - Match target: 5–7 minutes.
 - Safety boundary: no projectile and no physical strike; Unity remains authoritative.
-- Build evidence: concept drawing, dimensions, BOM, supplier references, wiring, firmware profile, assembly order, simulator profile, and field QA.
+- Build evidence: concept drawing, dimensions, BOM, supplier references, wiring, firmware profile, guided assembly with PASS gates, simulator profile, and field QA.
 
 ## Exit criteria for the vertical slice
 
@@ -30,6 +30,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - Wokwi automation can exercise both buttons and assert serial output.
 - The browser simulator demonstrates latency and packet loss effects.
 - A first time builder can follow the 32 step guide.
+- A Vietnamese or English reader can inspect every role and follow its eight-step drawing-linked assembly workflow.
 - The bill of materials separates required and optional items.
 
 ## Decisions held for real hardware testing

@@ -2,11 +2,13 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.2 adds the target **Atlas Event Kit v1** planner:
+Revision 0.3 adds the target **Atlas Event Kit v1** guided build planner:
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
+- Vietnamese and English UI with a remembered language choice
 - numbered concept drawings, sensor and core placement, role BOMs, supplier reference links, and ordered assembly paths
+- an eight-step guided assembly mode for every role, with drawing highlights, required parts, expected result, PASS gate, and saved per-role progress
 - downloadable Markdown build packs for every role
 - an explicit evidence boundary between design-ready work and physical field verification
 
@@ -24,7 +26,7 @@ The executable electronics vertical slice remains a **Hero Spell Orb Controller*
 
 | Path | Purpose |
 | --- | --- |
-| `dist/` | Static mobile web lab and downloadable build pack |
+| `dist/` | Bilingual static mobile web lab and downloadable build packs |
 | `firmware/spell-orb/` | PlatformIO firmware for ESP32 |
 | `wokwi/` | Circuit diagram, simulator configuration, and scenarios |
 | `docs/` | Architecture, bill of materials, event contract, and 32 step assembly guide |

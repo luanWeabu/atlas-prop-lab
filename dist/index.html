@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#071117" />
-    <meta name="description" content="Design, simulate, and assemble the first ESP32 prop for Project Atlas." />
+    <meta name="description" content="Thiết kế, mô phỏng và lắp ráp đạo cụ ESP32 cho Project Atlas bằng tiếng Việt hoặc tiếng Anh." />
     <title>Atlas Prop Lab</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
@@ -16,7 +16,11 @@
         <strong>ATLAS PROP LAB</strong>
         <span>ESP32 prototype workspace</span>
       </div>
-      <div class="header-status"><i></i> V0.2 KIT PLAN</div>
+      <div class="language-switch" role="group" aria-label="Language">
+        <button type="button" data-language="vi">VI</button>
+        <button type="button" data-language="en" class="is-active">EN</button>
+      </div>
+      <div class="header-status"><i></i> V0.3 BUILD GUIDE</div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
@@ -107,6 +111,56 @@
             <ol id="propAssembly" class="role-assembly-list"></ol>
           </section>
         </div>
+
+        <section class="panel guided-build-panel" aria-labelledby="guided-build-title">
+          <div class="guided-build-header">
+            <div>
+              <p class="eyebrow" id="guidedBuildEyebrow">PARTS READY / GUIDED ASSEMBLY</p>
+              <h2 id="guided-build-title">Build it one verified step at a time</h2>
+              <p id="guidedBuildIntro">The final drawing stays visible above. The numbered callout for the current operation is highlighted.</p>
+            </div>
+            <label class="parts-ready-check">
+              <input id="partsReadyCheck" type="checkbox" />
+              <span id="partsReadyLabel">I have checked all required parts</span>
+            </label>
+          </div>
+
+          <div class="guided-progress-row">
+            <div class="progress-track"><i id="guidedProgress"></i></div>
+            <strong id="guidedProgressText">0 / 8 complete</strong>
+          </div>
+
+          <div class="guided-build-grid">
+            <nav class="guided-step-nav" id="guidedStepNav" aria-label="Assembly steps"></nav>
+            <article class="guided-step-card" aria-live="polite">
+              <div class="step-kicker"><span id="guidedStepIndex">STEP 01 / 08</span><span id="guidedStepLocation">DRAWING 01</span></div>
+              <h3 id="guidedStepTitle"></h3>
+              <div class="step-detail-grid">
+                <section>
+                  <h4 id="guidedPartsHeading">Parts for this step</h4>
+                  <ul id="guidedStepParts" class="step-parts"></ul>
+                </section>
+                <section>
+                  <h4 id="guidedActionHeading">Do this</h4>
+                  <p id="guidedStepAction"></p>
+                </section>
+                <section>
+                  <h4 id="guidedResultHeading">Expected result</h4>
+                  <p id="guidedStepResult"></p>
+                </section>
+                <section>
+                  <h4 id="guidedPassHeading">PASS before continuing</h4>
+                  <p id="guidedStepPass"></p>
+                </section>
+              </div>
+              <div class="guided-step-actions">
+                <button class="button ghost" id="guidedPrev">Previous step</button>
+                <button class="button secondary" id="guidedComplete">Mark step complete</button>
+                <button class="button primary" id="guidedNext">Next step</button>
+              </div>
+            </article>
+          </div>
+        </section>
 
         <div class="panel kit-boundary">
           <div><strong>What this planner proves</strong><p>Role geometry, component placement, purchase categories, event names, and ordered assembly.</p></div>
@@ -300,7 +354,7 @@
       </section>
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.2 · design evidence, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.3 · guided build evidence, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
   </body>
