@@ -31,6 +31,7 @@ The tool must never present a Reference item as Purchased or a concept drawing a
 - Completion cannot be recorded until the builder confirms that the required parts were checked.
 - Progress is stored independently for each role build.
 - Highlighted drawing callouts must match the physical area changed by the current step.
+- Every step provides three synchronized visual states: whole prop, close-up location, and expected result after the step.
 - A checked step records self-attested progress only; it does not replace bench or field verification evidence.
 
 ## Shared safety boundary

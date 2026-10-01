@@ -20,7 +20,7 @@
         <button type="button" data-language="vi">VI</button>
         <button type="button" data-language="en" class="is-active">EN</button>
       </div>
-      <div class="header-status"><i></i> V0.3 BUILD GUIDE</div>
+      <div class="header-status"><i></i><span id="headerStatusText">V0.4 VISUAL GUIDE</span></div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
@@ -135,6 +135,19 @@
             <article class="guided-step-card" aria-live="polite">
               <div class="step-kicker"><span id="guidedStepIndex">STEP 01 / 08</span><span id="guidedStepLocation">DRAWING 01</span></div>
               <h3 id="guidedStepTitle"></h3>
+              <section class="guided-visual-shell" aria-labelledby="guidedVisualHeading">
+                <div class="guided-visual-toolbar">
+                  <div>
+                    <span class="guided-visual-heading" id="guidedVisualHeading">Step images</span>
+                    <small id="guidedVisualNote">Technical diagram — use the printed template for final dimensions.</small>
+                  </div>
+                  <div class="guided-visual-tabs" id="guidedVisualTabs" role="group" aria-label="Step image views"></div>
+                </div>
+                <figure class="guided-visual-figure">
+                  <div id="guidedVisualFrame" class="guided-visual-frame" aria-live="polite"></div>
+                  <figcaption id="guidedVisualCaption"></figcaption>
+                </figure>
+              </section>
               <div class="step-detail-grid">
                 <section>
                   <h4 id="guidedPartsHeading">Parts for this step</h4>
@@ -354,7 +367,7 @@
       </section>
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.3 · guided build evidence, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.4 · visual guided build, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
   </body>

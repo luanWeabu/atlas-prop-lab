@@ -21,7 +21,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - Target arena: 6 × 8 m minimum play zone; 8 × 8 m preferred.
 - Match target: 5–7 minutes.
 - Safety boundary: no projectile and no physical strike; Unity remains authoritative.
-- Build evidence: concept drawing, dimensions, BOM, supplier references, wiring, firmware profile, guided assembly with PASS gates, simulator profile, and field QA.
+- Build evidence: concept drawing, dimensions, BOM, supplier references, wiring, firmware profile, three-view guided assembly with PASS gates, simulator profile, and field QA.
 
 ## Exit criteria for the vertical slice
 

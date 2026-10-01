@@ -40,7 +40,7 @@ if (guideCount !== 32) throw new Error(`Expected 32 browser guide steps, found $
 const viGuideMatch = app.match(/const guideStepsVi = \[([\s\S]*?)\n\];/);
 const viGuideCount = viGuideMatch?.[1].match(/"(?:[^"\\]|\\.)*"/g)?.length ?? 0;
 if (viGuideCount !== 32) throw new Error(`Expected 32 Vietnamese browser guide steps, found ${viGuideCount}`);
-for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "atlas-language"]) {
+for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "function renderGuidedVisual", "const blueprintFocus", "atlas-language"]) {
   if (!app.includes(token)) throw new Error(`Missing bilingual guided-build feature: ${token}`);
 }
 
@@ -48,8 +48,8 @@ const html = await readFile(resolve(root, "dist/index.html"), "utf8");
 for (const asset of ["styles.css", "app.js", "favicon.svg"]) {
   if (!html.includes(asset)) throw new Error(`HTML is missing ${asset}`);
 }
-for (const id of ["partsReadyCheck", "guidedStepNav", "guidedStepAction", "guidedStepPass"]) {
+for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guidedVisualFrame", "guidedStepAction", "guidedStepPass"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing guided assembly control: ${id}`);
 }
 
-console.log("Atlas Prop Lab validation passed: 6 bilingual guided role packs, " + diagram.parts.length + " Wokwi parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese Spell Orb guide steps.");
+console.log("Atlas Prop Lab validation passed: 6 bilingual visual role packs, 3 synchronized images per guided step, " + diagram.parts.length + " Wokwi parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese Spell Orb guide steps.");

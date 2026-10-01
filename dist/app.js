@@ -135,6 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
+  "#headerStatusText": ["V0.4 VISUAL GUIDE", "V0.4 HƯỚNG DẪN HÌNH"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 Prototype", "02 Mẫu thử"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -224,7 +225,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.3 · guided build evidence, not field certification", "Bản 0.3 · hướng dẫn lắp, chưa phải chứng nhận sử dụng thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.4 · visual guided build, not field certification", "Bản 0.4 · hướng dẫn lắp bằng hình, chưa phải chứng nhận sử dụng thực địa"]
 };
 
 const roleCardTranslations = {
@@ -238,6 +239,7 @@ const roleCardTranslations = {
 
 let activeProp = "guardian";
 let activeAssemblyStep = 0;
+let activeVisualView = "overview";
 let currentLanguage = ["vi", "en"].includes(localStorage.getItem("atlas-language")) ? localStorage.getItem("atlas-language") : "vi";
 
 const roles = {
@@ -382,10 +384,46 @@ const state = {
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-function blueprintSvg(kind) {
-  const frame = (content, label) => `<svg viewBox="0 0 620 360" role="img" aria-label="${label} numbered concept assembly drawing">
-    <defs><pattern id="bp-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#183541" stroke-width="1"/></pattern></defs>
-    <rect width="620" height="360" fill="url(#bp-grid)"/>
+const blueprintFocus = {
+  guardian: { 1: [191, 72], 2: [310, 171], 3: [310, 132], 4: [388, 210], 5: [430, 170], 6: [240, 225] },
+  warrior: { 1: [284, 75], 2: [310, 135], 3: [342, 250], 4: [312, 289], 5: [310, 314], 6: [310, 340] },
+  archer: { 1: [178, 72], 2: [310, 92], 3: [310, 151], 4: [310, 180], 5: [310, 214], 6: [430, 92] },
+  assassin: { 1: [177, 92], 2: [433, 92], 3: [202, 239], 4: [177, 278], 5: [177, 306], 6: [433, 306] },
+  mage: { 1: [310, 64], 2: [310, 108], 3: [330, 154], 4: [306, 205], 5: [307, 246], 6: [310, 316] },
+  boss: { 1: [220, 52], 2: [382, 91], 3: [330, 181], 4: [310, 148], 5: [308, 257], 6: [505, 220] }
+};
+
+const guidedVisualCopy = {
+  en: {
+    heading: "Step images",
+    note: "Technical diagram — use the printed template for final dimensions.",
+    tabs: { overview: "Whole prop", detail: "Close-up", result: "After this step" },
+    overview: (kit, callouts) => `${kit.name} overview. Drawing positions ${callouts.join(" + ")} are highlighted for this operation.`,
+    detail: (names) => `Close-up of ${names.join("; ")}. Match the numbered positions before fastening anything.`,
+    result: (step) => `Expected visual state after step ${step}. Green markers show areas already handled in the build sequence.`,
+    location: "Install here",
+    completed: "Expected after step"
+  },
+  vi: {
+    heading: "Hình ảnh của bước này",
+    note: "Sơ đồ kỹ thuật — dùng mẫu in để chốt kích thước cuối.",
+    tabs: { overview: "Toàn bộ", detail: "Cận cảnh", result: "Sau bước này" },
+    overview: (kit, callouts) => `Toàn bộ ${kit.name}. Các vị trí ${callouts.join(" + ")} đang được làm sáng cho thao tác này.`,
+    detail: (names) => `Cận cảnh ${names.join("; ")}. Đối chiếu đúng vị trí đánh số trước khi cố định.`,
+    result: (step) => `Trạng thái dự kiến sau bước ${step}. Dấu màu xanh thể hiện những vùng đã được xử lý trong quy trình.`,
+    location: "Lắp tại đây",
+    completed: "Kết quả sau bước"
+  }
+};
+
+let blueprintRenderId = 0;
+
+function blueprintSvg(kind, options = {}) {
+  const viewBox = options.viewBox || "0 0 620 360";
+  const patternId = `bp-grid-${++blueprintRenderId}`;
+  const frame = (content, label) => `<svg viewBox="${viewBox}" role="img" aria-label="${label} numbered concept assembly drawing">
+    <defs><pattern id="${patternId}" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#183541" stroke-width="1"/></pattern></defs>
+    <rect width="620" height="360" fill="url(#${patternId})"/>
     <g class="blueprint-object">${content}</g>
     <path class="dimension-line" d="M70 330H550 M70 322V338 M550 322V338"/>
   </svg>`;
@@ -415,6 +453,51 @@ function blueprintSvg(kind) {
     <rect x="198" y="38" width="224" height="104" rx="34"/><path d="M230 62H390M230 117H390"/><path d="M290 142H330L324 329H296Z"/>
     <rect x="282" y="174" width="56" height="106" rx="19"/><path d="M450 185l55-28 55 28v72l-55 35-55-35z"/><path d="M470 205h70v42h-70z"/>
     ${dot(1,220,52,86,42)}${dot(2,382,91,538,67)}${dot(3,330,181,99,148)}${dot(4,310,148,505,132)}${dot(5,308,257,102,290)}${dot(6,505,220,554,300)}`, "Titan Warden Hammer and armour");
+}
+
+function focusedViewBox(role, callouts) {
+  const points = callouts.map(number => blueprintFocus[role][number]);
+  const minX = Math.min(...points.map(point => point[0]));
+  const maxX = Math.max(...points.map(point => point[0]));
+  const minY = Math.min(...points.map(point => point[1]));
+  const maxY = Math.max(...points.map(point => point[1]));
+  let width = Math.max(300, maxX - minX + 170);
+  let height = Math.max(175, maxY - minY + 110);
+  const targetRatio = 620 / 360;
+  if (width / height < targetRatio) width = height * targetRatio;
+  else height = width / targetRatio;
+  width = Math.min(620, width); height = Math.min(360, height);
+  const centerX = (minX + maxX) / 2; const centerY = (minY + maxY) / 2;
+  const x = Math.max(0, Math.min(620 - width, centerX - width / 2));
+  const y = Math.max(0, Math.min(360 - height, centerY - height / 2));
+  return `${x.toFixed(1)} ${y.toFixed(1)} ${width.toFixed(1)} ${height.toFixed(1)}`;
+}
+
+function renderGuidedVisual() {
+  const kit = localizedKit();
+  const copy = guidedVisualCopy[currentLanguage];
+  const callouts = guidedCallouts[activeProp][activeAssemblyStep];
+  const names = callouts.map(number => `#${number} ${kit.callouts[number - 1]}`);
+  const frame = $("#guidedVisualFrame");
+  $("#guidedVisualHeading").textContent = copy.heading;
+  $("#guidedVisualNote").textContent = copy.note;
+  $("#guidedVisualTabs").innerHTML = Object.entries(copy.tabs).map(([view, label]) => `<button type="button" data-visual-view="${view}" class="${activeVisualView === view ? "is-active" : ""}" aria-pressed="${activeVisualView === view}">${label}</button>`).join("");
+  frame.dataset.view = activeVisualView;
+  frame.className = `guided-visual-frame is-${activeVisualView}`;
+
+  if (activeVisualView === "detail") {
+    frame.innerHTML = `${blueprintSvg(kit.kind, { viewBox: focusedViewBox(activeProp, callouts) })}<div class="visual-location-card"><strong>${copy.location}</strong>${names.map(name => `<span>${name}</span>`).join("")}</div>`;
+    $("#guidedVisualCaption").textContent = copy.detail(names);
+  } else if (activeVisualView === "result") {
+    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-result-stamp"><b>✓</b><span>${copy.completed} ${String(activeAssemblyStep + 1).padStart(2, "0")}</span></div>`;
+    const assembled = new Set(guidedCallouts[activeProp].slice(0, activeAssemblyStep + 1).flat());
+    $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-assembled", assembled.has(Number(node.dataset.callout))));
+    $("#guidedVisualCaption").textContent = copy.result(activeAssemblyStep + 1);
+  } else {
+    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-location-card compact"><strong>${copy.location}</strong><span>${callouts.map(number => `#${number}`).join(" · ")}</span></div>`;
+    $("#guidedVisualCaption").textContent = copy.overview(kit, callouts);
+  }
+  $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));
 }
 
 function localizedKit() {
@@ -493,6 +576,7 @@ function renderGuidedAssembly() {
   $("#guidedComplete").textContent = completed.includes(activeAssemblyStep)
     ? (currentLanguage === "vi" ? "Bỏ đánh dấu hoàn thành" : "Undo completion")
     : (currentLanguage === "vi" ? "Đánh dấu hoàn thành" : "Mark step complete");
+  renderGuidedVisual();
   $$(".bp-callout").forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));
   $$("#propCallouts > div").forEach((node, index) => node.classList.toggle("is-highlighted", callouts.includes(index + 1)));
 }
@@ -756,15 +840,20 @@ function init() {
     currentLanguage = button.dataset.language;
     applyStaticTranslations(); renderPropKit(); renderConfig(); renderBuildPack();
   }));
-  $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; renderPropKit(); }));
+  $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); }));
   $("#downloadBuildPack").addEventListener("click", downloadRoleBuildPack);
+  $("#guidedVisualTabs").addEventListener("click", event => {
+    const button = event.target.closest("[data-visual-view]");
+    if (!button) return;
+    activeVisualView = button.dataset.visualView; renderGuidedVisual();
+  });
   $("#guidedStepNav").addEventListener("click", event => {
     const button = event.target.closest("[data-guided-step]");
     if (!button) return;
-    activeAssemblyStep = Number(button.dataset.guidedStep); renderGuidedAssembly();
+    activeAssemblyStep = Number(button.dataset.guidedStep); activeVisualView = "overview"; renderGuidedAssembly();
   });
-  $("#guidedPrev").addEventListener("click", () => { activeAssemblyStep = Math.max(0, activeAssemblyStep - 1); renderGuidedAssembly(); });
-  $("#guidedNext").addEventListener("click", () => { activeAssemblyStep = Math.min(7, activeAssemblyStep + 1); renderGuidedAssembly(); });
+  $("#guidedPrev").addEventListener("click", () => { activeAssemblyStep = Math.max(0, activeAssemblyStep - 1); activeVisualView = "overview"; renderGuidedAssembly(); });
+  $("#guidedNext").addEventListener("click", () => { activeAssemblyStep = Math.min(7, activeAssemblyStep + 1); activeVisualView = "overview"; renderGuidedAssembly(); });
   $("#partsReadyCheck").addEventListener("change", event => {
     localStorage.setItem(partsReadyStorageKey(), String(event.target.checked)); renderGuidedAssembly();
   });
@@ -776,7 +865,7 @@ function init() {
     const existing = completed.indexOf(activeAssemblyStep);
     if (existing >= 0) completed.splice(existing, 1); else completed.push(activeAssemblyStep);
     localStorage.setItem(guidedStorageKey(), JSON.stringify(completed));
-    if (existing < 0 && activeAssemblyStep < 7) activeAssemblyStep += 1;
+    if (existing < 0 && activeAssemblyStep < 7) { activeAssemblyStep += 1; activeVisualView = "overview"; }
     renderGuidedAssembly();
   });
   $("#roleSelect").addEventListener("change", event => { state.role = event.target.value; renderConfig(); });
