@@ -7,7 +7,8 @@ const required = [
   "dist/index.html", "dist/styles.css", "dist/app.js", "dist/favicon.svg",
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
-  "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md"
+  "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
+  "docs/event-kit-v1.md", "docs/role-build-contract.md"
 ];
 
 for (const file of required) await access(resolve(root, file), constants.R_OK);
@@ -30,6 +31,9 @@ for (const token of ["ATLAS_PROP_READY", '"PLAYER_INTENT"', '"CAST"', '"SPECIAL"
 }
 
 const app = await readFile(resolve(root, "dist/app.js"), "utf8");
+for (const role of ["guardian", "warrior", "archer", "assassin", "mage", "boss"]) {
+  if (!app.includes("  " + role + ": {")) throw new Error("Missing role build pack: " + role);
+}
 const guideMatch = app.match(/const guideSteps = \[([\s\S]*?)\n\];/);
 const guideCount = guideMatch?.[1].match(/"(?:[^"\\]|\\.)*"/g)?.length ?? 0;
 if (guideCount !== 32) throw new Error(`Expected 32 browser guide steps, found ${guideCount}`);
@@ -39,5 +43,4 @@ for (const asset of ["styles.css", "app.js", "favicon.svg"]) {
   if (!html.includes(asset)) throw new Error(`HTML is missing ${asset}`);
 }
 
-console.log(`Atlas Prop Lab validation passed: ${diagram.parts.length} parts, ${diagram.connections.length} wires, ${guideCount} guide steps.`);
-
+console.log("Atlas Prop Lab validation passed: 6 role build packs, " + diagram.parts.length + " Wokwi parts, " + diagram.connections.length + " wires, " + guideCount + " Spell Orb guide steps.");

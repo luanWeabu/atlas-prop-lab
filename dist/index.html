@@ -16,17 +16,105 @@
         <strong>ATLAS PROP LAB</strong>
         <span>ESP32 prototype workspace</span>
       </div>
-      <div class="header-status"><i></i> V1 BENCH</div>
+      <div class="header-status"><i></i> V0.2 KIT PLAN</div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
-      <button class="tab is-active" data-view="prototype">01 Prototype</button>
-      <button class="tab" data-view="field">02 Field simulator</button>
-      <button class="tab" data-view="build">03 Build pack</button>
+      <button class="tab is-active" data-view="event-kit">01 Event kit</button>
+      <button class="tab" data-view="prototype">02 Prototype</button>
+      <button class="tab" data-view="field">03 Field simulator</button>
+      <button class="tab" data-view="build">04 Spell Orb build</button>
     </nav>
 
     <main>
-      <section id="prototype" class="view is-active" aria-labelledby="prototype-title">
+      <section id="event-kit" class="view is-active" aria-labelledby="event-kit-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ATLAS EVENT KIT V1 / 1 BOSS VS 4 HEROES</p>
+            <h1 id="event-kit-title">Prop build planner</h1>
+          </div>
+          <p class="section-note">The roster contains five hero kits. Load any four heroes plus Titan Warden for a match.</p>
+        </div>
+
+        <div class="kit-status-grid" aria-label="Event kit target">
+          <div><strong>6</strong><span>role build packs</span></div>
+          <div><strong>6×8 m</strong><span>minimum play zone</span></div>
+          <div><strong>5–7 min</strong><span>match target</span></div>
+          <div><strong>6 ESP32</strong><span>MVP: five players + hub</span></div>
+        </div>
+
+        <div class="role-picker" role="list" aria-label="Choose a prop build">
+          <button class="role-card is-active" data-prop="guardian" role="listitem"><span class="role-glyph">⬡</span><strong>Guardian</strong><small>Shield</small></button>
+          <button class="role-card" data-prop="warrior" role="listitem"><span class="role-glyph">†</span><strong>Warrior</strong><small>Sword</small></button>
+          <button class="role-card" data-prop="archer" role="listitem"><span class="role-glyph">⌁</span><strong>Archer</strong><small>Bow</small></button>
+          <button class="role-card" data-prop="assassin" role="listitem"><span class="role-glyph">⟋</span><strong>Assassin</strong><small>Daggers</small></button>
+          <button class="role-card" data-prop="mage" role="listitem"><span class="role-glyph">✦</span><strong>Mage</strong><small>Staff</small></button>
+          <button class="role-card boss-card" data-prop="boss" role="listitem"><span class="role-glyph">♛</span><strong>Titan Warden</strong><small>Boss hammer</small></button>
+        </div>
+
+        <div class="kit-workspace">
+          <section class="panel blueprint-panel">
+            <div class="panel-toolbar">
+              <span class="panel-label">Numbered assembly drawing</span>
+              <span id="propStatus" class="mono-pill">DESIGN PACK</span>
+            </div>
+            <div class="blueprint-stage">
+              <div id="propBlueprint" class="prop-blueprint" aria-live="polite"></div>
+              <div class="blueprint-scale">
+                <span id="propSize">Ø 500 mm</span>
+                <small>Concept dimensions — verify on the first foam mock-up</small>
+              </div>
+            </div>
+            <div class="callout-grid" id="propCallouts"></div>
+          </section>
+
+          <aside class="panel prop-summary-panel">
+            <p class="eyebrow" id="propRoleLabel">GUARDIAN / DEFENCE</p>
+            <h2 id="propName">Aegis Shield</h2>
+            <p id="propPurpose" class="prop-purpose"></p>
+            <div class="spec-stack">
+              <div><span>Shell</span><strong id="propShell"></strong></div>
+              <div><span>Sensor</span><strong id="propSensor"></strong></div>
+              <div><span>Core location</span><strong id="propCore"></strong></div>
+              <div><span>Game events</span><strong id="propEvents"></strong></div>
+            </div>
+            <div class="safety-note"><strong>Physical rule</strong><p id="propSafety"></p></div>
+            <button class="button primary" id="downloadBuildPack">Download role build pack</button>
+          </aside>
+        </div>
+
+        <div class="kit-detail-grid">
+          <section class="panel procurement-panel">
+            <div class="panel-toolbar"><span class="panel-label">What to buy</span><span id="propBudget" class="mono-pill">PLANNING RANGE</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Part</th><th>Qty</th><th>Source</th><th>Stage</th></tr></thead>
+                <tbody id="propBomBody"></tbody>
+              </table>
+            </div>
+            <div class="supplier-links">
+              <a href="https://hshop.vn/mach-phat-trien-mke-k01-esp32-s3-dev-kit" target="_blank" rel="noreferrer">ESP32-S3 source</a>
+              <a href="https://hshop.vn/cam-bien-6-dof-bac-tu-do-gy-521-mpu6050" target="_blank" rel="noreferrer">MPU6050 source</a>
+              <a href="https://shopee.vn/scosplay" target="_blank" rel="noreferrer">EVA material source</a>
+              <a href="https://ariescosplay.com/" target="_blank" rel="noreferrer">Hanoi prop shop</a>
+              <a href="https://viecos.com/mua-ban-do-cosplay" target="_blank" rel="noreferrer">Cosplay marketplace</a>
+            </div>
+            <p class="fine-print">Supplier links are references, not locked SKUs. Recheck stock, dimensions, shipping, and seller reliability before purchase.</p>
+          </section>
+
+          <section class="panel role-assembly-panel">
+            <div class="panel-toolbar"><span class="panel-label">Assembly path</span><span class="mono-pill">USB FIRST</span></div>
+            <ol id="propAssembly" class="role-assembly-list"></ol>
+          </section>
+        </div>
+
+        <div class="panel kit-boundary">
+          <div><strong>What this planner proves</strong><p>Role geometry, component placement, purchase categories, event names, and ordered assembly.</p></div>
+          <div><strong>What still needs human proof</strong><p>Real measurements, comfort, impact safety, battery heat, radio range, false gestures, and Unity integration.</p></div>
+        </div>
+      </section>
+
+      <section id="prototype" class="view" aria-labelledby="prototype-title">
         <div class="section-heading">
           <div>
             <p class="eyebrow">VERTICAL SLICE / HERO INPUT</p>
@@ -212,9 +300,8 @@
       </section>
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Prototype revision 0.1</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.2 · design evidence, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
   </body>
 </html>
-

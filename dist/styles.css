@@ -14,6 +14,7 @@
   --red: #ef6b68;
   --green: #39cc93;
   --role: #16a6c9;
+  --kit-accent: #f0b44d;
   --shadow: 0 20px 55px rgba(0, 0, 0, .28);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -128,6 +129,152 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 .button { min-height: 42px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid transparent; border-radius: 9px; padding: 9px 13px; color: var(--text); text-decoration: none; font-size: .76rem; font-weight: 750; cursor: pointer; }
 .button.primary { color: #041318; background: var(--cyan-soft); }.button.secondary { background: #162832; border-color: var(--line-strong); }.button.ghost { background: transparent; border-color: var(--line); color: var(--muted); }.button:hover { filter: brightness(1.12); }.button.compact { min-height: 52px; }
 
+.kit-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.kit-status-grid div {
+  min-height: 82px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(9, 23, 30, .78);
+}
+.kit-status-grid strong { color: var(--cyan-soft); font: 750 1.15rem ui-monospace, monospace; }
+.kit-status-grid span { color: var(--muted); font-size: .72rem; margin-top: 5px; }
+.role-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.role-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 2px 10px;
+  text-align: left;
+  padding: 11px;
+  color: var(--text);
+  background: #0a171e;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  cursor: pointer;
+}
+.role-card:hover, .role-card:focus-visible { border-color: var(--line-strong); outline: none; }
+.role-card.is-active { border-color: var(--kit-accent); box-shadow: inset 0 0 0 1px var(--kit-accent), 0 0 22px color-mix(in srgb, var(--kit-accent) 14%, transparent); }
+.role-card.boss-card { background: linear-gradient(135deg, rgba(239,107,104,.08), #0a171e); }
+.role-card .role-glyph {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--kit-accent);
+  background: color-mix(in srgb, var(--kit-accent) 10%, #071117);
+  border: 1px solid color-mix(in srgb, var(--kit-accent) 45%, var(--line));
+  border-radius: 9px;
+  font-size: 1.05rem;
+}
+.role-card strong { overflow: hidden; text-overflow: ellipsis; font-size: .76rem; }
+.role-card small { color: var(--muted); font-size: .65rem; }
+.kit-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(270px, .55fr);
+  gap: 14px;
+}
+.blueprint-panel { overflow: hidden; }
+.blueprint-stage {
+  min-height: 430px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--kit-accent) 8%, transparent), transparent 55%);
+}
+.prop-blueprint { width: 100%; height: 100%; }
+.prop-blueprint svg { display: block; width: 100%; height: 430px; }
+.blueprint-object > path,
+.blueprint-object > rect,
+.blueprint-object > circle {
+  fill: color-mix(in srgb, var(--kit-accent) 9%, #071117);
+  stroke: var(--kit-accent);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.bp-callout path { fill: none; stroke: #6d8790; stroke-width: 1; stroke-dasharray: 4 4; }
+.bp-callout circle { fill: #071117; stroke: var(--kit-accent); stroke-width: 2; }
+.bp-callout text { fill: var(--text); font: 750 11px ui-monospace, monospace; }
+.dimension-line { fill: none; stroke: #55717b; stroke-width: 1; }
+.blueprint-scale {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 8px 10px;
+  background: rgba(4, 13, 18, .9);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.blueprint-scale span { color: var(--kit-accent); font: 750 .72rem ui-monospace, monospace; }
+.blueprint-scale small { max-width: 290px; margin-top: 3px; color: var(--muted); font-size: .61rem; }
+.callout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+}
+.callout-grid div {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 9px 12px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.callout-grid b { color: var(--kit-accent); font: 750 .68rem ui-monospace, monospace; }
+.callout-grid span { color: #c4d2d6; font-size: .69rem; }
+.prop-summary-panel { padding: 20px; }
+.prop-summary-panel h2 { margin-top: 5px; font-size: clamp(1.7rem, 3vw, 2.55rem); }
+.prop-purpose { min-height: 82px; color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.spec-stack { margin: 18px 0; border-top: 1px solid var(--line); }
+.spec-stack div { padding: 11px 0; border-bottom: 1px solid var(--line); }
+.spec-stack span, .spec-stack strong { display: block; }
+.spec-stack span { color: var(--muted); font-size: .64rem; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+.spec-stack strong { color: #dce8ea; font-size: .74rem; line-height: 1.4; }
+.safety-note { margin: 16px 0; padding: 12px; border-left: 3px solid var(--amber); background: rgba(240,180,77,.06); }
+.safety-note strong { color: #ffda98; font-size: .72rem; }
+.safety-note p { color: var(--muted); font-size: .69rem; line-height: 1.5; margin: 5px 0 0; }
+.prop-summary-panel .button { width: 100%; }
+.kit-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(330px, .85fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+.procurement-panel, .role-assembly-panel { overflow: hidden; }
+.supplier-links { display: flex; flex-wrap: wrap; gap: 7px; padding: 14px 18px 5px; }
+.supplier-links a { color: var(--cyan-soft); text-decoration: none; border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 9px; font-size: .65rem; }
+.supplier-links a:hover { background: rgba(22,166,201,.1); }
+.role-assembly-list { margin: 0; padding: 12px 18px 18px; list-style: none; counter-reset: role-assembly; }
+.role-assembly-list li { counter-increment: role-assembly; display: grid; grid-template-columns: 30px 1fr; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.role-assembly-list li > span::before { content: counter(role-assembly, decimal-leading-zero); color: var(--kit-accent); font: 750 .65rem ui-monospace, monospace; }
+.role-assembly-list p { color: #c1d0d4; margin: 0; font-size: .73rem; line-height: 1.45; }
+.kit-boundary { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 14px; overflow: hidden; }
+.kit-boundary div { padding: 17px 20px; }
+.kit-boundary div + div { border-left: 1px solid var(--line); }
+.kit-boundary strong { font-size: .75rem; }
+.kit-boundary p { margin: 5px 0 0; color: var(--muted); font-size: .71rem; line-height: 1.5; }
+
 .sim-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px; }
 .arena-panel { padding: 18px; }
 .arena-stats { display: grid; grid-template-columns: auto minmax(140px, 320px); gap: 16px; align-items: center; }
@@ -150,14 +297,33 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); display: flex; justify-content: space-between; color: #5d747c; border-top: 1px solid var(--line); font: .63rem ui-monospace, monospace; letter-spacing: .08em; }.toast { position: fixed; z-index: 40; left: 50%; bottom: 22px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; color: #051519; background: var(--cyan-soft); padding: 10px 14px; border-radius: 8px; font-size: .76rem; font-weight: 750; transition: .2s; }.toast.is-visible { opacity: 1; transform: translate(-50%,0); }
 
 @media (max-width: 1120px) {
+  .role-picker { grid-template-columns: repeat(3, 1fr); }
+  .kit-workspace { grid-template-columns: 1fr; }
+  .prop-summary-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .prop-summary-panel > .eyebrow, .prop-summary-panel > h2, .prop-summary-panel > .prop-purpose { grid-column: 1; }
+  .spec-stack { grid-column: 2; grid-row: 1 / 5; margin-top: 0; }
+  .safety-note, .prop-summary-panel .button { grid-column: 1 / -1; }
+  .kit-detail-grid { grid-template-columns: 1fr; }
   .workbench-grid { grid-template-columns: 230px 1fr; }.map-panel { grid-column: 1 / -1; }.pin-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 0 18px; }.download-stack { grid-template-columns: repeat(3,1fr); }.sim-grid { grid-template-columns: 1fr; }.telemetry-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }.metric-grid { grid-row: 1 / 4; grid-column: 2; }.log-label, .event-log { grid-column: 1 / -1; }.build-grid { grid-template-columns: 1fr; }.guide-list { height: 460px; }
 }
 @media (max-width: 760px) {
+  .kit-status-grid { grid-template-columns: repeat(2, 1fr); }
+  .role-picker { grid-template-columns: repeat(2, 1fr); }
+  .callout-grid { grid-template-columns: repeat(2, 1fr); }
+  .prop-summary-panel { display: block; }
+  .prop-purpose { min-height: 0; }
+  .blueprint-stage, .prop-blueprint svg { min-height: 330px; height: 330px; }
+  .kit-boundary { grid-template-columns: 1fr; }
+  .kit-boundary div + div { border-left: 0; border-top: 1px solid var(--line); }
   .topbar { height: 62px; }.brand-copy span { display: none; }.header-status { font-size: .6rem; }.section-heading { align-items: start; flex-direction: column; padding-top: 25px; }.section-note { text-align: left; }.workbench-grid { grid-template-columns: 1fr; }.controls-panel { order: 2; }.circuit-panel { order: 1; }.map-panel { order: 3; }.circuit-stage { min-height: 360px; }.circuit-stage svg { transform: scale(1.07); }.pin-list { grid-template-columns: 1fr; }.download-stack { grid-template-columns: 1fr; }.arena { min-height: 430px; }.arena::before { width: 230px; height: 230px; }.arena::after { width: 360px; height: 360px; }.action-bar { grid-template-columns: 1fr 1fr; }.action-bar .compact { grid-column: 1 / -1; min-height: 40px; }.telemetry-panel { display: block; }.download-row { align-items: stretch; flex-direction: column; }.download-row > div:last-child { display: grid; }.guide-list { height: 520px; }footer { flex-direction: column; gap: 6px; }
 }
 @media (max-width: 430px) {
+  .kit-status-grid { grid-template-columns: 1fr 1fr; }
+  .role-card { grid-template-columns: 32px 1fr; padding: 9px; }
+  .role-card .role-glyph { width: 32px; height: 32px; }
+  .callout-grid { grid-template-columns: 1fr; }
+  .blueprint-scale small { display: none; }
   main { padding-left: 12px; padding-right: 12px; }.mode-tabs { padding-left: 12px; }.tab { padding-inline: 12px; }.circuit-stage { min-height: 320px; }.device-card { transform: scale(.88); transform-origin: bottom left; }.arena { min-height: 390px; }.hero-token.guardian { left: 18%; }.hero-token.archer { left: 82%; }.hero-token.assassin { left: 82%; }.hero-token.support { left: 18%; }.boss-token span { width: 60px; height: 60px; }.hero-token small { font-size: .51rem; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto!important; animation-duration: .01ms!important; animation-iteration-count: 1!important; transition-duration: .01ms!important; } }
-
