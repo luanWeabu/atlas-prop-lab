@@ -135,11 +135,10 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.4 VISUAL GUIDE", "V0.4 HƯỚNG DẪN HÌNH"],
+  "#headerStatusText": ["V0.5 ROLE CIRCUITS", "V0.5 MẠCH THEO ROLE"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
-  ".mode-tabs [data-view='prototype']": ["02 Prototype", "02 Mẫu thử"],
+  ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
-  ".mode-tabs [data-view='build']": ["04 Spell Orb build", "04 Lắp Spell Orb"],
   "#event-kit .section-heading .eyebrow": ["ATLAS EVENT KIT V1 / 1 BOSS VS 4 HEROES", "ATLAS EVENT KIT V1 / 1 BOSS ĐẤU 4 HERO"],
   "#event-kit-title": ["Prop build planner", "Trình lập kế hoạch đạo cụ"],
   "#event-kit .section-note": ["The roster contains five hero kits. Load any four heroes plus Titan Warden for a match.", "Danh sách có năm bộ Hero. Mỗi trận chọn bốn Hero cùng Titan Warden."],
@@ -182,16 +181,16 @@ const staticTranslations = {
   ".kit-boundary div:nth-child(1) p": ["Role geometry, component placement, purchase categories, event names, and ordered assembly.", "Hình dạng role, vị trí linh kiện, nhóm đồ cần mua, tên sự kiện và thứ tự lắp ráp."],
   ".kit-boundary div:nth-child(2) strong": ["What still needs human proof", "Phần vẫn cần người thật xác minh"],
   ".kit-boundary div:nth-child(2) p": ["Real measurements, comfort, impact safety, battery heat, radio range, false gestures, and Unity integration.", "Kích thước thật, độ thoải mái, an toàn va chạm, nhiệt pin, sóng, nhận nhầm động tác và tích hợp Unity."],
-  "#prototype-title": ["Spell Orb Controller", "Bộ điều khiển Spell Orb"],
-  "#prototype .section-heading .eyebrow": ["VERTICAL SLICE / HERO INPUT", "LÁT CẮT THỬ NGHIỆM / INPUT HERO"],
-  "#prototype .section-note": ["Configure one prop, inspect every pin, then export a Wokwi circuit.", "Cấu hình một đạo cụ, kiểm tra từng chân rồi xuất mạch Wokwi."],
+  "#prototype-title": ["ESP32 Electronics Lab", "Xưởng mạch ESP32"],
+  "#prototype > .section-heading .eyebrow": ["ROLE ELECTRONICS / USB FIRST", "MẠCH THEO ROLE / USB TRƯỚC"],
+  "#prototype > .section-heading .section-note": ["Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.", "Đạo cụ đã chọn ở Trang 1 tự đi theo sang đây, kèm linh kiện, sơ đồ GPIO, nút thử sự kiện và mạch bàn có thể tải."],
   "#prototype .controls-panel > .panel-label": ["Device configuration", "Cấu hình thiết bị"],
-  "label[for='roleSelect']": ["Hero role", "Role Hero"],
+  "label[for='roleSelect']": ["Selected prop", "Đạo cụ đã chọn"],
   "label[for='transportSelect']": ["Event transport", "Kênh truyền sự kiện"],
-  ".controls-panel .switch-row:nth-child(6) strong": ["LED ring", "Vòng LED"],
-  ".controls-panel .switch-row:nth-child(6) small": ["Cooldown and acknowledgement", "Cooldown và xác nhận"],
-  ".controls-panel .switch-row:nth-child(7) strong": ["Audio feedback", "Phản hồi âm thanh"],
-  ".controls-panel .switch-row:nth-child(7) small": ["Short local confirmation tone", "Âm xác nhận ngắn tại thiết bị"],
+  ".controls-panel .switch-row:nth-child(6) strong": ["LED feedback", "Phản hồi LED"],
+  ".controls-panel .switch-row:nth-child(6) small": ["Role colour and acknowledgement", "Màu role và xác nhận"],
+  ".controls-panel .switch-row:nth-child(7) strong": ["Secondary feedback", "Phản hồi phụ"],
+  ".controls-panel .switch-row:nth-child(7) small": ["Vibration or short local tone", "Rung hoặc âm báo ngắn"],
   ".circuit-panel .panel-label": ["Circuit map", "Sơ đồ mạch"],
   ".map-panel > .panel-label": ["Pin contract", "Quy ước chân"],
   "#downloadDiagram": ["Download diagram.json", "Tải diagram.json"],
@@ -210,9 +209,9 @@ const staticTranslations = {
   ".metric-grid div:nth-child(3) span": ["Lost", "Bị mất"],
   ".metric-grid div:nth-child(4) span": ["Avg latency", "Trễ TB"],
   ".log-label": ["Event stream", "Luồng sự kiện"],
-  "#build-title": ["Build pack", "Bộ hướng dẫn lắp"],
-  "#build .section-heading .eyebrow": ["PHYSICAL BUILD / ONE UNIT", "LẮP PHẦN CỨNG / MỘT BỘ"],
-  "#build .section-note": ["Buy after the circuit proof. Complete each step in order on the first unit.", "Chỉ mua sau khi mạch thử đạt. Làm đúng thứ tự trên thiết bị đầu tiên."],
+  "#core-build-title": ["32-step bench build", "Lắp mạch bàn trong 32 bước"],
+  ".core-build-heading .eyebrow": ["COMMON ESP32 CORE / ONE UNIT", "LÕI ESP32 CHUNG / MỘT BỘ"],
+  ".core-build-heading .section-note": ["Complete the reusable electronics core here, then mount it into the selected prop using Page 1.", "Hoàn thành lõi điện tử dùng lại tại đây, rồi gắn vào đạo cụ đã chọn theo Trang 1."],
   ".bom-panel .panel-label": ["Bill of materials", "Bảng vật tư"],
   ".bom-panel thead th:nth-child(1)": ["Part", "Linh kiện"],
   ".bom-panel thead th:nth-child(2)": ["Qty", "SL"],
@@ -225,7 +224,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.4 · visual guided build, not field certification", "Bản 0.4 · hướng dẫn lắp bằng hình, chưa phải chứng nhận sử dụng thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.5 · role circuits + guided build, not field certification", "Bản 0.5 · mạch theo role + hướng dẫn lắp, chưa phải chứng nhận thực địa"]
 };
 
 const roleCardTranslations = {
@@ -247,6 +246,15 @@ const roles = {
   archer: { label: "ARCHER", color: "#16a6c9", cast: { damage: 18 }, special: { damage: 34 } },
   assassin: { label: "ASSASSIN", color: "#7057d9", cast: { damage: 14 }, special: { damage: 42 } },
   support: { label: "SUPPORT", color: "#39cc93", cast: { heal: 8 }, special: { heal: 22 } }
+};
+
+const electronicsProfiles = {
+  guardian: { label: "GUARDIAN", name: "Aegis Shield", color: "#f0b44d", deviceId: "guardian-shield-01", parts: ["ESP32-S3", "MPU6050", "Thumb trigger", "WS2812B rim", "Vibration motor"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Thumb trigger", "Cò ngón cái"], ["GPIO18", "LED rim data", "Dữ liệu LED viền"], ["GPIO27", "Vibration driver", "Driver motor rung"], ["5V / GND", "Shared power / ground", "Nguồn / GND chung"]], events: ["BLOCK_START", "BLOCK_END", "TAUNT"] },
+  warrior: { label: "WARRIOR", name: "Pulse Sword", color: "#16a6c9", deviceId: "warrior-sword-01", parts: ["ESP32-S3", "MPU6050", "Index trigger", "WS2812B spine", "Vibration motor"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Index trigger", "Cò ngón trỏ"], ["GPIO18", "LED spine data", "Dữ liệu LED sống kiếm"], ["GPIO27", "Vibration driver", "Driver motor rung"], ["5V / GND", "Shared power / ground", "Nguồn / GND chung"]], events: ["STRIKE", "HEAVY_STRIKE", "PARRY"] },
+  archer: { label: "ARCHER", name: "Arc Bow", color: "#16a6c9", deviceId: "archer-bow-01", parts: ["ESP32-S3", "Linear Hall sensor", "Draw magnet", "Release trigger", "Status LEDs"], pins: [["GPIO34", "Hall sensor analog", "Hall analog"], ["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Release trigger", "Cò nhả dây"], ["GPIO18", "Limb LED data", "Dữ liệu LED cánh cung"], ["5V / GND", "Shared power / ground", "Nguồn / GND chung"]], events: ["DRAW_START", "DRAW_READY", "FIRE"] },
+  assassin: { label: "ASSASSIN", name: "Shade Daggers", color: "#7057d9", deviceId: "assassin-daggers-01", parts: ["ESP32-S3", "MPU6050", "Grip trigger", "Trap button", "Status LED"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Grip trigger", "Cò tay cầm"], ["GPIO26", "Trap button", "Nút đặt bẫy"], ["GPIO18", "Status LED data", "Dữ liệu LED trạng thái"], ["5V / GND", "Shared power / ground", "Nguồn / GND chung"]], events: ["QUICK_STRIKE", "HEAVY_STRIKE", "PLACE_TRAP"] },
+  mage: { label: "MAGE", name: "Lumen Staff", color: "#39cc93", deviceId: "mage-staff-01", parts: ["ESP32-S3", "MPU6050", "CAST button", "SPECIAL button", "Orb LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "CAST button", "Nút CAST"], ["GPIO26", "SPECIAL button", "Nút SPECIAL"], ["GPIO18", "Orb LED data", "Dữ liệu LED quả cầu"], ["GPIO27", "Vibration driver", "Driver motor rung"]], events: ["CAST_HEAL", "CHANNEL", "TEAM_SHIELD"] },
+  boss: { label: "BOSS", name: "Titan Warden", color: "#ef6b68", deviceId: "boss-hammer-01", parts: ["ESP32-S3", "MPU6050", "Primary trigger", "Secondary trigger", "Hammer + armour LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Primary trigger", "Cò chính"], ["GPIO26", "Secondary trigger", "Cò phụ"], ["GPIO18", "Hammer LED data", "Dữ liệu LED đầu búa"], ["GPIO16/17", "Armour receiver UART2", "Bộ nhận áo giáp UART2"]], events: ["SWEEP", "SLAM", "MARK", "PHASE_SKILL"] }
 };
 
 const pinMap = [
@@ -525,7 +533,8 @@ function applyStaticTranslations() {
   }
   $$(".language-switch button").forEach(button => button.classList.toggle("is-active", button.dataset.language === currentLanguage));
   const roleOptions = {
-    guardian: ["Guardian", "Hộ vệ"], archer: ["Archer", "Cung thủ"], assassin: ["Assassin", "Sát thủ"], support: ["Support", "Hỗ trợ"]
+    guardian: ["Guardian shield", "Khiên Hộ vệ"], warrior: ["Warrior sword", "Kiếm Chiến binh"], archer: ["Archer bow", "Cung Cung thủ"],
+    assassin: ["Assassin daggers", "Dao găm Sát thủ"], mage: ["Mage staff", "Gậy Pháp sư"], boss: ["Titan Warden", "Titan Warden"]
   };
   for (const option of $$("#roleSelect option")) option.textContent = roleOptions[option.value][index];
   const transportOptions = {
@@ -627,6 +636,7 @@ function downloadRoleBuildPack() {
 
 function buildRingDots() {
   const root = $("#ringDots");
+  if (!root) return;
   root.innerHTML = Array.from({ length: 16 }, (_, index) => {
     const angle = (index / 16) * Math.PI * 2 - Math.PI / 2;
     const x = 500 + Math.cos(angle) * 50;
@@ -636,14 +646,15 @@ function buildRingDots() {
 }
 
 function currentDiagram() {
+  const profile = electronicsProfiles[activeProp];
   const parts = [
     { type: "wokwi-esp32-devkit-v1", id: "esp", top: 38.4, left: 8.2, attrs: {} },
-    { type: "wokwi-pushbutton", id: "castButton", top: 28.6, left: 258.1, attrs: { color: roles[state.role].color, label: "CAST", key: "C" } },
-    { type: "wokwi-pushbutton", id: "specialButton", top: 106.8, left: 258.1, attrs: { color: "#7057d9", label: "SPECIAL", key: "S" } }
+    { type: "wokwi-pushbutton", id: "primaryButton", top: 28.6, left: 258.1, attrs: { color: profile.color, label: profile.events[0], key: "C" } },
+    { type: "wokwi-pushbutton", id: "secondaryButton", top: 106.8, left: 258.1, attrs: { color: "#7057d9", label: profile.events[1], key: "S" } }
   ];
   const connections = [
-    ["esp:25", "castButton:1.l", roles[state.role].color, []], ["castButton:2.l", "esp:GND.1", "#5d6672", []],
-    ["esp:26", "specialButton:1.l", "#7057d9", []], ["specialButton:2.l", "esp:GND.1", "#5d6672", []]
+    ["esp:25", "primaryButton:1.l", profile.color, []], ["primaryButton:2.l", "esp:GND.1", "#5d6672", []],
+    ["esp:26", "secondaryButton:1.l", "#7057d9", []], ["secondaryButton:2.l", "esp:GND.1", "#5d6672", []]
   ];
   if (state.led) {
     parts.push({ type: "wokwi-led-ring", id: "ring", top: 190.1, left: 234.4, attrs: { pixels: "16" } });
@@ -653,30 +664,56 @@ function currentDiagram() {
     parts.push({ type: "wokwi-buzzer", id: "buzzer", top: 221.4, left: 34.7, attrs: { volume: "0.2" } });
     connections.push(["esp:27", "buzzer:2", "#f29f4b", []], ["esp:GND.1", "buzzer:1", "#5d6672", []]);
   }
-  return { version: 1, author: "Atlas Prop Lab", editor: "wokwi", parts, connections, dependencies: {} };
+  return { version: 1, author: "Atlas Prop Lab", editor: "wokwi", parts, connections, dependencies: {}, atlasProfile: { prop: activeProp, deviceId: profile.deviceId, exactParts: profile.parts, pinContract: profile.pins, events: profile.events, note: "Buttons proxy motion/special sensors in browser. Validate thresholds on real hardware." } };
+}
+
+function escapeXml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character]);
+}
+
+function electronicsDiagramSvg(profile) {
+  const rows = profile.pins.map((pin, index) => {
+    const y = 58 + index * 67;
+    const name = currentLanguage === "vi" ? pin[2] : pin[1];
+    return `<path d="M235 ${y + 22} C315 ${y + 22} 300 ${y + 22} 375 ${y + 22}" class="role-wire"/><circle cx="235" cy="${y + 22}" r="4"/><rect x="375" y="${y}" width="240" height="45" rx="8"/><text x="392" y="${y + 18}">${escapeXml(pin[0])}</text><text x="392" y="${y + 34}" class="role-subtext">${escapeXml(name)}</text>`;
+  }).join("");
+  return `<svg viewBox="0 0 660 410" role="img" aria-label="${escapeXml(profile.name)} ESP32 pin diagram"><defs><pattern id="roleGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#17303a"/></pattern></defs><rect width="660" height="410" fill="url(#roleGrid)" opacity=".7"/><g class="role-board"><rect x="55" y="63" width="180" height="275" rx="18"/><rect x="90" y="88" width="110" height="50" rx="7"/><text x="145" y="112" text-anchor="middle">ESP32-S3</text><text x="145" y="128" text-anchor="middle" class="role-subtext">USB BENCH CORE</text><rect x="85" y="166" width="120" height="120" rx="8"/><text x="145" y="221" text-anchor="middle">${escapeXml(profile.label)}</text><text x="145" y="241" text-anchor="middle" class="role-subtext">${escapeXml(profile.name)}</text></g><g class="role-modules">${rows}</g><text x="375" y="389" class="role-footnote">${currentLanguage === "vi" ? "Đường màu = tín hiệu · luôn dùng GND chung" : "Colour line = signal · always share GND"}</text></svg>`;
+}
+
+function testElectronicsEvent(action) {
+  const profile = electronicsProfiles[activeProp];
+  const item = document.createElement("li");
+  const stamp = new Date().toLocaleTimeString([], { minute: "2-digit", second: "2-digit" });
+  item.innerHTML = `<span>${stamp}</span><b>PASS · ${escapeXml(action)}</b>`;
+  $("#electronicsTestLog").prepend(item);
+  while ($("#electronicsTestLog").children.length > 5) $("#electronicsTestLog").lastElementChild.remove();
+  const button = $(`[data-electronics-event="${action}"]`);
+  button?.classList.add("is-firing"); setTimeout(() => button?.classList.remove("is-firing"), 350);
+  toast(currentLanguage === "vi" ? `Đã mô phỏng ${action} từ ${profile.name}` : `${action} simulated from ${profile.name}`);
 }
 
 function renderConfig() {
-  const role = roles[state.role];
-  document.documentElement.style.setProperty("--role", role.color);
-  $("#roleBadge").textContent = role.label;
-  $("#deviceId").textContent = `${state.role}-orb-01`;
+  const profile = electronicsProfiles[activeProp];
+  document.documentElement.style.setProperty("--role", profile.color);
+  $("#roleSelect").value = activeProp;
+  $("#roleBadge").textContent = profile.label;
+  $("#deviceId").textContent = profile.deviceId;
   $("#transportBadge").textContent = { usb: "USB SERIAL", websocket: "WIFI / WEBSOCKET", espnow: "ESP-NOW" }[state.transport];
-  $("#ringGraphic").classList.toggle("is-disabled", !state.led);
-  $("#buzzerGraphic").classList.toggle("is-disabled", !state.buzzer);
   const diagram = currentDiagram();
   $("#partCount").textContent = currentLanguage === "vi" ? `${diagram.parts.length} LINH KIỆN · ${diagram.connections.length} DÂY` : `${diagram.parts.length} PARTS · ${diagram.connections.length} WIRES`;
-  $("#pinList").innerHTML = pinMap.filter(item => {
-    if (item.optional === "led") return state.led;
-    if (item.optional === "buzzer") return state.buzzer;
-    if (item.optional === "feedback") return state.led || state.buzzer;
-    return true;
-  }).map(item => `<div class="pin-row"><code>${item.pin}</code><span>${currentLanguage === "vi" ? (pinNamesVi[item.name] || item.name) : item.name}</span><i style="color:${item.color}"></i></div>`).join("");
+  $("#roleCircuitGraphic").innerHTML = electronicsDiagramSvg(profile);
+  $("#pinList").innerHTML = profile.pins.map(item => `<div class="pin-row"><code>${item[0]}</code><span>${currentLanguage === "vi" ? item[2] : item[1]}</span><i style="color:${profile.color}"></i></div>`).join("");
+  $("#electronicsProfileSummary").innerHTML = `<strong>${currentLanguage === "vi" ? "Linh kiện riêng của role" : "Role-specific parts"}</strong><p>${profile.parts.join(" · ")}</p>`;
+  $("#electronicsEventButtons").innerHTML = profile.events.map(event => `<button type="button" data-electronics-event="${event}">${event}</button>`).join("");
   const bench = state.transport === "usb";
   const vi = currentLanguage === "vi";
   $("#validationBox").innerHTML = bench
     ? `<span class="validation-icon">✓</span><div><strong>${vi ? "Điểm khởi đầu an toàn trên bàn" : "Bench safe starting point"}</strong><p>${vi ? "Nguồn USB loại bỏ biến số pin và sóng trong lần chứng minh đầu." : "USB power keeps battery and radio variables out of the first proof."}</p></div>`
     : `<span class="validation-icon" style="background:var(--amber)">!</span><div><strong>${vi ? "Ứng viên thử thực địa" : "Field candidate"}</strong><p>${vi ? "Dùng mô phỏng trước; sau đó mới xác minh kết nối lại, tầm sóng và nhiễu trên phần cứng thật." : "Use the simulator now; validate reconnect, range, and interference on real hardware later."}</p></div>`;
+  $("#electronicsLimitTitle").textContent = vi ? "Trình duyệt chứng minh được" : "Browser proof boundary";
+  $("#electronicsLimitText").textContent = vi ? "Luồng chân GPIO, cấu trúc payload, trạng thái nút và phản hồi LED/âm/rung ở mức logic." : "GPIO flow, payload shape, button states, and LED/sound/vibration feedback logic.";
+  $("#electronicsNextTitle").textContent = vi ? "Bắt buộc thử ngoài đời" : "Required real-world proof";
+  $("#electronicsNextText").textContent = vi ? "Ngưỡng IMU/Hall, nhiễu, nhiệt, dòng LED, độ bền dây, tầm sóng và cảm giác khi mặc/cầm. Wokwi ở đây dùng nút làm proxy cho cảm biến chưa được mô phỏng chính xác." : "IMU/Hall thresholds, noise, heat, LED current, cable durability, radio range, and human fit. Wokwi uses buttons as proxies for sensors it cannot reproduce exactly here.";
   $$(".hero-token").forEach(token => token.classList.toggle("is-selected", token.dataset.role === state.role));
 }
 
@@ -787,19 +824,19 @@ function registerWebMcp() {
   const tools = [
     {
       name: "configure_atlas_prop", title: "Configure Atlas prop",
-      description: "Set the active hero role, transport, LED ring, and buzzer in the visible prototype workspace.",
-      inputSchema: { type: "object", properties: { role: { enum: Object.keys(roles) }, transport: { enum: ["usb", "websocket", "espnow"] }, led: { type: "boolean" }, buzzer: { type: "boolean" } }, additionalProperties: false },
+      description: "Set the active prop electronics profile, transport, LED feedback, and secondary feedback in the visible ESP32 lab.",
+      inputSchema: { type: "object", properties: { role: { enum: Object.keys(electronicsProfiles) }, transport: { enum: ["usb", "websocket", "espnow"] }, led: { type: "boolean" }, buzzer: { type: "boolean" } }, additionalProperties: false },
       annotations: { readOnlyHint: false, untrustedContentHint: false },
       execute(input) {
-        if (input.role !== undefined && !roles[input.role]) throw new Error("Invalid role");
+        if (input.role !== undefined && !electronicsProfiles[input.role]) throw new Error("Invalid role");
         if (input.transport !== undefined && !["usb", "websocket", "espnow"].includes(input.transport)) throw new Error("Invalid transport");
-        if (input.role !== undefined) state.role = input.role;
+        if (input.role !== undefined) activeProp = input.role;
         if (input.transport !== undefined) state.transport = input.transport;
         if (input.led !== undefined) state.led = Boolean(input.led);
         if (input.buzzer !== undefined) state.buzzer = Boolean(input.buzzer);
-        $("#roleSelect").value = state.role; $("#transportSelect").value = state.transport; $("#ledToggle").checked = state.led; $("#buzzerToggle").checked = state.buzzer;
-        renderConfig(); showView("prototype");
-        return { role: state.role, transport: state.transport, led: state.led, buzzer: state.buzzer };
+        $("#roleSelect").value = activeProp; $("#transportSelect").value = state.transport; $("#ledToggle").checked = state.led; $("#buzzerToggle").checked = state.buzzer;
+        renderPropKit(); renderConfig(); showView("prototype");
+        return { role: activeProp, transport: state.transport, led: state.led, buzzer: state.buzzer };
       }
     },
     {
@@ -810,7 +847,7 @@ function registerWebMcp() {
       execute(input) {
         if (!propKits[input.prop]) throw new Error("Unknown prop build");
         activeProp = input.prop;
-        renderPropKit();
+        renderPropKit(); renderConfig();
         showView("event-kit");
         return { prop: activeProp, name: propKits[activeProp].name, status: "design_pack" };
       }
@@ -840,7 +877,7 @@ function init() {
     currentLanguage = button.dataset.language;
     applyStaticTranslations(); renderPropKit(); renderConfig(); renderBuildPack();
   }));
-  $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); }));
+  $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); }));
   $("#downloadBuildPack").addEventListener("click", downloadRoleBuildPack);
   $("#guidedVisualTabs").addEventListener("click", event => {
     const button = event.target.closest("[data-visual-view]");
@@ -868,13 +905,14 @@ function init() {
     if (existing < 0 && activeAssemblyStep < 7) { activeAssemblyStep += 1; activeVisualView = "overview"; }
     renderGuidedAssembly();
   });
-  $("#roleSelect").addEventListener("change", event => { state.role = event.target.value; renderConfig(); });
+  $("#roleSelect").addEventListener("change", event => { activeProp = event.target.value; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); });
   $("#transportSelect").addEventListener("change", event => { state.transport = event.target.value; renderConfig(); });
   $("#ledToggle").addEventListener("change", event => { state.led = event.target.checked; renderConfig(); });
   $("#buzzerToggle").addEventListener("change", event => { state.buzzer = event.target.checked; renderConfig(); });
   $("#downloadDiagram").addEventListener("click", () => downloadJson("diagram.json", currentDiagram()));
-  $("#downloadConfig").addEventListener("click", () => downloadJson("atlas-prop-config.json", { version: 1, deviceId: `${state.role}-orb-01`, role: roles[state.role].label, transport: state.transport, features: { ledRing: state.led, buzzer: state.buzzer }, pins: { cast: 25, special: 26, led: state.led ? 18 : null, buzzer: state.buzzer ? 27 : null } }));
-  $$(".hero-token").forEach(token => token.addEventListener("click", () => { state.role = token.dataset.role; $("#roleSelect").value = state.role; renderConfig(); }));
+  $("#downloadConfig").addEventListener("click", () => { const profile = electronicsProfiles[activeProp]; downloadJson("atlas-prop-config.json", { version: 1, deviceId: profile.deviceId, role: profile.label, prop: activeProp, transport: state.transport, features: { ledFeedback: state.led, secondaryFeedback: state.buzzer }, parts: profile.parts, pins: profile.pins, events: profile.events }); });
+  $("#electronicsEventButtons").addEventListener("click", event => { const button = event.target.closest("[data-electronics-event]"); if (button) testElectronicsEvent(button.dataset.electronicsEvent); });
+  $$(".hero-token").forEach(token => token.addEventListener("click", () => { state.role = token.dataset.role; renderConfig(); }));
   $$(".action-button").forEach(button => button.addEventListener("click", () => triggerAction(button.dataset.action)));
   $("#resetSim").addEventListener("click", resetSimulation);
   $("#latencyRange").addEventListener("input", event => { state.latency = Number(event.target.value); $("#latencyValue").textContent = `${state.latency} ms`; });

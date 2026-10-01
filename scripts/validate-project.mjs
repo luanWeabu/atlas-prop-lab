@@ -43,6 +43,9 @@ if (viGuideCount !== 32) throw new Error(`Expected 32 Vietnamese browser guide s
 for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "function renderGuidedVisual", "const blueprintFocus", "atlas-language"]) {
   if (!app.includes(token)) throw new Error(`Missing bilingual guided-build feature: ${token}`);
 }
+for (const token of ["const electronicsProfiles", "function electronicsDiagramSvg", "function testElectronicsEvent", "roleCircuitGraphic", "electronicsEventButtons"]) {
+  if (!app.includes(token)) throw new Error(`Missing role electronics feature: ${token}`);
+}
 
 const html = await readFile(resolve(root, "dist/index.html"), "utf8");
 for (const asset of ["styles.css", "app.js", "favicon.svg"]) {
@@ -51,5 +54,9 @@ for (const asset of ["styles.css", "app.js", "favicon.svg"]) {
 for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guidedVisualFrame", "guidedStepAction", "guidedStepPass"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing guided assembly control: ${id}`);
 }
+for (const id of ["roleCircuitGraphic", "electronicsEventButtons", "electronicsTestLog", "core-build-title", "guideList"]) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing electronics lab control: ${id}`);
+}
+if (html.includes('data-view="build"')) throw new Error("Legacy disconnected build tab still exists");
 
-console.log("Atlas Prop Lab validation passed: 6 bilingual visual role packs, 3 synchronized images per guided step, " + diagram.parts.length + " Wokwi parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese Spell Orb guide steps.");
+console.log("Atlas Prop Lab validation passed: 6 bilingual role packs, synchronized role electronics, 3 guided images per step, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");

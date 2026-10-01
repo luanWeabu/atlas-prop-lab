@@ -6,11 +6,11 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 
 ## Phases
 
-1. **Vertical slice:** one Hero Spell Orb Controller, Wokwi circuit, firmware, browser field simulation, and build guide.
+1. **Role electronics lab:** six synchronized prop profiles, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser field simulation, and build guide.
 2. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
 3. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
 4. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
-5. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour.
+5. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour. Completed at concept and wiring-contract level; physical proof remains.
 6. **Role hardware proofs:** build and verify each prop from the shared USB-first electronics contract.
 7. **Event kit:** enclosures, charging, spare parts, pairing workflow, operator dashboard, and recovery procedures.
 
@@ -30,6 +30,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - Wokwi automation can exercise both buttons and assert serial output.
 - The browser simulator demonstrates latency and packet loss effects.
 - A first time builder can follow the 32 step guide.
+- Selecting a role on Page 1 loads its exact parts, GPIO contract, and event names on Page 2.
 - A Vietnamese or English reader can inspect every role and follow its eight-step drawing-linked assembly workflow.
 - The bill of materials separates required and optional items.
 

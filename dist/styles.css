@@ -110,10 +110,23 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 .validation-icon { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #062218; background: var(--green); flex: 0 0 auto; font-weight: 900; }
 .validation-box strong { font-size: .75rem; }
 .validation-box p { color: var(--muted); font-size: .69rem; line-height: 1.45; margin: 5px 0 0; }
+.electronics-profile-summary { margin-top: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: rgba(5,16,22,.58); }
+.electronics-profile-summary strong { color: var(--cyan-soft); font-size: .7rem; }
+.electronics-profile-summary p { margin: 6px 0 0; color: var(--muted); font-size: .68rem; line-height: 1.5; }
 .circuit-panel { overflow: hidden; }
 .circuit-stage { position: relative; min-height: 480px; display: grid; place-items: center; overflow: hidden; }
 .circuit-stage::after { content: ""; position: absolute; width: 280px; height: 280px; background: var(--role); opacity: .07; filter: blur(60px); border-radius: 50%; right: 8%; top: 22%; pointer-events: none; }
 .circuit-stage svg { width: 100%; max-height: 440px; position: relative; z-index: 1; }
+.role-circuit-graphic { width: 100%; position: relative; z-index: 1; }
+.role-circuit-graphic svg { display: block; }
+.role-board > rect:first-child { fill: #102d2d; stroke: var(--role); stroke-width: 2; }
+.role-board > rect:nth-child(2) { fill: #26343b; stroke: #78919a; }
+.role-board > rect:nth-of-type(3) { fill: #111c22; stroke: #41626c; }
+.role-board text, .role-modules text, .role-footnote { fill: var(--text); font: 700 11px ui-monospace, monospace; }
+.role-subtext, .role-footnote { fill: var(--muted)!important; font-size: 9px!important; }
+.role-modules rect { fill: #0a1a21; stroke: var(--role); stroke-width: 1.5; }
+.role-modules circle { fill: var(--role); filter: drop-shadow(0 0 5px var(--role)); }
+.role-wire { fill: none; stroke: var(--role); stroke-width: 2; stroke-dasharray: 5 5; animation: dash 8s linear infinite; }
 .wire path { fill: none; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 5 5; animation: dash 8s linear infinite; }
 .wire.power path { stroke: #dd6464; }.wire.signal path { stroke: var(--role); filter: url(#glow); }.wire.sound path { stroke: var(--amber); }
 @keyframes dash { to { stroke-dashoffset: -100; } }
@@ -130,6 +143,18 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 .pin-row { display: grid; grid-template-columns: 62px 1fr auto; gap: 8px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); }
 .pin-row code { color: var(--cyan-soft); font-size: .75rem; }.pin-row span { color: var(--muted); font-size: .74rem; }.pin-row i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .download-stack { display: grid; gap: 8px; }
+.electronics-event-buttons { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 12px 0; }
+.electronics-event-buttons button { min-height: 38px; color: var(--role); border: 1px solid color-mix(in srgb, var(--role) 58%, var(--line)); border-radius: 8px; background: color-mix(in srgb, var(--role) 8%, #071117); font: 700 .65rem ui-monospace, monospace; cursor: pointer; transition: .2s; }
+.electronics-event-buttons button:hover, .electronics-event-buttons button.is-firing { color: #061117; background: var(--role); box-shadow: 0 0 18px color-mix(in srgb, var(--role) 30%, transparent); }
+.electronics-test-log { min-height: 62px; max-height: 118px; overflow: auto; margin: 0 0 14px; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.electronics-test-log li { display: grid; grid-template-columns: 48px 1fr; gap: 7px; padding: 7px 0; border-bottom: 1px solid var(--line); color: var(--muted); font: .61rem ui-monospace, monospace; }
+.electronics-test-log b { color: var(--green); }
+.electronics-boundary { display: grid; grid-template-columns: 1fr 1fr; margin-top: 14px; overflow: hidden; }
+.electronics-boundary div { padding: 17px 20px; }
+.electronics-boundary div + div { border-left: 1px solid var(--line); }
+.electronics-boundary strong { font-size: .75rem; }
+.electronics-boundary p { margin: 5px 0 0; color: var(--muted); font-size: .71rem; line-height: 1.5; }
+.core-build-heading { padding-top: 42px; }
 .button { min-height: 42px; display: inline-flex; justify-content: center; align-items: center; border: 1px solid transparent; border-radius: 9px; padding: 9px 13px; color: var(--text); text-decoration: none; font-size: .76rem; font-weight: 750; cursor: pointer; }
 .button.primary { color: #041318; background: var(--cyan-soft); }.button.secondary { background: #162832; border-color: var(--line-strong); }.button.ghost { background: transparent; border-color: var(--line); color: var(--muted); }.button:hover { filter: brightness(1.12); }.button.compact { min-height: 52px; }
 
@@ -378,6 +403,8 @@ footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); 
   .prop-purpose { min-height: 0; }
   .blueprint-stage, .prop-blueprint svg { min-height: 330px; height: 330px; }
   .kit-boundary { grid-template-columns: 1fr; }
+  .electronics-boundary { grid-template-columns: 1fr; }
+  .electronics-boundary div + div { border-left: 0; border-top: 1px solid var(--line); }
   .guided-build-panel { padding: 16px; }
   .guided-build-header { align-items: stretch; flex-direction: column; }
   .parts-ready-check { width: 100%; }

@@ -2,7 +2,7 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.4 adds the target **Atlas Event Kit v1** visual guided build planner:
+Revision 0.5 connects the **Atlas Event Kit v1** planner to a role-aware ESP32 electronics lab:
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
@@ -12,16 +12,20 @@ Revision 0.4 adds the target **Atlas Event Kit v1** visual guided build planner:
 - three technical images per step: whole-prop location, numbered close-up, and expected post-step state
 - downloadable Markdown build packs for every role
 - an explicit evidence boundary between design-ready work and physical field verification
+- a synchronized electronics profile for every shield, sword, bow, dagger, staff, and Boss build
+- per-role component lists, GPIO diagrams, event test buttons, and downloadable configuration
+- the shared 32-step USB-first electronics build moved into the ESP32 lab instead of a disconnected fourth page
 
-The executable electronics vertical slice remains a **Hero Spell Orb Controller**:
+The Wokwi/firmware baseline remains a reusable bench proxy while each physical role gets its own contract:
 
 - ESP32 DevKit V1
-- CAST and SPECIAL buttons
+- two simulator buttons that proxy the selected role's sensor events
 - 16 pixel WS2812B LED ring
 - passive buzzer feedback
 - serial JSON event contract ready for a Unity bridge
 - Wokwi circuit files and automated scenarios
 - a browser field simulator for latency, packet loss, cooldowns, damage, and support healing
+- a clear warning that IMU/Hall thresholds, current, heat, radio range, fit, and durability still require real hardware
 
 ## Repository map
 

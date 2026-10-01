@@ -20,14 +20,13 @@
         <button type="button" data-language="vi">VI</button>
         <button type="button" data-language="en" class="is-active">EN</button>
       </div>
-      <div class="header-status"><i></i><span id="headerStatusText">V0.4 VISUAL GUIDE</span></div>
+      <div class="header-status"><i></i><span id="headerStatusText">V0.5 ROLE CIRCUITS</span></div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
       <button class="tab is-active" data-view="event-kit">01 Event kit</button>
-      <button class="tab" data-view="prototype">02 Prototype</button>
+      <button class="tab" data-view="prototype">02 ESP32 lab</button>
       <button class="tab" data-view="field">03 Field simulator</button>
-      <button class="tab" data-view="build">04 Spell Orb build</button>
     </nav>
 
     <main>
@@ -184,22 +183,24 @@
       <section id="prototype" class="view" aria-labelledby="prototype-title">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">VERTICAL SLICE / HERO INPUT</p>
-            <h1 id="prototype-title">Spell Orb Controller</h1>
+            <p class="eyebrow">ROLE ELECTRONICS / USB FIRST</p>
+            <h1 id="prototype-title">ESP32 Electronics Lab</h1>
           </div>
-          <p class="section-note">Configure one prop, inspect every pin, then export a Wokwi circuit.</p>
+          <p class="section-note">Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.</p>
         </div>
 
         <div class="workbench-grid">
           <aside class="panel controls-panel">
             <div class="panel-label">Device configuration</div>
 
-            <label class="field-label" for="roleSelect">Hero role</label>
+            <label class="field-label" for="roleSelect">Selected prop</label>
             <select id="roleSelect">
-              <option value="guardian">Guardian</option>
-              <option value="archer" selected>Archer</option>
+              <option value="guardian" selected>Guardian shield</option>
+              <option value="warrior">Warrior sword</option>
+              <option value="archer">Archer bow</option>
               <option value="assassin">Assassin</option>
-              <option value="support">Support</option>
+              <option value="mage">Mage staff</option>
+              <option value="boss">Titan Warden</option>
             </select>
 
             <label class="field-label" for="transportSelect">Event transport</label>
@@ -210,11 +211,11 @@
             </select>
 
             <div class="switch-row">
-              <div><strong>LED ring</strong><small>Cooldown and acknowledgement</small></div>
+              <div><strong>LED feedback</strong><small>Role colour and acknowledgement</small></div>
               <label class="switch"><input id="ledToggle" type="checkbox" checked /><span></span></label>
             </div>
             <div class="switch-row">
-              <div><strong>Audio feedback</strong><small>Short local confirmation tone</small></div>
+              <div><strong>Secondary feedback</strong><small>Vibration or short local tone</small></div>
               <label class="switch"><input id="buzzerToggle" type="checkbox" checked /><span></span></label>
             </div>
 
@@ -222,6 +223,7 @@
               <span class="validation-icon">✓</span>
               <div><strong>Bench safe starting point</strong><p>USB power keeps battery and radio variables out of the first proof.</p></div>
             </div>
+            <div id="electronicsProfileSummary" class="electronics-profile-summary"></div>
           </aside>
 
           <section class="panel circuit-panel" aria-label="Interactive circuit preview">
@@ -230,49 +232,10 @@
               <span id="partCount" class="mono-pill">5 PARTS · 9 WIRES</span>
             </div>
             <div class="circuit-stage" id="circuitStage">
-              <svg viewBox="0 0 680 390" role="img" aria-labelledby="circuitTitle circuitDesc">
-                <title id="circuitTitle">ESP32 Spell Orb circuit</title>
-                <desc id="circuitDesc">ESP32 connected to cast and special buttons, LED ring, and buzzer.</desc>
-                <defs>
-                  <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#17303a" stroke-width="1"/></pattern>
-                </defs>
-                <rect width="680" height="390" fill="url(#grid)" opacity=".72"/>
-                <g class="wire power"><path d="M225 120 H430 V270"/><path d="M225 285 H430 V300"/></g>
-                <g class="wire signal"><path d="M225 154 C310 154 300 72 452 72"/><path d="M225 185 C320 185 325 155 452 155"/><path d="M225 218 C330 218 335 286 430 286"/></g>
-                <g class="wire sound"><path d="M225 250 C310 250 305 335 436 335"/></g>
-                <g class="board">
-                  <rect x="92" y="62" width="136" height="254" rx="20"/>
-                  <rect x="122" y="83" width="76" height="42" rx="5" class="module"/>
-                  <path d="M135 95 h50 M135 104 h50 M135 113 h50" class="antenna"/>
-                  <rect x="110" y="137" width="100" height="128" rx="7" class="chip-bed"/>
-                  <rect x="131" y="163" width="58" height="76" rx="4" class="chip"/>
-                  <circle cx="110" cy="154" r="4" class="pin"/><circle cx="110" cy="185" r="4" class="pin"/><circle cx="110" cy="218" r="4" class="pin"/><circle cx="110" cy="250" r="4" class="pin"/>
-                  <circle cx="210" cy="120" r="4" class="pin"/><circle cx="210" cy="285" r="4" class="pin"/>
-                  <text x="160" y="288" text-anchor="middle">ESP32</text>
-                  <text x="160" y="304" text-anchor="middle" class="subtext">DEVKIT V1</text>
-                </g>
-                <g class="button-part cast-part">
-                  <circle cx="500" cy="72" r="31"/><circle cx="500" cy="72" r="18"/>
-                  <text x="550" y="68">CAST</text><text x="550" y="84" class="subtext">GPIO 25</text>
-                </g>
-                <g class="button-part special-part">
-                  <circle cx="500" cy="155" r="31"/><circle cx="500" cy="155" r="18"/>
-                  <text x="550" y="151">SPECIAL</text><text x="550" y="167" class="subtext">GPIO 26</text>
-                </g>
-                <g class="ring-part" id="ringGraphic">
-                  <circle cx="500" cy="276" r="62"/><circle cx="500" cy="276" r="37"/>
-                  <g id="ringDots"></g>
-                  <text x="500" y="280" text-anchor="middle">16× LED</text>
-                </g>
-                <g class="buzzer-part" id="buzzerGraphic">
-                  <circle cx="500" cy="352" r="26"/><path d="M490 352 q10 -15 20 0 q-10 15 -20 0"/>
-                  <text x="543" y="356">BUZZER</text>
-                </g>
-              </svg>
+              <div id="roleCircuitGraphic" class="role-circuit-graphic"></div>
               <div class="device-card">
-                <span id="roleBadge">ARCHER</span>
-                <strong id="deviceId">hero-orb-01</strong>
+                <span id="roleBadge">GUARDIAN</span>
+                <strong id="deviceId">guardian-shield-01</strong>
                 <small id="transportBadge">USB SERIAL</small>
               </div>
             </div>
@@ -281,12 +244,40 @@
           <aside class="panel map-panel">
             <div class="panel-label">Pin contract</div>
             <div class="pin-list" id="pinList"></div>
+            <div class="panel-label">Event bench test</div>
+            <div id="electronicsEventButtons" class="electronics-event-buttons"></div>
+            <ol id="electronicsTestLog" class="electronics-test-log" aria-live="polite"></ol>
             <div class="download-stack">
               <button class="button primary" id="downloadDiagram">Download diagram.json</button>
               <button class="button secondary" id="downloadConfig">Download device config</button>
               <a class="button ghost" href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noreferrer">Open Wokwi</a>
             </div>
           </aside>
+        </div>
+        <div class="panel electronics-boundary">
+          <div><strong id="electronicsLimitTitle">Browser proof boundary</strong><p id="electronicsLimitText"></p></div>
+          <div><strong id="electronicsNextTitle">Required real-world proof</strong><p id="electronicsNextText"></p></div>
+        </div>
+
+        <div class="section-heading core-build-heading">
+          <div><p class="eyebrow">COMMON ESP32 CORE / ONE UNIT</p><h2 id="core-build-title">32-step bench build</h2></div>
+          <p class="section-note">Complete the reusable electronics core here, then mount it into the selected prop using Page 1.</p>
+        </div>
+        <div class="build-grid">
+          <section class="panel bom-panel">
+            <div class="panel-toolbar"><span class="panel-label">Bill of materials</span><span class="mono-pill">BENCH: 251K–575K VND</span></div>
+            <div class="table-wrap"><table><thead><tr><th>Part</th><th>Qty</th><th>Stage</th></tr></thead><tbody id="bomBody"></tbody></table></div>
+            <p class="fine-print">Ranges are planning values. Recheck listings before purchase. The first proof uses USB power.</p>
+          </section>
+          <section class="panel guide-panel">
+            <div class="panel-toolbar"><span class="panel-label">32 step assembly</span><button id="clearChecklist" class="text-button">Clear checks</button></div>
+            <div class="progress-row"><div class="progress-track"><i id="guideProgress"></i></div><strong id="guideCount">0 / 32</strong></div>
+            <ol id="guideList" class="guide-list"></ol>
+          </section>
+        </div>
+        <div class="download-row panel">
+          <div><strong>Repository build pack</strong><p>Firmware, Wokwi proxy, event contract, BOM, and full guide.</p></div>
+          <div><a class="button secondary" href="downloads/diagram.json" download>Wokwi circuit</a><a class="button secondary" href="downloads/main.cpp" download>ESP32 firmware</a><a class="button secondary" href="downloads/assembly-32-steps.md" download>Assembly guide</a></div>
         </div>
       </section>
 
@@ -334,40 +325,9 @@
         </div>
       </section>
 
-      <section id="build" class="view" aria-labelledby="build-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">PHYSICAL BUILD / ONE UNIT</p><h2 id="build-title">Build pack</h2></div>
-          <p class="section-note">Buy after the circuit proof. Complete each step in order on the first unit.</p>
-        </div>
-        <div class="build-grid">
-          <section class="panel bom-panel">
-            <div class="panel-toolbar"><span class="panel-label">Bill of materials</span><span class="mono-pill">BENCH: 251K–575K VND</span></div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Part</th><th>Qty</th><th>Stage</th></tr></thead>
-                <tbody id="bomBody"></tbody>
-              </table>
-            </div>
-            <p class="fine-print">Ranges are planning values. Recheck listings before purchase. The first proof uses USB power.</p>
-          </section>
-          <section class="panel guide-panel">
-            <div class="panel-toolbar"><span class="panel-label">32 step assembly</span><button id="clearChecklist" class="text-button">Clear checks</button></div>
-            <div class="progress-row"><div class="progress-track"><i id="guideProgress"></i></div><strong id="guideCount">0 / 32</strong></div>
-            <ol id="guideList" class="guide-list"></ol>
-          </section>
-        </div>
-        <div class="download-row panel">
-          <div><strong>Repository build pack</strong><p>Firmware, Wokwi files, event contract, BOM, and full guide.</p></div>
-          <div>
-            <a class="button secondary" href="downloads/diagram.json" download>Wokwi circuit</a>
-            <a class="button secondary" href="downloads/main.cpp" download>ESP32 firmware</a>
-            <a class="button secondary" href="downloads/assembly-32-steps.md" download>Assembly guide</a>
-          </div>
-        </div>
-      </section>
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.4 · visual guided build, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.5 · role circuits + guided build, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
   </body>
