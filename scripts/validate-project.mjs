@@ -53,7 +53,7 @@ if (guideCount !== 32) throw new Error(`Expected 32 browser guide steps, found $
 const viGuideMatch = app.match(/const guideStepsVi = \[([\s\S]*?)\n\];/);
 const viGuideCount = viGuideMatch?.[1].match(/"(?:[^"\\]|\\.)*"/g)?.length ?? 0;
 if (viGuideCount !== 32) throw new Error(`Expected 32 Vietnamese browser guide steps, found ${viGuideCount}`);
-for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "function renderGuidedVisual", "const blueprintFocus", "atlas-language"]) {
+for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "function renderGuidedVisual", "function guardianStepSvg", "const blueprintFocus", "atlas-language"]) {
   if (!app.includes(token)) throw new Error(`Missing bilingual guided-build feature: ${token}`);
 }
 const manifests = await readFile(resolve(root, "dist/prop-manifests.js"), "utf8");

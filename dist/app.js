@@ -539,6 +539,42 @@ function blueprintSvg(kind, options = {}) {
     ${dot(1,220,52,86,42)}${dot(2,382,91,538,67)}${dot(3,330,181,99,148)}${dot(4,310,148,505,132)}${dot(5,308,257,102,290)}${dot(6,505,220,554,300)}`, "Titan Warden Hammer and armour");
 }
 
+function guardianStepSvg(step, view = "overview") {
+  const patternId = `guardian-step-grid-${++blueprintRenderId}`;
+  const dot = (n, x, y, tx, ty) => `<g class="bp-callout is-highlighted" data-callout="${n}"><path d="M${x} ${y}L${tx} ${ty}"/><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y + 4}" text-anchor="middle">${n}</text></g>`;
+  const label = (x, y, value, anchor = "start") => `<text class="technical-label" x="${x}" y="${y}" text-anchor="${anchor}">${value}</text>`;
+  const dimension = (path, value, x, y) => `<path class="dimension-line" d="${path}"/>${label(x, y, value, "middle")}`;
+  const face = (extra = "") => `<circle class="technical-shell" cx="310" cy="178" r="138"/><circle class="technical-guide" cx="310" cy="178" r="118"/>${extra}`;
+  const views = {
+    overview: { transform: "", title: "whole assembly" },
+    detail: { transform: "translate(-115 -42) scale(1.38)", title: "installation close-up" },
+    result: { transform: "", title: "expected completed state" }
+  };
+  const stage = [
+    `${face(`<path class="technical-centre" d="M310 25V331M157 178H463"/>`)}${dimension("M172 330H448M172 323V337M448 323V337", "Ø 500 mm", 310, 350)}${label(458, 58, "CARDBOARD FIT")}${dot(1,190,82,92,48)}`,
+    `<rect class="technical-bench" x="72" y="63" width="476" height="230" rx="14"/>` +
+      `<rect class="technical-module" x="242" y="103" width="136" height="92" rx="8"/>${label(310,135,"ESP32-S3","middle")}${label(310,158,"USB ONLY","middle")}` +
+      `<rect class="technical-module" x="108" y="112" width="88" height="62" rx="7"/>${label(152,147,"IMU","middle")}` +
+      `<circle class="technical-module" cx="455" cy="140" r="24"/>${label(455,145,"BTN","middle")}` +
+      `<path class="technical-wire" d="M196 140H242M378 140H431M310 195V245H455"/>` +
+      `<path class="technical-led" d="M112 244H508"/>${label(310,275,"SERIAL: BLOCK_START / BLOCK_END","middle")}` +
+      `${dot(2,310,118,486,44)}${dot(3,152,126,72,42)}${dot(4,455,116,548,92)}${dot(5,435,244,548,280)}`,
+    `${face(`<circle class="technical-cut" cx="310" cy="178" r="47"/><path class="technical-cut" d="M222 105Q202 178 224 250M398 105Q418 178 396 250"/>`)}${label(90,55,"5 mm FACE")}${label(430,307,"10 mm RING")}${dimension("M495 94V262M488 94H502M488 262H502","55 mm MAX",548,181)}${dot(1,190,82,82,82)}`,
+    `${face(`<rect class="technical-module" x="278" y="146" width="64" height="64" rx="8"/><path class="technical-axis axis-x-line" d="M310 178H394"/><path class="technical-axis axis-y-line" d="M310 178V94"/><path class="technical-axis axis-z-line" d="M310 178L260 228"/>`)}${label(402,182,"+X")}${label(310,84,"+Y","middle")}${label(246,240,"+Z","end")}${label(310,232,"FOAM CRADLE","middle")}${dot(3,310,178,500,80)}`,
+    `${face(`<rect class="technical-module" x="273" y="205" width="74" height="46" rx="7"/><circle class="technical-control" cx="385" cy="190" r="13"/><path class="technical-wire" d="M385 203Q380 232 347 232M347 220H273M273 232H228"/><rect class="technical-connector" x="210" y="221" width="18" height="22" rx="3"/>`)}${label(385,164,"THUMB")}${label(310,271,"REMOVABLE LOOM","middle")}${dot(2,310,224,520,286)}${dot(4,385,190,535,148)}`,
+    `${face(`<circle class="technical-led" cx="310" cy="178" r="126"/><path class="technical-wire" d="M184 178Q184 282 282 292H344Q436 282 436 178"/><rect class="technical-connector" x="301" y="281" width="20" height="22" rx="3"/>`)}${label(310,40,"SOFT DIFFUSER","middle")}${label(310,324,"330 Ω + QUICK CONNECTOR","middle")}${dot(5,434,174,528,94)}`,
+    `${face(`<path class="technical-strap" d="M236 115Q210 178 236 242M384 115Q410 178 384 242"/><rect class="technical-hatch" x="269" y="198" width="82" height="54" rx="8"/><path class="technical-pad" d="M252 126Q224 178 252 230M368 126Q396 178 368 230"/>`)}${label(310,276,"SERVICE HATCH","middle")}${label(130,302,"ADJUSTABLE 25 mm STRAPS")}${dot(2,310,220,510,294)}${dot(6,245,226,87,246)}`,
+    `${face(`<circle class="technical-led" cx="310" cy="178" r="126"/><path class="technical-strap" d="M236 115Q210 178 236 242M384 115Q410 178 384 242"/><rect class="technical-hatch" x="269" y="198" width="82" height="54" rx="8"/><circle class="technical-pass" cx="310" cy="178" r="34"/><path class="technical-check" d="M291 178l13 13 27-31"/>`)}${label(310,59,"30 cm DROP · 100 INPUTS · 10 min LIGHT","middle")}${label(310,322,"REVISION LABEL + TEST LOG","middle")}${dot(1,190,82,92,48)}${dot(2,310,220,520,286)}${dot(3,310,174,95,148)}${dot(4,390,198,520,191)}${dot(5,434,174,530,116)}${dot(6,245,226,96,286)}`
+  ];
+  const title = `${currentLanguage === "vi" ? "Guardian bước" : "Guardian step"} ${step + 1}: ${views[view].title}`;
+  return `<svg viewBox="0 0 620 360" role="img" aria-label="${title}">
+    <defs><pattern id="${patternId}" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#183541" stroke-width="1"/></pattern></defs>
+    <rect width="620" height="360" fill="url(#${patternId})"/>
+    <g class="guardian-step-drawing ${view === "result" ? "is-complete" : ""}" transform="${views[view].transform}">${stage[step]}</g>
+    <text class="technical-step-number" x="24" y="34">0${step + 1}</text>
+  </svg>`;
+}
+
 function focusedViewBox(role, callouts) {
   const points = callouts.map(number => blueprintFocus[role][number]);
   const minX = Math.min(...points.map(point => point[0]));
@@ -568,17 +604,18 @@ function renderGuidedVisual() {
   $("#guidedVisualTabs").innerHTML = Object.entries(copy.tabs).map(([view, label]) => `<button type="button" data-visual-view="${view}" class="${activeVisualView === view ? "is-active" : ""}" aria-pressed="${activeVisualView === view}">${label}</button>`).join("");
   frame.dataset.view = activeVisualView;
   frame.className = `guided-visual-frame is-${activeVisualView}`;
+  const visual = () => activeProp === "guardian" ? guardianStepSvg(activeAssemblyStep, activeVisualView) : blueprintSvg(kit.kind);
 
   if (activeVisualView === "detail") {
-    frame.innerHTML = `${blueprintSvg(kit.kind, { viewBox: focusedViewBox(activeProp, callouts) })}<div class="visual-location-card"><strong>${copy.location}</strong>${names.map(name => `<span>${name}</span>`).join("")}</div>`;
+    frame.innerHTML = `${activeProp === "guardian" ? visual() : blueprintSvg(kit.kind, { viewBox: focusedViewBox(activeProp, callouts) })}<div class="visual-location-card"><strong>${copy.location}</strong>${names.map(name => `<span>${name}</span>`).join("")}</div>`;
     $("#guidedVisualCaption").textContent = copy.detail(names);
   } else if (activeVisualView === "result") {
-    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-result-stamp"><b>✓</b><span>${copy.completed} ${String(activeAssemblyStep + 1).padStart(2, "0")}</span></div>`;
+    frame.innerHTML = `${visual()}<div class="visual-result-stamp"><b>✓</b><span>${copy.completed} ${String(activeAssemblyStep + 1).padStart(2, "0")}</span></div>`;
     const assembled = new Set(guidedCallouts[activeProp].slice(0, activeAssemblyStep + 1).flat());
     $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-assembled", assembled.has(Number(node.dataset.callout))));
     $("#guidedVisualCaption").textContent = copy.result(activeAssemblyStep + 1);
   } else {
-    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-location-card compact"><strong>${copy.location}</strong><span>${callouts.map(number => `#${number}`).join(" · ")}</span></div>`;
+    frame.innerHTML = `${visual()}<div class="visual-location-card compact"><strong>${copy.location}</strong><span>${callouts.map(number => `#${number}`).join(" · ")}</span></div>`;
     $("#guidedVisualCaption").textContent = copy.overview(kit, callouts);
   }
   $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));

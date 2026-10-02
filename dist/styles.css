@@ -415,6 +415,21 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 .guided-visual-frame.is-result .bp-callout.is-assembled { opacity: 1; }
 .guided-visual-frame.is-result .bp-callout.is-assembled:not(.is-highlighted) circle { fill: rgba(57,204,147,.22); stroke: var(--green); }
 .guided-visual-frame.is-result .bp-callout.is-assembled:not(.is-highlighted) text { fill: #c4f4df; }
+.guardian-step-drawing > .technical-shell, .guardian-step-drawing > .technical-guide, .guardian-step-drawing > .technical-cut,
+.guardian-step-drawing > .technical-module, .guardian-step-drawing > .technical-bench, .guardian-step-drawing > .technical-hatch,
+.guardian-step-drawing > .technical-pad, .guardian-step-drawing > .technical-strap, .guardian-step-drawing > .technical-pass {
+  fill: color-mix(in srgb, var(--kit-accent) 8%, #071117); stroke: var(--kit-accent); stroke-width: 2; vector-effect: non-scaling-stroke;
+}
+.guardian-step-drawing > .technical-guide, .guardian-step-drawing > .technical-cut, .guardian-step-drawing > .technical-centre { fill: none; stroke: #6d8790; stroke-width: 1.25; stroke-dasharray: 7 6; }
+.guardian-step-drawing > .technical-wire { fill: none; stroke: #c2d3d7; stroke-width: 2; }
+.guardian-step-drawing > .technical-led { fill: none; stroke: #5ce0ff; stroke-width: 5; stroke-dasharray: 9 5; }
+.guardian-step-drawing > .technical-control, .guardian-step-drawing > .technical-connector { fill: #7048c7; stroke: #c6b2ff; stroke-width: 2; }
+.guardian-step-drawing > .technical-axis { fill: none; stroke-width: 3; marker-end: none; }
+.guardian-step-drawing > .axis-x-line { stroke: #ef6b68; } .guardian-step-drawing > .axis-y-line { stroke: #39cc93; } .guardian-step-drawing > .axis-z-line { stroke: #5ce0ff; }
+.guardian-step-drawing .technical-label { fill: #bcd0d5; font: 700 11px ui-monospace, monospace; letter-spacing: .05em; }
+.technical-step-number { fill: var(--kit-accent); opacity: .28; font: 800 30px ui-monospace, monospace; }
+.guardian-step-drawing > .technical-check { fill: none; stroke: var(--green); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.guardian-step-drawing.is-complete > .technical-shell { stroke: var(--green); filter: drop-shadow(0 0 7px rgba(57,204,147,.35)); }
 .guided-visual-figure figcaption { min-height: 48px; padding: 11px 13px; color: #b7c8cd; border-top: 1px solid var(--line); font-size: .82rem; line-height: 1.5; }
 .step-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .step-detail-grid section { min-height: 128px; padding: 14px; border: 1px solid var(--line); border-radius: 9px; background: rgba(5, 16, 22, .58); }
