@@ -213,6 +213,32 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 }
 .role-card strong { overflow: hidden; text-overflow: ellipsis; font-size: .76rem; }
 .role-card small { color: var(--muted); font-size: .65rem; }
+.twin-panel { margin-bottom: 14px; overflow: hidden; }
+.twin-toolbar { min-height: 66px; }
+.twin-toolbar > div { display: grid; gap: 4px; }
+.twin-toolbar strong { font-size: .92rem; }
+.twin-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr); min-height: 570px; }
+.twin-stage, .three-arena-stage { position: relative; min-height: 520px; overflow: hidden; background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--kit-accent) 11%, transparent), transparent 50%), linear-gradient(rgba(22,166,201,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(22,166,201,.025) 1px, transparent 1px), #061219; background-size: auto, 24px 24px, 24px 24px; touch-action: none; }
+.twin-stage canvas, .three-arena-stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.twin-stage canvas:active, .three-arena-stage canvas:active { cursor: grabbing; }
+.three-loading { position: absolute; z-index: 1; inset: 0; display: grid; place-items: center; color: var(--muted); font: 700 .68rem ui-monospace, monospace; letter-spacing: .08em; }
+.three-loading.is-error { color: var(--red); padding: 24px; text-align: center; line-height: 1.6; }
+.twin-axis { position: absolute; z-index: 3; left: 16px; bottom: 16px; display: flex; gap: 7px; pointer-events: none; }
+.twin-axis i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; color: #071117; font: 850 .64rem ui-monospace, monospace; font-style: normal; }
+.axis-x { background: #ef6b68; }.axis-y { background: #39cc93; }.axis-z { background: #62c6e0; }
+.twin-controls { padding: 22px; border-left: 1px solid var(--line); }
+.twin-controls h2 { font-size: clamp(1.65rem, 3vw, 2.5rem); }
+.twin-controls > p:not(.eyebrow, .three-boundary) { color: var(--muted); font-size: .78rem; line-height: 1.6; }
+.twin-controls input[type=range] { width: 100%; accent-color: var(--kit-accent); }
+.twin-toggle { display: flex; gap: 9px; align-items: center; margin: 18px 0 22px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; color: #d8e5e8; background: #08171e; font-size: .74rem; cursor: pointer; }
+.twin-toggle input { accent-color: var(--kit-accent); }
+.twin-part-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 11px 0; }
+.twin-part-buttons button { min-height: 38px; padding: 8px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; background: #07141b; text-align: left; font-size: .68rem; cursor: pointer; }
+.twin-part-buttons button:hover, .twin-part-buttons button.is-active { color: #071117; border-color: var(--kit-accent); background: var(--kit-accent); }
+.twin-part-info { min-height: 112px; padding: 13px; border: 1px solid color-mix(in srgb, var(--kit-accent) 38%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--kit-accent) 6%, #071117); }
+.twin-part-info strong { color: var(--kit-accent); font-size: .76rem; }
+.twin-part-info p { margin: 7px 0 0; color: #bfd0d4; font-size: .71rem; line-height: 1.55; }
+.three-boundary { margin: 14px 0 0; padding-top: 13px; color: var(--muted); border-top: 1px solid var(--line); font-size: .67rem; line-height: 1.5; }
 .kit-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(270px, .55fr);
@@ -362,6 +388,20 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 
 .sim-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px; }
 .arena-panel { padding: 18px; }
+.arena-view-toolbar { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 14px; }
+.arena-view-toolbar > div:first-child { display: grid; gap: 4px; }
+.arena-view-toolbar strong { color: var(--cyan-soft); font: 700 .67rem ui-monospace, monospace; letter-spacing: .08em; }
+.segmented-control { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: #061219; }
+.segmented-control button { min-height: 32px; padding: 6px 11px; color: var(--muted); border: 0; border-radius: 7px; background: transparent; font-size: .68rem; font-weight: 750; cursor: pointer; }
+.segmented-control button.is-active { color: #041318; background: var(--cyan-soft); }
+.three-arena-stage { min-height: 500px; margin: 0 0 16px; border: 1px solid var(--line); border-radius: 13px; }
+.arena-role-chips { position: absolute; z-index: 4; left: 12px; top: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
+.arena-role-chips button { padding: 7px 9px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: rgba(4,13,18,.88); font-size: .63rem; font-weight: 750; cursor: pointer; }
+.arena-role-chips button.is-active { color: #041318; border-color: var(--cyan-soft); background: var(--cyan-soft); }
+.arena-legend { position: absolute; z-index: 4; right: 12px; bottom: 12px; display: flex; gap: 12px; padding: 8px 10px; color: var(--muted); border: 1px solid var(--line); border-radius: 8px; background: rgba(4,13,18,.88); font-size: .6rem; pointer-events: none; }
+.arena-legend span { display: flex; align-items: center; gap: 5px; }
+.arena-legend i { width: 8px; height: 8px; border-radius: 50%; }.hero-dot { background: var(--cyan); }.boss-dot { background: var(--red); }.zone-dot { border: 1px solid var(--amber); }
+.is-hidden { display: none!important; }
 .arena-stats { display: grid; grid-template-columns: auto minmax(140px, 320px); gap: 16px; align-items: center; }
 .arena-stats div:first-child { display: flex; gap: 12px; align-items: baseline; }.arena-stats span { color: var(--muted); font-size: .75rem; }.arena-stats strong { font: 700 .78rem ui-monospace, monospace; }
 .hp-track, .progress-track { height: 7px; background: #18272d; border-radius: 999px; overflow: hidden; }.hp-track i, .progress-track i { display: block; width: 100%; height: 100%; background: var(--red); transition: width .3s ease; }
@@ -383,6 +423,8 @@ footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); 
 
 @media (max-width: 1120px) {
   .role-picker { grid-template-columns: repeat(3, 1fr); }
+  .twin-grid { grid-template-columns: 1fr; }
+  .twin-controls { border-left: 0; border-top: 1px solid var(--line); }
   .kit-workspace { grid-template-columns: 1fr; }
   .prop-summary-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
   .prop-summary-panel > .eyebrow, .prop-summary-panel > h2, .prop-summary-panel > .prop-purpose { grid-column: 1; }
@@ -398,6 +440,11 @@ footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); 
 @media (max-width: 760px) {
   .kit-status-grid { grid-template-columns: repeat(2, 1fr); }
   .role-picker { grid-template-columns: repeat(2, 1fr); }
+  .twin-stage { min-height: 410px; }
+  .twin-controls { padding: 17px; }
+  .three-arena-stage { min-height: 430px; }
+  .arena-view-toolbar { align-items: stretch; flex-direction: column; padding-bottom: 10px; }
+  .segmented-control { align-self: flex-start; }
   .callout-grid { grid-template-columns: repeat(2, 1fr); }
   .prop-summary-panel { display: block; }
   .prop-purpose { min-height: 0; }
@@ -421,6 +468,12 @@ footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); 
   .kit-status-grid { grid-template-columns: 1fr 1fr; }
   .role-card { grid-template-columns: 32px 1fr; padding: 9px; }
   .role-card .role-glyph { width: 32px; height: 32px; }
+  .twin-stage { min-height: 350px; }
+  .twin-part-buttons { grid-template-columns: 1fr; }
+  .three-arena-stage { min-height: 390px; }
+  .arena-role-chips { right: 10px; }
+  .arena-role-chips button { flex: 1; }
+  .arena-legend { left: 10px; right: auto; max-width: calc(100% - 20px); flex-wrap: wrap; }
   .callout-grid { grid-template-columns: 1fr; }
   .guided-step-nav { grid-template-columns: repeat(4, 1fr); }
   .guided-step-actions { grid-template-columns: 1fr; }

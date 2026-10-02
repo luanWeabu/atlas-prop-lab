@@ -6,7 +6,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 
 ## Phases
 
-1. **Role electronics lab:** six synchronized prop profiles, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser field simulation, and build guide.
+1. **Role digital-twin lab:** six synchronized 3D prop profiles, exploded assembly layers, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser arena replay, and build guide.
 2. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
 3. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
 4. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
@@ -31,6 +31,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - The browser simulator demonstrates latency and packet loss effects.
 - A first time builder can follow the 32 step guide.
 - Selecting a role on Page 1 loads its exact parts, GPIO contract, and event names on Page 2.
+- The browser can inspect every role as a lightweight 3D digital twin and replay the same field event envelope without becoming a second game engine.
 - A Vietnamese or English reader can inspect every role and follow its eight-step drawing-linked assembly workflow.
 - The bill of materials separates required and optional items.
 

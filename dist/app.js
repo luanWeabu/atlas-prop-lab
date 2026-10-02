@@ -135,7 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.5 ROLE CIRCUITS", "V0.5 MẠCH THEO ROLE"],
+  "#headerStatusText": ["V0.6 DIGITAL TWIN", "V0.6 BẢN SAO SỐ"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -146,6 +146,14 @@ const staticTranslations = {
   ".kit-status-grid div:nth-child(2) span": ["minimum play zone", "khu chơi tối thiểu"],
   ".kit-status-grid div:nth-child(3) span": ["match target", "thời lượng trận"],
   ".kit-status-grid div:nth-child(4) span": ["MVP: five players + hub", "MVP: năm người + hub"],
+  ".twin-panel .panel-label": ["Interactive digital twin", "Bản sao số tương tác"],
+  "#twinStatus": ["LIVE MODEL", "MÔ HÌNH ĐANG CHẠY"],
+  ".twin-controls .eyebrow": ["EXPLORE BEFORE BUILDING", "KHẢO SÁT TRƯỚC KHI CHẾ TÁC"],
+  "#twinIntro": ["Rotate the model, separate its layers, and select a component to inspect where it belongs.", "Xoay mô hình, tách các lớp và chọn linh kiện để xem vị trí lắp."],
+  "#explodeLabel": ["Exploded view", "Mức tách lớp"],
+  "#electronicsLayerLabel": ["Show electronics layer", "Hiện lớp điện tử"],
+  "#twinPartsLabel": ["Selectable modules", "Các mô-đun có thể chọn"],
+  "#twinBoundary": ["Concept geometry only. Verify real dimensions with a cardboard or EVA mock-up before cutting final material.", "Đây là hình học ý tưởng. Phải xác minh kích thước thật bằng mẫu carton hoặc EVA trước khi cắt vật liệu cuối."],
   ".blueprint-panel .panel-label": ["Numbered assembly drawing", "Bản vẽ lắp ráp đánh số"],
   ".blueprint-scale small": ["Concept dimensions — verify on the first foam mock-up", "Kích thước ý tưởng — cần xác minh bằng mẫu foam đầu tiên"],
   ".spec-stack div:nth-child(1) span": ["Shell", "Vỏ đạo cụ"],
@@ -199,6 +207,8 @@ const staticTranslations = {
   "#field-title": ["Field simulator", "Mô phỏng trận đấu"],
   "#field .section-heading .eyebrow": ["EVENT PATH / FAILURE TEST", "LUỒNG SỰ KIỆN / THỬ LỖI"],
   "#field .section-note": ["Test how an input feels when delivery is delayed or lost.", "Kiểm tra cảm giác khi tín hiệu bị trễ hoặc mất gói."],
+  "#arenaViewLabel": ["Arena view", "Góc nhìn sân đấu"],
+  "[data-arena-view='logic']": ["Logic map", "Bản đồ logic"],
   ".arena-stats span": ["Boss HP", "Máu Boss"],
   "#resetSim": ["Reset", "Đặt lại"],
   ".telemetry-panel > .panel-label": ["Network conditions", "Điều kiện mạng"],
@@ -224,7 +234,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.5 · role circuits + guided build, not field certification", "Bản 0.5 · mạch theo role + hướng dẫn lắp, chưa phải chứng nhận thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.6 · browser digital twin, not field certification", "Bản 0.6 · bản sao số trên trình duyệt, chưa phải chứng nhận thực địa"]
 };
 
 const roleCardTranslations = {
@@ -611,6 +621,7 @@ function renderPropKit() {
   $("#propAssembly").innerHTML = kit.assembly.map(step => `<li><span></span><p>${step}</p></li>`).join("");
   $$(".role-card").forEach(card => card.classList.toggle("is-active", card.dataset.prop === activeProp));
   renderGuidedAssembly();
+  window.dispatchEvent(new CustomEvent("atlas-prop-change", { detail: { prop: activeProp } }));
 }
 
 function downloadRoleBuildPack() {
@@ -755,6 +766,7 @@ function updateMetrics() {
   $("#avgMetric").textContent = state.delivered ? `${Math.round(state.latencyTotal / state.delivered)} ms` : "—";
   $("#bossHpText").textContent = `${state.bossHp} / 520`;
   $("#bossHpBar").style.width = `${(state.bossHp / 520) * 100}%`;
+  window.dispatchEvent(new CustomEvent("atlas-field-state", { detail: { bossHp: state.bossHp, role: state.role } }));
 }
 
 function animatePacket(isLost, duration) {
@@ -788,6 +800,7 @@ function triggerAction(action) {
 
   const payload = eventPayload(action); const jitter = Math.round((Math.random() - .5) * state.latency * .25);
   const travel = Math.max(0, state.latency + jitter); const lost = Math.random() * 100 < state.loss;
+  window.dispatchEvent(new CustomEvent("atlas-field-action", { detail: { role: state.role, action, lost, duration: Math.max(180, travel) } }));
   state.sent++; updateMetrics(); addLog("", payload, "sent"); animatePacket(lost, travel);
   setTimeout(() => {
     if (lost) { state.lost++; addLog("lost", payload, "lost"); }
@@ -799,7 +812,7 @@ function triggerAction(action) {
 
 function resetSimulation() {
   Object.assign(state, { bossHp: 520, sent: 0, delivered: 0, lost: 0, latencyTotal: 0, sequence: 0 });
-  $("#eventLog").innerHTML = ""; updateMetrics(); toast(currentLanguage === "vi" ? "Đã đặt lại mô phỏng" : "Simulation reset");
+  $("#eventLog").innerHTML = ""; updateMetrics(); window.dispatchEvent(new CustomEvent("atlas-field-reset")); toast(currentLanguage === "vi" ? "Đã đặt lại mô phỏng" : "Simulation reset");
 }
 
 function renderBuildPack() {
@@ -876,6 +889,7 @@ function init() {
   $$(".language-switch button").forEach(button => button.addEventListener("click", () => {
     currentLanguage = button.dataset.language;
     applyStaticTranslations(); renderPropKit(); renderConfig(); renderBuildPack();
+    window.dispatchEvent(new CustomEvent("atlas-language-change", { detail: { language: currentLanguage } }));
   }));
   $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); }));
   $("#downloadBuildPack").addEventListener("click", downloadRoleBuildPack);
@@ -913,6 +927,7 @@ function init() {
   $("#downloadConfig").addEventListener("click", () => { const profile = electronicsProfiles[activeProp]; downloadJson("atlas-prop-config.json", { version: 1, deviceId: profile.deviceId, role: profile.label, prop: activeProp, transport: state.transport, features: { ledFeedback: state.led, secondaryFeedback: state.buzzer }, parts: profile.parts, pins: profile.pins, events: profile.events }); });
   $("#electronicsEventButtons").addEventListener("click", event => { const button = event.target.closest("[data-electronics-event]"); if (button) testElectronicsEvent(button.dataset.electronicsEvent); });
   $$(".hero-token").forEach(token => token.addEventListener("click", () => { state.role = token.dataset.role; renderConfig(); }));
+  window.addEventListener("atlas-select-field-role", event => { if (roles[event.detail?.role]) { state.role = event.detail.role; renderConfig(); } });
   $$(".action-button").forEach(button => button.addEventListener("click", () => triggerAction(button.dataset.action)));
   $("#resetSim").addEventListener("click", resetSimulation);
   $("#latencyRange").addEventListener("input", event => { state.latency = Number(event.target.value); $("#latencyValue").textContent = `${state.latency} ms`; });

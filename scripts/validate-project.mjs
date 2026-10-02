@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const required = [
-  "dist/index.html", "dist/styles.css", "dist/app.js", "dist/favicon.svg",
+  "dist/index.html", "dist/styles.css", "dist/app.js", "dist/three-lab.js", "dist/favicon.svg",
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
@@ -57,6 +57,13 @@ for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guide
 for (const id of ["roleCircuitGraphic", "electronicsEventButtons", "electronicsTestLog", "core-build-title", "guideList"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing electronics lab control: ${id}`);
 }
+for (const id of ["threePropStage", "explodeRange", "electronicsLayerToggle", "twinPartButtons", "threeArenaStage", "arenaRoleChips"]) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing Three.js digital-twin control: ${id}`);
+}
+const threeLab = await readFile(resolve(root, "dist/three-lab.js"), "utf8");
+for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "atlas-field-action", "atlas-prop-change"]) {
+  if (!threeLab.includes(token)) throw new Error(`Missing Three.js digital-twin feature: ${token}`);
+}
 if (html.includes('data-view="build"')) throw new Error("Legacy disconnected build tab still exists");
 
-console.log("Atlas Prop Lab validation passed: 6 bilingual role packs, synchronized role electronics, 3 guided images per step, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");
+console.log("Atlas Prop Lab validation passed: 6 bilingual role packs, 6 Three.js digital twins, synchronized role electronics and arena replay, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");

@@ -20,7 +20,7 @@
         <button type="button" data-language="vi">VI</button>
         <button type="button" data-language="en" class="is-active">EN</button>
       </div>
-      <div class="header-status"><i></i><span id="headerStatusText">V0.5 ROLE CIRCUITS</span></div>
+      <div class="header-status"><i></i><span id="headerStatusText">V0.6 DIGITAL TWIN</span></div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
@@ -54,6 +54,31 @@
           <button class="role-card" data-prop="mage" role="listitem"><span class="role-glyph">✦</span><strong>Mage</strong><small>Staff</small></button>
           <button class="role-card boss-card" data-prop="boss" role="listitem"><span class="role-glyph">♛</span><strong>Titan Warden</strong><small>Boss hammer</small></button>
         </div>
+
+        <section class="panel twin-panel" aria-labelledby="twin-title">
+          <div class="panel-toolbar twin-toolbar">
+            <div><span class="panel-label">Interactive digital twin</span><strong id="twin-title">Guardian Shield · 3D assembly model</strong></div>
+            <span class="mono-pill" id="twinStatus">LIVE MODEL</span>
+          </div>
+          <div class="twin-grid">
+            <div class="twin-stage" id="threePropStage">
+              <div class="three-loading" id="threePropLoading">Loading 3D workspace…</div>
+              <div class="twin-axis" aria-hidden="true"><i class="axis-x">X</i><i class="axis-y">Y</i><i class="axis-z">Z</i></div>
+            </div>
+            <aside class="twin-controls">
+              <p class="eyebrow">EXPLORE BEFORE BUILDING</p>
+              <h2 id="twinPropName">Aegis Shield</h2>
+              <p id="twinIntro">Rotate the model, separate its layers, and select a component to inspect where it belongs.</p>
+              <label class="range-label" for="explodeRange"><span id="explodeLabel">Exploded view</span><output id="explodeValue">0%</output></label>
+              <input id="explodeRange" type="range" min="0" max="100" value="0" step="1" />
+              <label class="twin-toggle"><input id="electronicsLayerToggle" type="checkbox" checked /><span id="electronicsLayerLabel">Show electronics layer</span></label>
+              <div class="panel-label" id="twinPartsLabel">Selectable modules</div>
+              <div id="twinPartButtons" class="twin-part-buttons"></div>
+              <div id="twinPartInfo" class="twin-part-info" aria-live="polite"><strong>Select a module</strong><p>Its placement, job, and build caution will appear here.</p></div>
+              <p class="three-boundary" id="twinBoundary">Concept geometry only. Verify real dimensions with a cardboard or EVA mock-up before cutting final material.</p>
+            </aside>
+          </div>
+        </section>
 
         <div class="kit-workspace">
           <section class="panel blueprint-panel">
@@ -292,7 +317,24 @@
               <div><span>Boss HP</span><strong id="bossHpText">520 / 520</strong></div>
               <div class="hp-track"><i id="bossHpBar"></i></div>
             </div>
-            <div class="arena" id="arena">
+            <div class="arena-view-toolbar">
+              <div><span class="panel-label" id="arenaViewLabel">Arena view</span><strong id="arenaViewStatus">3D EVENT REPLAY</strong></div>
+              <div class="segmented-control" role="group" aria-label="Arena view mode">
+                <button type="button" class="is-active" data-arena-view="three">3D</button>
+                <button type="button" data-arena-view="logic">Logic map</button>
+              </div>
+            </div>
+            <div class="three-arena-stage" id="threeArenaStage">
+              <div class="three-loading" id="threeArenaLoading">Loading arena…</div>
+              <div class="arena-role-chips" id="arenaRoleChips">
+                <button type="button" data-field-role="guardian">Guardian</button>
+                <button type="button" data-field-role="archer" class="is-active">Archer</button>
+                <button type="button" data-field-role="assassin">Assassin</button>
+                <button type="button" data-field-role="support">Support</button>
+              </div>
+              <div class="arena-legend"><span><i class="hero-dot"></i>Hero</span><span><i class="boss-dot"></i>Boss</span><span><i class="zone-dot"></i>AoE / range</span></div>
+            </div>
+            <div class="arena is-hidden" id="arena">
               <div class="boss-token"><span>B</span><small>BOSS</small></div>
               <div class="hero-token guardian" data-role="guardian"><span>G</span><small>GUARDIAN</small></div>
               <div class="hero-token archer is-selected" data-role="archer"><span>A</span><small>ARCHER</small></div>
@@ -327,8 +369,10 @@
 
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.5 · role circuits + guided build, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.6 · browser digital twin, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
+    <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
+    <script type="module" src="three-lab.js"></script>
   </body>
 </html>

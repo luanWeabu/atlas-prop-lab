@@ -2,7 +2,7 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.5 connects the **Atlas Event Kit v1** planner to a role-aware ESP32 electronics lab:
+Revision 0.6 connects the **Atlas Event Kit v1** planner to browser-based digital twins and a role-aware ESP32 electronics lab:
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
@@ -26,12 +26,15 @@ The Wokwi/firmware baseline remains a reusable bench proxy while each physical r
 - Wokwi circuit files and automated scenarios
 - a browser field simulator for latency, packet loss, cooldowns, damage, and support healing
 - a clear warning that IMU/Hall thresholds, current, heat, radio range, fit, and durability still require real hardware
+- interactive Three.js digital twins for all six props, with orbit controls, exploded layers, electronics visibility, and selectable modules
+- a lightweight Three.js arena replay that visualizes the same latency/loss events as the existing field simulator without duplicating Unity gameplay
 
 ## Repository map
 
 | Path | Purpose |
 | --- | --- |
 | `dist/` | Bilingual static mobile web lab and downloadable build packs |
+| `dist/three-lab.js` | Three.js prop digital twins and lightweight arena event replay |
 | `firmware/spell-orb/` | PlatformIO firmware for ESP32 |
 | `wokwi/` | Circuit diagram, simulator configuration, and scenarios |
 | `docs/` | Architecture, bill of materials, event contract, and 32 step assembly guide |
