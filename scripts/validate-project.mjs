@@ -11,7 +11,8 @@ const required = [
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
   "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md", "docs/guardian-purchase-ledger.md",
   "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg",
-  "docs/guardian-electronics.md", "wokwi/guardian-diagram.json", "wokwi/scenarios/guardian-block.yaml", "wokwi-guardian.toml"
+  "docs/guardian-electronics.md", "wokwi/guardian-diagram.json", "wokwi/scenarios/guardian-block.yaml", "wokwi-guardian.toml",
+  "docs/unity-bridge.md", "unity/Runtime/AtlasPropEvent.cs", "unity/Runtime/AtlasPropLineParser.cs", "unity/Runtime/AtlasPropIntentRouter.cs"
 ];
 
 for (const file of required) await access(resolve(root, file), constants.R_OK);
@@ -92,6 +93,12 @@ const threeLab = await readFile(resolve(root, "dist/three-lab.js"), "utf8");
 for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "plateGeometry", "ACESFilmicToneMapping", "atlas-field-action", "atlas-prop-change", "selectedByProp", "refreshPropLabels", "selectPartManually", "baseOpacity"]) {
   if (!threeLab.includes(token)) throw new Error(`Missing Three.js digital-twin feature: ${token}`);
 }
+const unityParser = await readFile(resolve(root, "unity/Runtime/AtlasPropLineParser.cs"), "utf8");
+const unityRouter = await readFile(resolve(root, "unity/Runtime/AtlasPropIntentRouter.cs"), "utf8");
+for (const token of ["unsupported_version", "not_player_intent", "missing_required_field"]) {
+  if (!unityParser.includes(token)) throw new Error(`Unity parser is missing rejection: ${token}`);
+}
+if (!unityRouter.includes("duplicate_or_stale_sequence")) throw new Error("Unity router is missing sequence deduplication");
 if (html.includes('data-view="build"')) throw new Error("Legacy disconnected build tab still exists");
 
 console.log("Atlas Prop Lab validation passed: Guardian production pack, 6 bilingual role packs, 6 Three.js digital twins, synchronized role electronics and arena replay, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");

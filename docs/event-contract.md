@@ -20,10 +20,10 @@ Every accepted physical action becomes one newline terminated JSON object.
 | --- | --- |
 | `v` | Protocol version. Reject unsupported major versions. |
 | `deviceId` | Stable ID assigned during kit setup. |
-| `role` | `GUARDIAN`, `ARCHER`, `ASSASSIN`, or `SUPPORT`. |
+| `role` | `GUARDIAN`, `WARRIOR`, `ARCHER`, `ASSASSIN`, `MAGE`, or `BOSS`. |
 | `seq` | Monotonic counter per boot, used to reject duplicates. |
 | `type` | `PLAYER_INTENT` for accepted input. |
-| `action` | `CAST` or `SPECIAL` in this prototype. |
+| `action` | A role action from the locked profile, such as `BLOCK_START`, `FIRE`, `CAST_HEAL`, or `SLAM`. |
 | `atMs` | Device uptime when the input was accepted. |
 
 ## Unity bridge rules
@@ -35,9 +35,19 @@ Every accepted physical action becomes one newline terminated JSON object.
 5. Let the authoritative game state accept or reject the action.
 6. Return an acknowledgement for accepted, rejected, and stale events once wireless transport is introduced.
 
+## Role action sets
+
+| Role | Actions |
+| --- | --- |
+| Guardian | `BLOCK_START`, `BLOCK_END`, `TAUNT` |
+| Warrior | `STRIKE`, `HEAVY_STRIKE`, `PARRY` |
+| Archer | `DRAW_START`, `DRAW_READY`, `FIRE` |
+| Assassin | `QUICK_STRIKE`, `HEAVY_STRIKE`, `PLACE_TRAP` |
+| Mage | `CAST_HEAL`, `CHANNEL`, `TEAM_SHIELD` |
+| Boss | `SWEEP`, `SLAM`, `MARK`, `PHASE_SKILL` |
+
 Local cooldown rejection is diagnostic output and must not enter gameplay:
 
 ```json
 {"v":1,"deviceId":"hero-orb-01","type":"LOCAL_REJECT","action":"CAST","reason":"COOLDOWN","remainingMs":420}
 ```
-
