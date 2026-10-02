@@ -16,6 +16,7 @@ Promise.all([import(THREE_URL), import(CONTROLS_URL)])
 function startThreeLab(THREE, OrbitControls) {
   const $ = selector => document.querySelector(selector);
   const isVi = () => document.documentElement.lang === "vi";
+  const propManifests = window.ATLAS_PROP_MANIFESTS || {};
   const palette = { guardian: 0xf0b44d, warrior: 0x16a6c9, archer: 0x16a6c9, assassin: 0x7057d9, mage: 0x39cc93, boss: 0xef6b68 };
   const names = {
     guardian: ["Aegis Shield", "Khiên Aegis"], warrior: ["Pulse Sword", "Kiếm Pulse"], archer: ["Arc Bow", "Cung Arc"],
@@ -207,7 +208,9 @@ function startThreeLab(THREE, OrbitControls) {
 
   function partLabel(key) { return copy[key]?.[isVi() ? 1 : 0] || key; }
   function modelKeys() {
-    return [...new Set((propModel?.children || []).map(child => child.userData.partKey).filter(Boolean))];
+    const geometryKeys = new Set((propModel?.children || []).map(child => child.userData.partKey).filter(Boolean));
+    const manifestKeys = (propManifests[currentProp]?.modules || []).map(module => module.modelKey);
+    return [...new Set(manifestKeys)].filter(key => geometryKeys.has(key));
   }
   function refreshPropLabels() {
     if (!propModel) return;

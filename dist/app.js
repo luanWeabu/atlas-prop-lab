@@ -395,14 +395,8 @@ const guideStepsVi = [
   "Nhấn CAST rồi SPECIAL; kiểm tra JSON, ánh sáng, âm thanh và cooldown.", "Rút USB, dán nhãn phiên bản và ghi lại sai khác trước khi làm vỏ."
 ];
 
-const guidedCallouts = {
-  guardian: [[1], [2, 3, 4, 5], [1], [3], [4], [5], [2, 6], [1, 2, 3, 4, 5, 6]],
-  warrior: [[1, 6], [3, 4, 5], [1], [2], [3], [4, 5], [6], [1, 2, 3, 4, 5, 6]],
-  archer: [[1, 2], [3, 4, 5], [2], [3, 4], [5], [1, 6], [3, 4], [1, 2, 3, 4, 5, 6]],
-  assassin: [[1, 2], [3, 4, 5, 6], [1, 2], [3], [4, 5], [2], [6], [1, 2, 3, 4, 5, 6]],
-  mage: [[1, 2, 6], [1, 3, 4, 5], [2, 6], [1], [4], [5], [3, 4], [1, 2, 3, 4, 5, 6]],
-  boss: [[1], [2, 3, 4, 5], [1], [4, 5], [6], [2, 5, 6], [3, 4], [1, 2, 3, 4, 5, 6]]
-};
+const propManifests = window.ATLAS_PROP_MANIFESTS;
+const guidedCallouts = Object.fromEntries(Object.entries(propManifests).map(([role, manifest]) => [role, manifest.assemblyCallouts]));
 
 const guidedCopy = {
   en: {

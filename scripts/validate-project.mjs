@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const required = [
-  "dist/index.html", "dist/styles.css", "dist/app.js", "dist/three-lab.js", "dist/favicon.svg",
+  "dist/index.html", "dist/styles.css", "dist/prop-manifests.js", "dist/app.js", "dist/three-lab.js", "dist/favicon.svg",
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
@@ -43,12 +43,19 @@ if (viGuideCount !== 32) throw new Error(`Expected 32 Vietnamese browser guide s
 for (const token of ["const propKitVi", "const guidedCallouts", "function renderGuidedAssembly", "function renderGuidedVisual", "const blueprintFocus", "atlas-language"]) {
   if (!app.includes(token)) throw new Error(`Missing bilingual guided-build feature: ${token}`);
 }
+const manifests = await readFile(resolve(root, "dist/prop-manifests.js"), "utf8");
+for (const role of ["guardian", "warrior", "archer", "assassin", "mage", "boss"]) {
+  if (!manifests.includes(`    ${role}: {`)) throw new Error(`Missing shared prop manifest: ${role}`);
+}
+for (const token of ["assemblyCallouts", "modelKey", "window.ATLAS_PROP_MANIFESTS"]) {
+  if (!manifests.includes(token)) throw new Error(`Missing manifest contract token: ${token}`);
+}
 for (const token of ["const electronicsProfiles", "function electronicsDiagramSvg", "function testElectronicsEvent", "roleCircuitGraphic", "electronicsEventButtons"]) {
   if (!app.includes(token)) throw new Error(`Missing role electronics feature: ${token}`);
 }
 
 const html = await readFile(resolve(root, "dist/index.html"), "utf8");
-for (const asset of ["styles.css", "app.js", "favicon.svg"]) {
+for (const asset of ["styles.css", "prop-manifests.js", "app.js", "favicon.svg"]) {
   if (!html.includes(asset)) throw new Error(`HTML is missing ${asset}`);
 }
 for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guidedVisualFrame", "guidedStepAction", "guidedStepPass"]) {
