@@ -77,6 +77,9 @@ function startThreeLab(THREE, OrbitControls) {
       object.userData.basePosition = object.position.clone();
       object.userData.baseEmissive = object.material.emissive?.getHex() || 0;
       object.userData.baseEmissiveIntensity = object.material.emissiveIntensity || 0;
+      object.userData.baseOpacity = object.material.opacity;
+      object.userData.baseTransparent = object.material.transparent;
+      object.userData.baseDepthWrite = object.material.depthWrite;
     });
     return group;
   }
@@ -200,16 +203,39 @@ function startThreeLab(THREE, OrbitControls) {
   const propGrid = new THREE.GridHelper(8, 16, 0x16a6c9, 0x17303a); propGrid.position.y = -3.21; propWorld.scene.add(propGrid);
   const initialHeight = Number($("#playerHeight")?.value || 168);
   let currentProp = "guardian", propModel, selectedKey = null, currentAssemblyStep = 0, guardianDiameter = Math.round(Math.max(45, Math.min(55, initialHeight * .3)));
+  const selectedByProp = {};
 
   function partLabel(key) { return copy[key]?.[isVi() ? 1 : 0] || key; }
-  function selectPart(key) {
-    selectedKey = key;
+  function modelKeys() {
+    return [...new Set((propModel?.children || []).map(child => child.userData.partKey).filter(Boolean))];
+  }
+  function refreshPropLabels() {
     if (!propModel) return;
+    const keys = modelKeys();
+    $("#twinPartButtons").innerHTML = keys.map(key => `<button type="button" data-twin-part="${key}">${partLabel(key)}</button>`).join("");
+    $("#twin-title").textContent = `${names[currentProp][isVi() ? 1 : 0]} · ${isVi() ? "mô hình lắp 3D" : "3D assembly model"}`;
+    $("#twinPropName").textContent = names[currentProp][isVi() ? 1 : 0];
+    selectPart(keys.includes(selectedKey) ? selectedKey : keys[0], { autoReveal: false });
+  }
+  function selectPart(key, { autoReveal = true } = {}) {
+    if (!copy[key]) return;
+    selectedKey = key;
+    selectedByProp[currentProp] = key;
+    if (!propModel) return;
+    const selectingElectronics = propModel.children.some(object => object.userData.partKey === key && object.userData.electronic);
+    if (autoReveal && selectingElectronics) {
+      $("#electronicsLayerToggle").checked = true;
+      if (Number($("#explodeRange").value) < 28) $("#explodeRange").value = "28";
+    }
     propModel.traverse(object => {
       if (!object.isMesh || !object.material.emissive) return;
-      object.material.emissive.setHex(object.userData.partKey === key ? palette[currentProp] : object.userData.baseEmissive || 0);
-      object.material.emissiveIntensity = object.userData.partKey === key ? Math.max(.62, object.userData.baseEmissiveIntensity || 0) : object.userData.baseEmissiveIntensity || 0;
+      const selected = object.userData.partKey === key;
+      object.material.emissive.setHex(selected ? palette[currentProp] : object.userData.baseEmissive || 0);
+      object.material.emissiveIntensity = selected ? Math.max(1.85, object.userData.baseEmissiveIntensity || 0) : object.userData.baseEmissiveIntensity || 0;
+      object.renderOrder = selected ? 4 : 0;
     });
+    updateExplode();
+    updateElectronicLayer();
     document.querySelectorAll("#twinPartButtons button").forEach(button => button.classList.toggle("is-active", button.dataset.twinPart === key));
     const entry = copy[key];
     $("#twinPartInfo").innerHTML = `<strong>${entry[isVi() ? 1 : 0]}</strong><p>${entry[isVi() ? 3 : 2]}</p><p><b>${isVi() ? "Cần kiểm tra:" : "Build check:"}</b> ${entry[isVi() ? 5 : 4]}</p>`;
@@ -226,21 +252,33 @@ function startThreeLab(THREE, OrbitControls) {
   }
   function updateElectronicLayer() {
     const show = $("#electronicsLayerToggle").checked;
-    propModel?.traverse(object => { if (object.isMesh && object.userData.electronic) object.visible = show; });
+    propModel?.traverse(object => {
+      if (!object.isMesh) return;
+      if (object.userData.electronic) object.visible = show;
+      const ghostShell = show && object.userData.partKey === "shell" && selectedKey !== "shell";
+      object.material.opacity = ghostShell ? Math.min(.22, object.userData.baseOpacity ?? 1) : object.userData.baseOpacity ?? 1;
+      object.material.transparent = ghostShell || object.userData.baseTransparent;
+      object.material.depthWrite = ghostShell ? false : object.userData.baseDepthWrite;
+    });
   }
   function rebuildProp(prop = currentProp) {
     if (!builders[prop]) return;
+    if (prop === currentProp && propModel) {
+      refreshPropLabels();
+      applyGuidedStep(prop, currentAssemblyStep);
+      return;
+    }
     currentProp = prop;
     if (propModel) propWorld.scene.remove(propModel);
     propModel = builders[prop](palette[prop]);
     if (prop === "guardian") propModel.scale.setScalar(guardianDiameter / 50);
     propWorld.scene.add(propModel);
-    const keys = [...new Set(propModel.children.map(child => child.userData.partKey).filter(Boolean))];
-    $("#twinPartButtons").innerHTML = keys.map(key => `<button type="button" data-twin-part="${key}">${partLabel(key)}</button>`).join("");
-    $("#twin-title").textContent = `${names[prop][isVi() ? 1 : 0]} · ${isVi() ? "mô hình lắp 3D" : "3D assembly model"}`;
-    $("#twinPropName").textContent = names[prop][isVi() ? 1 : 0];
-    $("#explodeRange").value = "0"; updateExplode(); updateElectronicLayer(); selectPart(keys[0]);
-    applyGuidedStep(prop, currentAssemblyStep);
+    const keys = modelKeys();
+    selectedKey = keys.includes(selectedByProp[prop]) ? selectedByProp[prop] : keys[0];
+    $("#explodeRange").value = "0";
+    refreshPropLabels();
+    if ($("#syncTwinToggle")?.checked) applyGuidedStep(prop, currentAssemblyStep);
+    else selectPart(selectedKey, { autoReveal: false });
   }
   function applyGuidedStep(prop, step) {
     currentAssemblyStep = Number(step || 0);
@@ -253,14 +291,23 @@ function startThreeLab(THREE, OrbitControls) {
   $("#explodeRange").addEventListener("input", updateExplode);
   $("#electronicsLayerToggle").addEventListener("change", updateElectronicLayer);
   $("#syncTwinToggle").addEventListener("change", () => applyGuidedStep(currentProp, currentAssemblyStep));
-  $("#twinPartButtons").addEventListener("click", event => { const button = event.target.closest("[data-twin-part]"); if (button) selectPart(button.dataset.twinPart); });
+  function selectPartManually(key) {
+    $("#syncTwinToggle").checked = false;
+    selectPart(key);
+  }
+  $("#twinPartButtons").addEventListener("click", event => { const button = event.target.closest("[data-twin-part]"); if (button) selectPartManually(button.dataset.twinPart); });
   const propRaycaster = new THREE.Raycaster(); const propPointer = new THREE.Vector2();
+  let pointerStart = null;
+  propWorld.renderer.domElement.addEventListener("pointerdown", event => { pointerStart = [event.clientX, event.clientY]; });
   propWorld.renderer.domElement.addEventListener("pointerup", event => {
+    const moved = pointerStart ? Math.hypot(event.clientX - pointerStart[0], event.clientY - pointerStart[1]) : 0;
+    pointerStart = null;
+    if (moved > 6) return;
     const rect = propWorld.renderer.domElement.getBoundingClientRect();
     propPointer.set((event.clientX - rect.left) / rect.width * 2 - 1, -((event.clientY - rect.top) / rect.height) * 2 + 1);
     propRaycaster.setFromCamera(propPointer, propWorld.camera);
     const hit = propRaycaster.intersectObject(propModel, true).find(item => item.object.userData.partKey);
-    if (hit) selectPart(hit.object.userData.partKey);
+    if (hit) selectPartManually(hit.object.userData.partKey);
   });
   $("#threePropLoading")?.remove(); rebuildProp($("#roleSelect")?.value || "guardian");
 
@@ -311,7 +358,7 @@ function startThreeLab(THREE, OrbitControls) {
   $("#threeArenaLoading")?.remove(); selectFieldRole("archer");
 
   window.addEventListener("atlas-prop-change", event => rebuildProp(event.detail?.prop));
-  window.addEventListener("atlas-language-change", () => rebuildProp(currentProp));
+  window.addEventListener("atlas-language-change", refreshPropLabels);
   window.addEventListener("atlas-guided-step-change", event => applyGuidedStep(event.detail?.prop, event.detail?.step));
   window.addEventListener("atlas-guardian-fit-change", event => {
     guardianDiameter = Number(event.detail?.diameterCm || 50);

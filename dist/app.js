@@ -135,7 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.7 GUARDIAN PACK", "V0.7 BỘ KHIÊN GUARDIAN"],
+  "#headerStatusText": ["V0.8.1 PROP LAB", "V0.8.1 XƯỞNG ĐẠO CỤ"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -257,7 +257,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.7 · Guardian production readiness, not field certification", "Bản 0.7 · chuẩn bị chế tác Guardian, chưa phải chứng nhận thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.8.1 · build planning, not field certification", "Bản 0.8.1 · kế hoạch chế tác, chưa phải chứng nhận thực địa"]
 };
 
 const roleCardTranslations = {
@@ -469,9 +469,9 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 const blueprintFocus = {
-  guardian: { 1: [191, 72], 2: [310, 171], 3: [310, 132], 4: [388, 210], 5: [430, 170], 6: [240, 225] },
+  guardian: { 1: [190, 82], 2: [310, 220], 3: [310, 174], 4: [390, 198], 5: [434, 174], 6: [245, 226] },
   warrior: { 1: [284, 75], 2: [310, 135], 3: [342, 250], 4: [312, 289], 5: [310, 314], 6: [310, 340] },
-  archer: { 1: [178, 72], 2: [310, 92], 3: [310, 151], 4: [310, 180], 5: [310, 214], 6: [430, 92] },
+  archer: { 1: [205, 86], 2: [420, 86], 3: [410, 178], 4: [286, 161], 5: [286, 207], 6: [238, 112] },
   assassin: { 1: [177, 92], 2: [433, 92], 3: [202, 239], 4: [177, 278], 5: [177, 306], 6: [433, 306] },
   mage: { 1: [310, 64], 2: [310, 108], 3: [330, 154], 4: [306, 205], 5: [307, 246], 6: [310, 316] },
   boss: { 1: [220, 52], 2: [382, 91], 3: [330, 181], 4: [310, 148], 5: [308, 257], 6: [505, 220] }
@@ -513,18 +513,22 @@ function blueprintSvg(kind, options = {}) {
   </svg>`;
   const dot = (n, x, y, tx, ty) => `<g class="bp-callout" data-callout="${n}"><path d="M${x} ${y}L${tx} ${ty}"/><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y + 4}" text-anchor="middle">${n}</text></g>`;
   if (kind === "shield") return frame(`
-    <path d="M310 35C420 35 485 83 476 174C467 264 398 306 310 320C222 306 153 264 144 174C135 83 200 35 310 35Z"/>
-    <path d="M310 70C388 70 435 103 430 170C424 233 376 267 310 281C244 267 196 233 190 170C185 103 232 70 310 70Z"/>
-    <circle cx="310" cy="171" r="52"/><path d="M236 116Q310 76 384 116M236 228Q310 268 384 228"/>
-    ${dot(1,191,72,118,32)}${dot(2,310,171,520,104)}${dot(3,310,132,94,135)}${dot(4,388,210,530,238)}${dot(5,430,170,533,163)}${dot(6,240,225,104,273)}`, "Aegis Shield");
+    <ellipse cx="310" cy="174" rx="174" ry="150"/><ellipse cx="310" cy="174" rx="148" ry="126"/>
+    <ellipse cx="310" cy="174" rx="126" ry="106"/><circle cx="310" cy="174" r="45"/>
+    <ellipse cx="310" cy="174" rx="137" ry="116" class="bp-led-ring"/>
+    <path d="M244 112Q220 174 245 238M376 112Q400 174 375 238" stroke-dasharray="8 7"/>
+    <rect x="273" y="199" width="74" height="42" rx="7" stroke-dasharray="7 6"/><rect x="286" y="161" width="48" height="26" rx="5" stroke-dasharray="7 6"/>
+    ${dot(1,190,82,96,42)}${dot(2,310,220,518,272)}${dot(3,310,174,98,146)}${dot(4,390,198,526,221)}${dot(5,434,174,538,150)}${dot(6,245,226,102,286)}`, "Aegis Shield");
   if (kind === "sword") return frame(`
     <path d="M282 34L338 34L353 239L326 274H294L267 239Z"/><path d="M310 62V238"/>
     <path d="M225 250H395L378 279H242Z"/><rect x="291" y="273" width="38" height="64" rx="13"/><circle cx="310" cy="337" r="18"/>
     ${dot(1,284,75,118,48)}${dot(2,310,135,500,62)}${dot(3,342,250,520,190)}${dot(4,312,289,102,242)}${dot(5,310,314,496,302)}${dot(6,310,340,116,333)}`, "Pulse Sword");
   if (kind === "bow") return frame(`
-    <path d="M194 45Q88 180 194 315M426 45Q532 180 426 315"/><path d="M194 45L310 180L194 315M426 45L310 180L426 315"/>
-    <rect x="291" y="126" width="38" height="108" rx="12"/><path d="M310 92V268"/><circle cx="310" cy="180" r="10"/>
-    ${dot(1,178,72,74,44)}${dot(2,310,92,500,46)}${dot(3,310,151,105,135)}${dot(4,310,180,520,176)}${dot(5,310,214,100,250)}${dot(6,430,92,526,112)}`, "Arc Bow");
+    <path d="M420 38Q356 42 252 104Q181 149 270 158M270 202Q181 211 252 256Q356 318 420 322"/>
+    <path d="M420 38Q426 180 420 322" class="bp-string"/><path d="M238 112Q300 70 396 48M238 248Q300 290 396 312" class="bp-led-ring"/>
+    <path d="M270 139L310 128L326 157L316 224L276 232L260 204Z"/><rect x="271" y="157" width="30" height="48" rx="9"/>
+    <rect x="275" y="148" width="24" height="20" rx="4" stroke-dasharray="6 5"/><circle cx="410" cy="178" r="9"/>
+    ${dot(1,205,86,82,45)}${dot(2,420,86,534,52)}${dot(3,410,178,534,151)}${dot(4,286,161,94,151)}${dot(5,286,207,94,245)}${dot(6,238,112,117,94)}`, "Arc Bow");
   if (kind === "dagger") return frame(`
     <path d="M158 56L196 56L209 216L177 248L145 216Z"/><path d="M118 239H236L221 263H133Z"/><rect x="158" y="260" width="38" height="64" rx="12"/>
     <path d="M414 56L452 56L465 216L433 248L401 216Z"/><path d="M374 239H492L477 263H389Z"/><rect x="414" y="260" width="38" height="64" rx="12"/>
