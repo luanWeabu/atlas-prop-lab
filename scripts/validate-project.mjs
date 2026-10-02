@@ -8,7 +8,8 @@ const required = [
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
-  "docs/event-kit-v1.md", "docs/role-build-contract.md"
+  "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md",
+  "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg"
 ];
 
 for (const file of required) await access(resolve(root, file), constants.R_OK);
@@ -69,6 +70,9 @@ for (const id of ["threePropStage", "explodeRange", "electronicsLayerToggle", "t
 }
 for (const id of ["guardianProductionPack", "playerHeight", "forearmLength", "shieldDiameterResult", "guardianPurchaseList", "guardianGateList", "downloadGuardianProductionPack"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing Guardian production control: ${id}`);
+}
+for (const asset of ["downloads/guardian-template-500mm.svg", "downloads/guardian-rear-layout.svg"]) {
+  if (!html.includes(asset)) throw new Error(`HTML is missing Guardian fabrication asset: ${asset}`);
 }
 for (const token of ["const guardianProduction", "function renderGuardianProduction", "function updateGuardianFit", "function downloadGuardianProductionPack", "atlas-guided-step-change"]) {
   if (!app.includes(token)) throw new Error(`Missing Guardian production feature: ${token}`);

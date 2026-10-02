@@ -177,6 +177,8 @@ const staticTranslations = {
   ".readiness-panel .panel-label": ["Release gates", "Cổng cho phép chế tác"],
   "#clearGuardianGates": ["Clear checks", "Xóa đánh dấu"],
   "#downloadGuardianProductionPack": ["Download Guardian production pack", "Tải bộ chế tác Guardian"],
+  ".production-assets a:nth-child(1)": ["500 mm face template", "Mẫu mặt khiên 500 mm"],
+  ".production-assets a:nth-child(2)": ["Rear layout + section", "Mặt sau + mặt cắt"],
   ".blueprint-panel .panel-label": ["Numbered assembly drawing", "Bản vẽ lắp ráp đánh số"],
   ".blueprint-scale small": ["Concept dimensions — verify on the first foam mock-up", "Kích thước ý tưởng — cần xác minh bằng mẫu foam đầu tiên"],
   ".spec-stack div:nth-child(1) span": ["Shell", "Vỏ đạo cụ"],
