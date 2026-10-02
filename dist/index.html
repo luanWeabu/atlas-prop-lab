@@ -20,7 +20,7 @@
         <button type="button" data-language="vi">VI</button>
         <button type="button" data-language="en" class="is-active">EN</button>
       </div>
-      <div class="header-status"><i></i><span id="headerStatusText">V0.6 DIGITAL TWIN</span></div>
+      <div class="header-status"><i></i><span id="headerStatusText">V0.7 GUARDIAN PACK</span></div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
@@ -72,11 +72,62 @@
               <label class="range-label" for="explodeRange"><span id="explodeLabel">Exploded view</span><output id="explodeValue">0%</output></label>
               <input id="explodeRange" type="range" min="0" max="100" value="0" step="1" />
               <label class="twin-toggle"><input id="electronicsLayerToggle" type="checkbox" checked /><span id="electronicsLayerLabel">Show electronics layer</span></label>
+              <label class="twin-toggle"><input id="syncTwinToggle" type="checkbox" checked /><span id="syncTwinLabel">Follow the current assembly step</span></label>
               <div class="panel-label" id="twinPartsLabel">Selectable modules</div>
               <div id="twinPartButtons" class="twin-part-buttons"></div>
               <div id="twinPartInfo" class="twin-part-info" aria-live="polite"><strong>Select a module</strong><p>Its placement, job, and build caution will appear here.</p></div>
               <p class="three-boundary" id="twinBoundary">Concept geometry only. Verify real dimensions with a cardboard or EVA mock-up before cutting final material.</p>
             </aside>
+          </div>
+        </section>
+
+        <section class="guardian-production" id="guardianProductionPack" aria-labelledby="guardian-production-title">
+          <div class="section-heading production-heading">
+            <div><p class="eyebrow">GUARDIAN / PRODUCTION READINESS</p><h2 id="guardian-production-title">From design to first physical shield</h2></div>
+            <p class="section-note">These values create a full-size cardboard starting point. The mock-up must pass before final EVA or electronics purchases.</p>
+          </div>
+          <div class="production-grid">
+            <section class="panel fit-panel">
+              <div class="panel-toolbar"><span class="panel-label">Fit calculator</span><span class="mono-pill">MOCK-UP VALUES</span></div>
+              <div class="fit-fields">
+                <label for="playerHeight"><span>Player height</span><strong><output id="playerHeightValue">168</output> cm</strong></label>
+                <input id="playerHeight" type="range" min="145" max="195" value="168" step="1" />
+                <label for="forearmLength"><span>Forearm length</span><strong><output id="forearmLengthValue">27</output> cm</strong></label>
+                <input id="forearmLength" type="range" min="20" max="36" value="27" step="1" />
+              </div>
+              <div class="fit-results">
+                <div><span>Starting diameter</span><strong id="shieldDiameterResult">50 cm</strong><small>Clamp: 45–55 cm</small></div>
+                <div><span>Strap centres</span><strong id="strapSpacingResult">15 cm</strong><small>Keep both adjustable</small></div>
+                <div><span>Electronics cavity</span><strong>110 × 85 × 28 mm</strong><small>Rear removable cover</small></div>
+                <div><span>Target mass</span><strong>&lt; 1.2 kg</strong><small>Reject if wrist-heavy</small></div>
+              </div>
+              <div class="production-warning"><strong>Not a final cutting specification</strong><p id="fitWarningText">Print or draw this diameter on cardboard. Test three users and adjust it before transferring the outline to EVA.</p></div>
+            </section>
+
+            <section class="panel layer-panel">
+              <div class="panel-toolbar"><span class="panel-label">Physical layer stack</span><span class="mono-pill">FRONT → BODY</span></div>
+              <ol class="layer-stack" id="guardianLayerStack">
+                <li><b>01</b><div><strong>5 mm cosmetic face</strong><p>Logo, diffuser openings and a soft replaceable front skin.</p></div><span>5 mm EVA</span></li>
+                <li><b>02</b><div><strong>10 mm structural ring</strong><p>Main shape; rounded perimeter with no rigid full-width core.</p></div><span>10 mm EVA</span></li>
+                <li><b>03</b><div><strong>Protected cable channel</strong><p>LED and trigger wiring with quick connectors and strain relief.</p></div><span>5 mm route</span></li>
+                <li><b>04</b><div><strong>Rear service plate</strong><p>Removable ESP32/IMU compartment; isolated from the forearm.</p></div><span>5 mm EVA</span></li>
+                <li><b>05</b><div><strong>Adjustable wearable layer</strong><p>Two padded nylon straps plus a reachable thumb trigger.</p></div><span>25 mm webbing</span></li>
+              </ol>
+            </section>
+          </div>
+
+          <div class="production-grid lower-production-grid">
+            <section class="panel buy-gate-panel">
+              <div class="panel-toolbar"><span class="panel-label">Purchase gates</span><span id="purchaseGateCount" class="mono-pill">0 / 10 READY</span></div>
+              <div class="purchase-columns" id="guardianPurchaseList"></div>
+              <p class="fine-print">“Buy later” protects the budget: do not order electronics until the cardboard fit gate passes.</p>
+            </section>
+            <section class="panel readiness-panel">
+              <div class="panel-toolbar"><span class="panel-label">Release gates</span><button id="clearGuardianGates" class="text-button">Clear checks</button></div>
+              <div class="readiness-score"><div class="progress-track"><i id="guardianGateProgress"></i></div><strong id="guardianGateCount">0 / 5 PASS</strong></div>
+              <ol id="guardianGateList" class="guardian-gate-list"></ol>
+              <button class="button primary" id="downloadGuardianProductionPack">Download Guardian production pack</button>
+            </section>
           </div>
         </section>
 
@@ -369,7 +420,7 @@
 
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.6 · browser digital twin, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.7 · Guardian production readiness, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
     <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>

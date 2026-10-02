@@ -60,10 +60,16 @@ for (const id of ["roleCircuitGraphic", "electronicsEventButtons", "electronicsT
 for (const id of ["threePropStage", "explodeRange", "electronicsLayerToggle", "twinPartButtons", "threeArenaStage", "arenaRoleChips"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing Three.js digital-twin control: ${id}`);
 }
+for (const id of ["guardianProductionPack", "playerHeight", "forearmLength", "shieldDiameterResult", "guardianPurchaseList", "guardianGateList", "downloadGuardianProductionPack"]) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing Guardian production control: ${id}`);
+}
+for (const token of ["const guardianProduction", "function renderGuardianProduction", "function updateGuardianFit", "function downloadGuardianProductionPack", "atlas-guided-step-change"]) {
+  if (!app.includes(token)) throw new Error(`Missing Guardian production feature: ${token}`);
+}
 const threeLab = await readFile(resolve(root, "dist/three-lab.js"), "utf8");
 for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "atlas-field-action", "atlas-prop-change"]) {
   if (!threeLab.includes(token)) throw new Error(`Missing Three.js digital-twin feature: ${token}`);
 }
 if (html.includes('data-view="build"')) throw new Error("Legacy disconnected build tab still exists");
 
-console.log("Atlas Prop Lab validation passed: 6 bilingual role packs, 6 Three.js digital twins, synchronized role electronics and arena replay, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");
+console.log("Atlas Prop Lab validation passed: Guardian production pack, 6 bilingual role packs, 6 Three.js digital twins, synchronized role electronics and arena replay, " + diagram.parts.length + " Wokwi proxy parts, " + diagram.connections.length + " wires, " + guideCount + " English + " + viGuideCount + " Vietnamese bench steps.");

@@ -7,12 +7,13 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 ## Phases
 
 1. **Role digital-twin lab:** six synchronized 3D prop profiles, exploded assembly layers, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser arena replay, and build guide.
-2. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
-3. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
-4. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
-5. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour. Completed at concept and wiring-contract level; physical proof remains.
-6. **Role hardware proofs:** build and verify each prop from the shared USB-first electronics contract.
-7. **Event kit:** enclosures, charging, spare parts, pairing workflow, operator dashboard, and recovery procedures.
+2. **Guardian production readiness:** fit-derived cardboard dimensions, five physical layers, staged purchases, 3D step synchronization, and evidence-gated release before final material spend.
+3. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
+4. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
+5. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
+6. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour. Completed at concept and wiring-contract level; physical proof remains.
+7. **Role hardware proofs:** build and verify each prop from the shared USB-first electronics contract.
+8. **Event kit:** enclosures, charging, spare parts, pairing workflow, operator dashboard, and recovery procedures.
 
 ## Event Kit v1 target
 

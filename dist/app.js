@@ -135,7 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.6 DIGITAL TWIN", "V0.6 BẢN SAO SỐ"],
+  "#headerStatusText": ["V0.7 GUARDIAN PACK", "V0.7 BỘ KHIÊN GUARDIAN"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -154,6 +154,29 @@ const staticTranslations = {
   "#electronicsLayerLabel": ["Show electronics layer", "Hiện lớp điện tử"],
   "#twinPartsLabel": ["Selectable modules", "Các mô-đun có thể chọn"],
   "#twinBoundary": ["Concept geometry only. Verify real dimensions with a cardboard or EVA mock-up before cutting final material.", "Đây là hình học ý tưởng. Phải xác minh kích thước thật bằng mẫu carton hoặc EVA trước khi cắt vật liệu cuối."],
+  "#syncTwinLabel": ["Follow the current assembly step", "Theo bước lắp ráp hiện tại"],
+  ".production-heading .eyebrow": ["GUARDIAN / PRODUCTION READINESS", "GUARDIAN / SẴN SÀNG CHẾ TÁC"],
+  "#guardian-production-title": ["From design to first physical shield", "Từ thiết kế tới chiếc khiên vật lý đầu tiên"],
+  ".production-heading .section-note": ["These values create a full-size cardboard starting point. The mock-up must pass before final EVA or electronics purchases.", "Các giá trị này tạo điểm bắt đầu cho mẫu carton đúng kích thước. Mẫu thử phải PASS trước khi mua EVA cuối hoặc linh kiện điện tử."],
+  ".fit-panel .panel-label": ["Fit calculator", "Tính kích thước thử"],
+  ".fit-panel .mono-pill": ["MOCK-UP VALUES", "GIÁ TRỊ MẪU THỬ"],
+  "label[for='playerHeight'] span": ["Player height", "Chiều cao người chơi"],
+  "label[for='forearmLength'] span": ["Forearm length", "Chiều dài cẳng tay"],
+  ".fit-results div:nth-child(1) span": ["Starting diameter", "Đường kính khởi điểm"],
+  ".fit-results div:nth-child(1) small": ["Clamp: 45–55 cm", "Giới hạn: 45–55 cm"],
+  ".fit-results div:nth-child(2) span": ["Strap centres", "Khoảng tâm hai quai"],
+  ".fit-results div:nth-child(2) small": ["Keep both adjustable", "Cả hai quai phải chỉnh được"],
+  ".fit-results div:nth-child(3) span": ["Electronics cavity", "Khoang điện tử"],
+  ".fit-results div:nth-child(3) small": ["Rear removable cover", "Nắp sau tháo rời"],
+  ".fit-results div:nth-child(4) span": ["Target mass", "Khối lượng mục tiêu"],
+  ".fit-results div:nth-child(4) small": ["Reject if wrist-heavy", "Loại nếu nặng cổ tay"],
+  ".production-warning strong": ["Not a final cutting specification", "Chưa phải thông số cắt cuối"],
+  "#fitWarningText": ["Print or draw this diameter on cardboard. Test three users and adjust it before transferring the outline to EVA.", "In hoặc vẽ đường kính này lên carton. Thử với ba người rồi điều chỉnh trước khi chuyển biên dạng sang EVA."],
+  ".layer-panel .panel-label": ["Physical layer stack", "Cấu trúc lớp vật lý"],
+  ".buy-gate-panel .panel-label": ["Purchase gates", "Cổng mua đồ"],
+  ".readiness-panel .panel-label": ["Release gates", "Cổng cho phép chế tác"],
+  "#clearGuardianGates": ["Clear checks", "Xóa đánh dấu"],
+  "#downloadGuardianProductionPack": ["Download Guardian production pack", "Tải bộ chế tác Guardian"],
   ".blueprint-panel .panel-label": ["Numbered assembly drawing", "Bản vẽ lắp ráp đánh số"],
   ".blueprint-scale small": ["Concept dimensions — verify on the first foam mock-up", "Kích thước ý tưởng — cần xác minh bằng mẫu foam đầu tiên"],
   ".spec-stack div:nth-child(1) span": ["Shell", "Vỏ đạo cụ"],
@@ -234,7 +257,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.6 · browser digital twin, not field certification", "Bản 0.6 · bản sao số trên trình duyệt, chưa phải chứng nhận thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.7 · Guardian production readiness, not field certification", "Bản 0.7 · chuẩn bị chế tác Guardian, chưa phải chứng nhận thực địa"]
 };
 
 const roleCardTranslations = {
@@ -265,6 +288,49 @@ const electronicsProfiles = {
   assassin: { label: "ASSASSIN", name: "Shade Daggers", color: "#7057d9", deviceId: "assassin-daggers-01", parts: ["ESP32-S3", "MPU6050", "Grip trigger", "Trap button", "Status LED"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Grip trigger", "Cò tay cầm"], ["GPIO26", "Trap button", "Nút đặt bẫy"], ["GPIO18", "Status LED data", "Dữ liệu LED trạng thái"], ["5V / GND", "Shared power / ground", "Nguồn / GND chung"]], events: ["QUICK_STRIKE", "HEAVY_STRIKE", "PLACE_TRAP"] },
   mage: { label: "MAGE", name: "Lumen Staff", color: "#39cc93", deviceId: "mage-staff-01", parts: ["ESP32-S3", "MPU6050", "CAST button", "SPECIAL button", "Orb LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "CAST button", "Nút CAST"], ["GPIO26", "SPECIAL button", "Nút SPECIAL"], ["GPIO18", "Orb LED data", "Dữ liệu LED quả cầu"], ["GPIO27", "Vibration driver", "Driver motor rung"]], events: ["CAST_HEAL", "CHANNEL", "TEAM_SHIELD"] },
   boss: { label: "BOSS", name: "Titan Warden", color: "#ef6b68", deviceId: "boss-hammer-01", parts: ["ESP32-S3", "MPU6050", "Primary trigger", "Secondary trigger", "Hammer + armour LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Primary trigger", "Cò chính"], ["GPIO26", "Secondary trigger", "Cò phụ"], ["GPIO18", "Hammer LED data", "Dữ liệu LED đầu búa"], ["GPIO16/17", "Armour receiver UART2", "Bộ nhận áo giáp UART2"]], events: ["SWEEP", "SLAM", "MARK", "PHASE_SKILL"] }
+};
+
+const guardianProduction = {
+  en: {
+    layers: [
+      ["5 mm cosmetic face", "Logo, diffuser openings and a soft replaceable front skin.", "5 mm EVA"],
+      ["10 mm structural ring", "Main shape; rounded perimeter with no rigid full-width core.", "10 mm EVA"],
+      ["Protected cable channel", "LED and trigger wiring with quick connectors and strain relief.", "5 mm route"],
+      ["Rear service plate", "Removable ESP32/IMU compartment; isolated from the forearm.", "5 mm EVA"],
+      ["Adjustable wearable layer", "Two padded nylon straps plus a reachable thumb trigger.", "25 mm webbing"]
+    ],
+    groups: [
+      { title: "BUY NOW · FIT MOCK-UP", items: [["Double-wall cardboard", "2 sheets · full-size fit proof"], ["Paper tape + marker", "1 set · outline and iteration"], ["25 mm nylon webbing", "1.5 m · strap position proof"], ["Adjustable buckles", "2 · verify quick release"], ["EVA offcut", "Small piece · edge and adhesive test"]] },
+      { title: "BUY AFTER FIT PASS", items: [["ESP32-S3 DevKit", "1 · USB-first controller"], ["MPU6050 module", "1 · centre-mounted IMU"], ["Momentary thumb trigger", "1 · deliberate input"], ["WS2812B strip", "1 m · protected rim feedback"], ["Wire + connectors", "1 set · removable service core"]] }
+    ],
+    gates: [
+      ["G0 · Gameplay contract frozen", "BLOCK_START, BLOCK_END and TAUNT names are accepted by the game."],
+      ["G1 · Cardboard fit PASS", "Three intended users wear it for five minutes; vision, wrist and quick removal all pass."],
+      ["G2 · USB electronics PASS", "100 trigger/motion cycles with no duplicate event, reset, short or unsafe heat."],
+      ["G3 · Integrated shell PASS", "30 cm mat drop and cable pull checks reveal no hard edge, loose layer or pinched wire."],
+      ["G4 · Field rehearsal PASS", "Five-minute match with no body contact, false block, discomfort or recovery failure."]
+    ]
+  },
+  vi: {
+    layers: [
+      ["Mặt trang trí 5 mm", "Logo, khe tán sáng và lớp mặt mềm có thể thay thế.", "EVA 5 mm"],
+      ["Vòng kết cấu 10 mm", "Tạo hình chính; viền bo tròn, không dùng lõi cứng chạy toàn chiều rộng.", "EVA 10 mm"],
+      ["Rãnh dây có bảo vệ", "Dây LED và cò dùng đầu nối nhanh cùng chống kéo.", "Rãnh 5 mm"],
+      ["Tấm bảo trì mặt sau", "Khoang ESP32/IMU tháo rời, cách ly khỏi cẳng tay.", "EVA 5 mm"],
+      ["Lớp đeo điều chỉnh", "Hai quai nylon có đệm cùng cò ngón cái dễ với tới.", "Quai 25 mm"]
+    ],
+    groups: [
+      { title: "MUA NGAY · MẪU THỬ ĐỘ VỪA", items: [["Carton hai lớp", "2 tấm · thử kích thước thật"], ["Băng dính giấy + bút", "1 bộ · vẽ biên và chỉnh sửa"], ["Quai nylon 25 mm", "1,5 m · thử vị trí quai"], ["Khóa điều chỉnh", "2 · kiểm tra tháo nhanh"], ["Miếng EVA thừa", "Mảnh nhỏ · thử cạnh và keo"]] },
+      { title: "MUA SAU KHI FIT PASS", items: [["ESP32-S3 DevKit", "1 · bộ điều khiển ưu tiên USB"], ["Module MPU6050", "1 · IMU đặt tại tâm"], ["Cò ngón cái nhấn nhả", "1 · input chủ động"], ["Dải WS2812B", "1 m · LED viền có bảo vệ"], ["Dây + đầu nối", "1 bộ · lõi bảo trì tháo rời"]] }
+    ],
+    gates: [
+      ["G0 · Khóa gameplay contract", "Game đã chấp nhận tên BLOCK_START, BLOCK_END và TAUNT."],
+      ["G1 · Mẫu carton FIT PASS", "Ba người dự kiến đeo 5 phút; tầm nhìn, cổ tay và tháo nhanh đều đạt."],
+      ["G2 · Mạch USB PASS", "100 chu kỳ cò/chuyển động không lặp event, reset, chập hoặc nóng nguy hiểm."],
+      ["G3 · Vỏ tích hợp PASS", "Thả 30 cm xuống thảm và kéo dây không lộ cạnh cứng, bong lớp hoặc kẹp dây."],
+      ["G4 · Diễn tập trận PASS", "Trận 5 phút không tiếp xúc cơ thể, block giả, khó chịu hoặc lỗi khôi phục."]
+    ]
+  }
 };
 
 const pinMap = [
@@ -598,6 +664,7 @@ function renderGuidedAssembly() {
   renderGuidedVisual();
   $$(".bp-callout").forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));
   $$("#propCallouts > div").forEach((node, index) => node.classList.toggle("is-highlighted", callouts.includes(index + 1)));
+  window.dispatchEvent(new CustomEvent("atlas-guided-step-change", { detail: { prop: activeProp, step: activeAssemblyStep } }));
 }
 
 function renderPropKit() {
@@ -620,6 +687,7 @@ function renderPropKit() {
   $("#propBomBody").innerHTML = rows.map(([part, qty, source, stage]) => `<tr><td>${localizeBomCell(part)}</td><td>${localizeBomCell(qty)}</td><td>${localizeBomCell(source)}</td><td><span class="stage-tag ${stage === "Bench" ? "" : "later"}">${localizeBomCell(stage)}</span></td></tr>`).join("");
   $("#propAssembly").innerHTML = kit.assembly.map(step => `<li><span></span><p>${step}</p></li>`).join("");
   $$(".role-card").forEach(card => card.classList.toggle("is-active", card.dataset.prop === activeProp));
+  $("#guardianProductionPack").hidden = activeProp !== "guardian";
   renderGuidedAssembly();
   window.dispatchEvent(new CustomEvent("atlas-prop-change", { detail: { prop: activeProp } }));
 }
@@ -824,6 +892,75 @@ function renderBuildPack() {
   updateGuideProgress();
 }
 
+function guardianPurchaseKey() { return "atlas-guardian-purchases"; }
+function guardianGateKey() { return "atlas-guardian-gates"; }
+function guardianFitKey() { return "atlas-guardian-fit"; }
+function readStoredIndexes(key, max) {
+  try {
+    const values = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(values) ? values.filter(value => Number.isInteger(value) && value >= 0 && value < max) : [];
+  } catch { return []; }
+}
+
+function renderGuardianProduction() {
+  const content = guardianProduction[currentLanguage];
+  const purchases = readStoredIndexes(guardianPurchaseKey(), 10);
+  const gates = readStoredIndexes(guardianGateKey(), 5);
+  $("#guardianLayerStack").innerHTML = content.layers.map(([title, detail, material], index) => `<li><b>${String(index + 1).padStart(2, "0")}</b><div><strong>${title}</strong><p>${detail}</p></div><span>${material}</span></li>`).join("");
+  let itemIndex = 0;
+  $("#guardianPurchaseList").innerHTML = content.groups.map(group => `<section class="purchase-group"><h3>${group.title}</h3>${group.items.map(([title, detail]) => { const index = itemIndex++; return `<label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label>`; }).join("")}</section>`).join("");
+  $("#guardianGateList").innerHTML = content.gates.map(([title, detail], index) => `<li><label><input type="checkbox" data-guardian-gate="${index}" ${gates.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label></li>`).join("");
+  try {
+    const fit = JSON.parse(localStorage.getItem(guardianFitKey()) || "{}");
+    if (Number.isFinite(fit.height)) $("#playerHeight").value = String(fit.height);
+    if (Number.isFinite(fit.forearm)) $("#forearmLength").value = String(fit.forearm);
+  } catch {}
+  updateGuardianProductionProgress(false);
+  updateGuardianFit();
+}
+
+function updateGuardianFit() {
+  const height = Number($("#playerHeight").value);
+  const forearm = Number($("#forearmLength").value);
+  const diameter = Math.round(Math.max(45, Math.min(55, height * .3)));
+  const strapSpacing = Math.round(forearm * .55);
+  $("#playerHeightValue").textContent = height;
+  $("#forearmLengthValue").textContent = forearm;
+  $("#shieldDiameterResult").textContent = `${diameter} cm`;
+  $("#strapSpacingResult").textContent = `${strapSpacing} cm`;
+  localStorage.setItem(guardianFitKey(), JSON.stringify({ height, forearm }));
+  window.dispatchEvent(new CustomEvent("atlas-guardian-fit-change", { detail: { heightCm: height, forearmCm: forearm, diameterCm: diameter, strapSpacingCm: strapSpacing } }));
+}
+
+function updateGuardianProductionProgress(save = true) {
+  const purchases = $$("#guardianPurchaseList input:checked").map(input => Number(input.dataset.purchaseIndex));
+  const gates = $$("#guardianGateList input:checked").map(input => Number(input.dataset.guardianGate));
+  if (save) { localStorage.setItem(guardianPurchaseKey(), JSON.stringify(purchases)); localStorage.setItem(guardianGateKey(), JSON.stringify(gates)); }
+  $("#purchaseGateCount").textContent = currentLanguage === "vi" ? `${purchases.length} / 10 SẴN SÀNG` : `${purchases.length} / 10 READY`;
+  $("#guardianGateCount").textContent = `${gates.length} / 5 PASS`;
+  $("#guardianGateProgress").style.width = `${gates.length / 5 * 100}%`;
+}
+
+function downloadGuardianProductionPack() {
+  const vi = currentLanguage === "vi";
+  const content = guardianProduction[currentLanguage];
+  const height = Number($("#playerHeight").value); const forearm = Number($("#forearmLength").value);
+  const diameter = Math.round(Math.max(45, Math.min(55, height * .3))); const straps = Math.round(forearm * .55);
+  const markdown = [
+    `# Guardian Aegis Shield — ${vi ? "Bộ chuẩn bị chế tác" : "Production readiness pack"}`, "",
+    `> ${vi ? "Chưa phải thông số cắt cuối. Phải thử mẫu carton với ba người trước khi chuyển sang EVA." : "Not a final cutting specification. Fit-test a cardboard mock-up with three users before transferring to EVA."}`, "",
+    `## ${vi ? "Kích thước mẫu thử" : "Mock-up dimensions"}`, "", `- ${vi ? "Chiều cao người chơi" : "Player height"}: ${height} cm`, `- ${vi ? "Chiều dài cẳng tay" : "Forearm length"}: ${forearm} cm`, `- ${vi ? "Đường kính khởi điểm" : "Starting diameter"}: ${diameter} cm`, `- ${vi ? "Khoảng tâm quai" : "Strap centres"}: ${straps} cm`, `- ${vi ? "Khoang điện tử" : "Electronics cavity"}: 110 × 85 × 28 mm`, `- ${vi ? "Khối lượng mục tiêu" : "Target mass"}: < 1.2 kg`, "",
+    `## ${vi ? "Cấu trúc lớp" : "Layer stack"}`, "", ...content.layers.map((row, index) => `${index + 1}. **${row[0]} — ${row[2]}**: ${row[1]}`), "",
+    `## ${vi ? "Cổng mua đồ" : "Purchase gates"}`, "", ...content.groups.flatMap(group => [`### ${group.title}`, ...group.items.map(item => `- [ ] **${item[0]}** — ${item[1]}`), ""]),
+    `## ${vi ? "Cổng cho phép chế tác" : "Release gates"}`, "", ...content.gates.map((gate, index) => `${index + 1}. [ ] **${gate[0]}** — ${gate[1]}`), "",
+    `## ${vi ? "Giới hạn" : "Boundary"}`, "", vi ? "Phải xác minh độ vừa, cạnh mềm, nhiệt, nguồn, ngưỡng IMU, độ bền dây và không tiếp xúc cơ thể trên thiết bị thật trước khi dùng tại sự kiện." : "Verify fit, soft edges, heat, power, IMU thresholds, cable durability, and no-contact play on real hardware before event use.", ""
+  ].join("\n");
+  const blob = new Blob([markdown], { type: "text/markdown" }); const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob); link.download = `atlas-guardian-production-${diameter}cm.md`; link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 500);
+  toast(vi ? "Đã tạo bộ chế tác Guardian" : "Guardian production pack generated");
+}
+
 function updateGuideProgress() {
   const checked = $$("#guideList input:checked").map(input => Number(input.dataset.step));
   localStorage.setItem("atlas-guide-checks", JSON.stringify(checked));
@@ -884,15 +1021,21 @@ function registerWebMcp() {
 }
 
 function init() {
-  buildRingDots(); applyStaticTranslations(); renderPropKit(); renderConfig(); renderBuildPack(); updateMetrics();
+  buildRingDots(); applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack(); updateMetrics();
   $$(".tab").forEach(tab => tab.addEventListener("click", () => showView(tab.dataset.view)));
   $$(".language-switch button").forEach(button => button.addEventListener("click", () => {
     currentLanguage = button.dataset.language;
-    applyStaticTranslations(); renderPropKit(); renderConfig(); renderBuildPack();
+    applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack();
     window.dispatchEvent(new CustomEvent("atlas-language-change", { detail: { language: currentLanguage } }));
   }));
   $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); }));
   $("#downloadBuildPack").addEventListener("click", downloadRoleBuildPack);
+  $("#playerHeight").addEventListener("input", updateGuardianFit);
+  $("#forearmLength").addEventListener("input", updateGuardianFit);
+  $("#guardianPurchaseList").addEventListener("change", () => updateGuardianProductionProgress());
+  $("#guardianGateList").addEventListener("change", () => updateGuardianProductionProgress());
+  $("#clearGuardianGates").addEventListener("click", () => { $$("#guardianGateList input").forEach(input => input.checked = false); updateGuardianProductionProgress(); });
+  $("#downloadGuardianProductionPack").addEventListener("click", downloadGuardianProductionPack);
   $("#guidedVisualTabs").addEventListener("click", event => {
     const button = event.target.closest("[data-visual-view]");
     if (!button) return;

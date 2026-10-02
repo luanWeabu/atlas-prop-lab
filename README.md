@@ -2,7 +2,7 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.6 connects the **Atlas Event Kit v1** planner to browser-based digital twins and a role-aware ESP32 electronics lab:
+Revision 0.7 adds the first **production-readiness pack** on top of the browser digital twins and role-aware ESP32 lab:
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
@@ -28,6 +28,8 @@ The Wokwi/firmware baseline remains a reusable bench proxy while each physical r
 - a clear warning that IMU/Hall thresholds, current, heat, radio range, fit, and durability still require real hardware
 - interactive Three.js digital twins for all six props, with orbit controls, exploded layers, electronics visibility, and selectable modules
 - a lightweight Three.js arena replay that visualizes the same latency/loss events as the existing field simulator without duplicating Unity gameplay
+- a focused Guardian Shield fit calculator, five-layer construction contract, staged purchase checklist, five release gates, and downloadable measurement-aware production pack
+- synchronization between the eight guided assembly steps and the Guardian 3D twin, including part highlight and exploded state
 
 ## Repository map
 

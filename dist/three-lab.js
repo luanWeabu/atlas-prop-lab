@@ -140,7 +140,8 @@ function startThreeLab(THREE, OrbitControls) {
   const propPlatform = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.9, .25, 64), material(0x0c2027, .2));
   propPlatform.position.y = -3.35; propPlatform.receiveShadow = true; propWorld.scene.add(propPlatform);
   const propGrid = new THREE.GridHelper(8, 16, 0x16a6c9, 0x17303a); propGrid.position.y = -3.21; propWorld.scene.add(propGrid);
-  let currentProp = "guardian", propModel, selectedKey = null;
+  const initialHeight = Number($("#playerHeight")?.value || 168);
+  let currentProp = "guardian", propModel, selectedKey = null, currentAssemblyStep = 0, guardianDiameter = Math.round(Math.max(45, Math.min(55, initialHeight * .3)));
 
   function partLabel(key) { return copy[key]?.[isVi() ? 1 : 0] || key; }
   function selectPart(key) {
@@ -173,15 +174,27 @@ function startThreeLab(THREE, OrbitControls) {
     if (!builders[prop]) return;
     currentProp = prop;
     if (propModel) propWorld.scene.remove(propModel);
-    propModel = builders[prop](palette[prop]); propWorld.scene.add(propModel);
+    propModel = builders[prop](palette[prop]);
+    if (prop === "guardian") propModel.scale.setScalar(guardianDiameter / 50);
+    propWorld.scene.add(propModel);
     const keys = [...new Set(propModel.children.map(child => child.userData.partKey).filter(Boolean))];
     $("#twinPartButtons").innerHTML = keys.map(key => `<button type="button" data-twin-part="${key}">${partLabel(key)}</button>`).join("");
     $("#twin-title").textContent = `${names[prop][isVi() ? 1 : 0]} · ${isVi() ? "mô hình lắp 3D" : "3D assembly model"}`;
     $("#twinPropName").textContent = names[prop][isVi() ? 1 : 0];
     $("#explodeRange").value = "0"; updateExplode(); updateElectronicLayer(); selectPart(keys[0]);
+    applyGuidedStep(prop, currentAssemblyStep);
+  }
+  function applyGuidedStep(prop, step) {
+    currentAssemblyStep = Number(step || 0);
+    if (prop !== currentProp || !$("#syncTwinToggle")?.checked) return;
+    const mapping = ["wearable", "core", "shell", "sensor", "control", "light", "wearable", "shell"];
+    const key = mapping[Math.max(0, Math.min(7, currentAssemblyStep))];
+    $("#explodeRange").value = currentAssemblyStep === 0 ? "22" : currentAssemblyStep === 7 ? "0" : "48";
+    updateExplode(); selectPart(key);
   }
   $("#explodeRange").addEventListener("input", updateExplode);
   $("#electronicsLayerToggle").addEventListener("change", updateElectronicLayer);
+  $("#syncTwinToggle").addEventListener("change", () => applyGuidedStep(currentProp, currentAssemblyStep));
   $("#twinPartButtons").addEventListener("click", event => { const button = event.target.closest("[data-twin-part]"); if (button) selectPart(button.dataset.twinPart); });
   const propRaycaster = new THREE.Raycaster(); const propPointer = new THREE.Vector2();
   propWorld.renderer.domElement.addEventListener("pointerup", event => {
@@ -241,6 +254,11 @@ function startThreeLab(THREE, OrbitControls) {
 
   window.addEventListener("atlas-prop-change", event => rebuildProp(event.detail?.prop));
   window.addEventListener("atlas-language-change", () => rebuildProp(currentProp));
+  window.addEventListener("atlas-guided-step-change", event => applyGuidedStep(event.detail?.prop, event.detail?.step));
+  window.addEventListener("atlas-guardian-fit-change", event => {
+    guardianDiameter = Number(event.detail?.diameterCm || 50);
+    if (currentProp === "guardian" && propModel) propModel.scale.setScalar(guardianDiameter / 50);
+  });
   window.addEventListener("atlas-field-action", event => launchEvent(event.detail || {}));
   window.addEventListener("atlas-field-state", event => setBossHp(Number(event.detail?.bossHp ?? 520)));
   window.addEventListener("atlas-field-reset", () => { attackTweens.forEach(item => arenaWorld.scene.remove(item.orb)); attackTweens = []; setBossHp(520); });
