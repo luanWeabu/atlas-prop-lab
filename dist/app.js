@@ -496,6 +496,13 @@ const guidedVisualCopy = {
   }
 };
 
+const fabricationAssetLabels = {
+  "face-template": ["Guardian 500 mm face template", "Mẫu mặt khiên Guardian 500 mm"],
+  "rear-layout": ["Guardian rear layout + section", "Mặt sau + mặt cắt Guardian"],
+  "bow-template": ["Arc Bow 900 mm full-size template", "Mẫu Cung Arc 900 mm đúng kích thước"],
+  "riser-layout": ["Arc Bow riser + Hall sensor layout", "Tay cầm + vị trí Hall của Cung Arc"]
+};
+
 let blueprintRenderId = 0;
 
 function blueprintSvg(kind, options = {}) {
@@ -723,6 +730,8 @@ function renderPropKit() {
   const rows = [...commonPropBom, ...kit.bom];
   $("#propBomBody").innerHTML = rows.map(([part, qty, source, stage]) => `<tr><td>${localizeBomCell(part)}</td><td>${localizeBomCell(qty)}</td><td>${localizeBomCell(source)}</td><td><span class="stage-tag ${stage === "Bench" ? "" : "later"}">${localizeBomCell(stage)}</span></td></tr>`).join("");
   $("#propAssembly").innerHTML = kit.assembly.map(step => `<li><span></span><p>${step}</p></li>`).join("");
+  const assetIndex = currentLanguage === "vi" ? 1 : 0;
+  $("#roleProductionAssets").innerHTML = (propManifests[activeProp].assets || []).map(asset => `<a href="${asset.href}" download>${fabricationAssetLabels[asset.id][assetIndex]}</a>`).join("");
   $$(".role-card").forEach(card => card.classList.toggle("is-active", card.dataset.prop === activeProp));
   $("#guardianProductionPack").hidden = activeProp !== "guardian";
   renderGuidedAssembly();

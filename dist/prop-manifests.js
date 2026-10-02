@@ -2,6 +2,10 @@
   const manifests = {
     guardian: {
       revision: "0.1", status: "reference", dimensionsMm: { width: 500, height: 500, depth: 55 },
+      assets: [
+        { id: "face-template", href: "downloads/guardian-template-500mm.svg" },
+        { id: "rear-layout", href: "downloads/guardian-rear-layout.svg" }
+      ],
       modules: [
         { callout: 1, id: "shield-face", modelKey: "shell" },
         { callout: 2, id: "esp32-service-box", modelKey: "core" },
@@ -37,7 +41,11 @@
       assemblyCallouts: [[1, 6], [3, 4, 5], [1], [2], [3], [4, 5], [6], [1, 2, 3, 4, 5, 6]]
     },
     archer: {
-      revision: "0.1", status: "reference", dimensionsMm: { width: 430, height: 900, depth: 60 },
+      revision: "0.2", status: "reference", dimensionsMm: { width: 430, height: 900, depth: 60 },
+      assets: [
+        { id: "bow-template", href: "downloads/arc-bow-template-900mm.svg" },
+        { id: "riser-layout", href: "downloads/arc-bow-riser-layout.svg" }
+      ],
       modules: [
         { callout: 1, id: "recurve-limbs", modelKey: "shell" },
         { callout: 2, id: "cosmetic-cord", modelKey: "wearable" },

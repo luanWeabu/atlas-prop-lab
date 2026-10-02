@@ -11,6 +11,7 @@ const required = [
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
   "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md", "docs/guardian-purchase-ledger.md",
   "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg",
+  "docs/arc-bow-production-pack.md", "dist/downloads/arc-bow-template-900mm.svg", "dist/downloads/arc-bow-riser-layout.svg",
   "docs/guardian-electronics.md", "wokwi/guardian-diagram.json", "wokwi/scenarios/guardian-block.yaml", "wokwi-guardian.toml",
   "docs/unity-bridge.md", "unity/Runtime/AtlasPropEvent.cs", "unity/Runtime/AtlasPropLineParser.cs", "unity/Runtime/AtlasPropIntentRouter.cs"
 ];
@@ -60,7 +61,7 @@ const manifests = await readFile(resolve(root, "dist/prop-manifests.js"), "utf8"
 for (const role of ["guardian", "warrior", "archer", "assassin", "mage", "boss"]) {
   if (!manifests.includes(`    ${role}: {`)) throw new Error(`Missing shared prop manifest: ${role}`);
 }
-for (const token of ["assemblyCallouts", "modelKey", "procurement", "priceVnd", "window.ATLAS_PROP_MANIFESTS"]) {
+for (const token of ["assemblyCallouts", "modelKey", "assets", "arc-bow-template-900mm.svg", "procurement", "priceVnd", "window.ATLAS_PROP_MANIFESTS"]) {
   if (!manifests.includes(token)) throw new Error(`Missing manifest contract token: ${token}`);
 }
 for (const token of ["const electronicsProfiles", "function electronicsDiagramSvg", "function testElectronicsEvent", "roleCircuitGraphic", "electronicsEventButtons"]) {
@@ -71,7 +72,7 @@ const html = await readFile(resolve(root, "dist/index.html"), "utf8");
 for (const asset of ["styles.css", "prop-manifests.js", "app.js", "favicon.svg"]) {
   if (!html.includes(asset)) throw new Error(`HTML is missing ${asset}`);
 }
-for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guidedVisualFrame", "guidedStepAction", "guidedStepPass"]) {
+for (const id of ["partsReadyCheck", "guidedStepNav", "guidedVisualTabs", "guidedVisualFrame", "guidedStepAction", "guidedStepPass", "roleProductionAssets"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing guided assembly control: ${id}`);
 }
 for (const id of ["roleCircuitGraphic", "electronicsEventButtons", "electronicsTestLog", "core-build-title", "guideList"]) {

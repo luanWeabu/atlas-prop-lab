@@ -360,6 +360,11 @@ select:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,166,201,
 .safety-note strong { color: #ffda98; font-size: .72rem; }
 .safety-note p { color: var(--muted); font-size: .69rem; line-height: 1.5; margin: 5px 0 0; }
 .prop-summary-panel .button { width: 100%; }
+.role-production-assets { display: grid; gap: 7px; margin-top: 9px; }
+.role-production-assets:empty { display: none; }
+.role-production-assets a { display: flex; align-items: center; justify-content: space-between; min-height: 36px; padding: 8px 10px; color: var(--cyan-soft); border: 1px solid var(--line-strong); border-radius: 8px; font-size: .68rem; text-decoration: none; }
+.role-production-assets a::after { content: "SVG ↓"; color: var(--muted); font: 700 .58rem ui-monospace, monospace; }
+.role-production-assets a:hover { background: rgba(22,166,201,.1); }
 .kit-detail-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(330px, .85fr);
