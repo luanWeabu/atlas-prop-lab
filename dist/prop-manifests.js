@@ -10,6 +10,18 @@
         { callout: 5, id: "led-rim", modelKey: "light" },
         { callout: 6, id: "arm-straps", modelKey: "wearable" }
       ],
+      procurement: [
+        { id: "double-wall-cardboard", gate: "fit", state: "reference", priceVnd: [20000, 60000] },
+        { id: "paper-tape-marker", gate: "fit", state: "reference", priceVnd: [30000, 80000] },
+        { id: "nylon-webbing-25mm", gate: "fit", state: "reference", priceVnd: [20000, 50000] },
+        { id: "adjustable-buckles-25mm", gate: "fit", state: "reference", priceVnd: [10000, 40000] },
+        { id: "eva-offcut", gate: "fit", state: "reference", priceVnd: [0, 50000] },
+        { id: "mke-k01-esp32-s3", gate: "after-fit", state: "reference", priceVnd: [255000, 255000], checkedAt: "2026-10-02", supplier: "Hshop", supplierUrl: "https://hshop.vn/mach-phat-trien-mke-k01-esp32-s3-dev-kit" },
+        { id: "gy-521-mpu6050", gate: "after-fit", state: "reference", priceVnd: [85000, 85000], checkedAt: "2026-10-02", supplier: "Hshop", supplierUrl: "https://hshop.vn/cam-bien-6-dof-bac-tu-do-gy-521-mpu6050" },
+        { id: "pbs-11b-12mm", gate: "after-fit", state: "reference", priceVnd: [10000, 10000], checkedAt: "2026-10-02", supplier: "Hshop", supplierUrl: "https://hshop.vn/nut-nhan-nha-tron-pbs-11b-12mm-kem-cap" },
+        { id: "ws2812b-strip-1m", gate: "after-fit", state: "reference", priceVnd: [60000, 180000] },
+        { id: "wire-connectors", gate: "after-fit", state: "reference", priceVnd: [50000, 150000] }
+      ],
       assemblyCallouts: [[1], [2, 3, 4, 5], [1], [3], [4], [5], [2, 6], [1, 2, 3, 4, 5, 6]]
     },
     warrior: {

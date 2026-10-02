@@ -904,11 +904,18 @@ function readStoredIndexes(key, max) {
 
 function renderGuardianProduction() {
   const content = guardianProduction[currentLanguage];
+  const procurement = propManifests.guardian.procurement;
   const purchases = readStoredIndexes(guardianPurchaseKey(), 10);
   const gates = readStoredIndexes(guardianGateKey(), 5);
   $("#guardianLayerStack").innerHTML = content.layers.map(([title, detail, material], index) => `<li><b>${String(index + 1).padStart(2, "0")}</b><div><strong>${title}</strong><p>${detail}</p></div><span>${material}</span></li>`).join("");
   let itemIndex = 0;
-  $("#guardianPurchaseList").innerHTML = content.groups.map(group => `<section class="purchase-group"><h3>${group.title}</h3>${group.items.map(([title, detail]) => { const index = itemIndex++; return `<label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label>`; }).join("")}</section>`).join("");
+  $("#guardianPurchaseList").innerHTML = content.groups.map(group => `<section class="purchase-group"><h3>${group.title}</h3>${group.items.map(([title, detail]) => {
+    const index = itemIndex++; const item = procurement[index];
+    const [low, high] = item.priceVnd; const price = low === high ? `${Math.round(low / 1000)}K` : `${Math.round(low / 1000)}–${Math.round(high / 1000)}K`;
+    const state = currentLanguage === "vi" ? "THAM KHẢO" : "REFERENCE";
+    const source = item.supplierUrl ? `<a href="${item.supplierUrl}" target="_blank" rel="noreferrer">${item.supplier} · ${price}</a>` : `<em>${price}</em>`;
+    return `<label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small><span class="purchase-meta"><b>${state}</b>${source}</span></span></label>`;
+  }).join("")}</section>`).join("");
   $("#guardianGateList").innerHTML = content.gates.map(([title, detail], index) => `<li><label><input type="checkbox" data-guardian-gate="${index}" ${gates.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label></li>`).join("");
   try {
     const fit = JSON.parse(localStorage.getItem(guardianFitKey()) || "{}");
@@ -951,7 +958,11 @@ function downloadGuardianProductionPack() {
     `> ${vi ? "Chưa phải thông số cắt cuối. Phải thử mẫu carton với ba người trước khi chuyển sang EVA." : "Not a final cutting specification. Fit-test a cardboard mock-up with three users before transferring to EVA."}`, "",
     `## ${vi ? "Kích thước mẫu thử" : "Mock-up dimensions"}`, "", `- ${vi ? "Chiều cao người chơi" : "Player height"}: ${height} cm`, `- ${vi ? "Chiều dài cẳng tay" : "Forearm length"}: ${forearm} cm`, `- ${vi ? "Đường kính khởi điểm" : "Starting diameter"}: ${diameter} cm`, `- ${vi ? "Khoảng tâm quai" : "Strap centres"}: ${straps} cm`, `- ${vi ? "Khoang điện tử" : "Electronics cavity"}: 110 × 85 × 28 mm`, `- ${vi ? "Khối lượng mục tiêu" : "Target mass"}: < 1.2 kg`, "",
     `## ${vi ? "Cấu trúc lớp" : "Layer stack"}`, "", ...content.layers.map((row, index) => `${index + 1}. **${row[0]} — ${row[2]}**: ${row[1]}`), "",
-    `## ${vi ? "Cổng mua đồ" : "Purchase gates"}`, "", ...content.groups.flatMap(group => [`### ${group.title}`, ...group.items.map(item => `- [ ] **${item[0]}** — ${item[1]}`), ""]),
+    `## ${vi ? "Cổng mua đồ" : "Purchase gates"}`, "", ...content.groups.flatMap((group, groupIndex) => [`### ${group.title}`, ...group.items.map((item, itemIndex) => {
+      const procurementIndex = groupIndex * 5 + itemIndex; const source = propManifests.guardian.procurement[procurementIndex]; const [low, high] = source.priceVnd;
+      const price = low === high ? `${Math.round(low / 1000)}k VND` : `${Math.round(low / 1000)}–${Math.round(high / 1000)}k VND`;
+      return `- [ ] **${item[0]}** — ${item[1]} · ${vi ? "Tham khảo" : "Reference"} · ${price}${source.supplierUrl ? ` · ${source.supplierUrl}` : ""}`;
+    }), ""]),
     `## ${vi ? "Cổng cho phép chế tác" : "Release gates"}`, "", ...content.gates.map((gate, index) => `${index + 1}. [ ] **${gate[0]}** — ${gate[1]}`), "",
     `## ${vi ? "Giới hạn" : "Boundary"}`, "", vi ? "Phải xác minh độ vừa, cạnh mềm, nhiệt, nguồn, ngưỡng IMU, độ bền dây và không tiếp xúc cơ thể trên thiết bị thật trước khi dùng tại sự kiện." : "Verify fit, soft edges, heat, power, IMU thresholds, cable durability, and no-contact play on real hardware before event use.", ""
   ].join("\n");

@@ -8,7 +8,7 @@ const required = [
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
-  "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md",
+  "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md", "docs/guardian-purchase-ledger.md",
   "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg"
 ];
 
@@ -48,7 +48,7 @@ const manifests = await readFile(resolve(root, "dist/prop-manifests.js"), "utf8"
 for (const role of ["guardian", "warrior", "archer", "assassin", "mage", "boss"]) {
   if (!manifests.includes(`    ${role}: {`)) throw new Error(`Missing shared prop manifest: ${role}`);
 }
-for (const token of ["assemblyCallouts", "modelKey", "window.ATLAS_PROP_MANIFESTS"]) {
+for (const token of ["assemblyCallouts", "modelKey", "procurement", "priceVnd", "window.ATLAS_PROP_MANIFESTS"]) {
   if (!manifests.includes(token)) throw new Error(`Missing manifest contract token: ${token}`);
 }
 for (const token of ["const electronicsProfiles", "function electronicsDiagramSvg", "function testElectronicsEvent", "roleCircuitGraphic", "electronicsEventButtons"]) {
