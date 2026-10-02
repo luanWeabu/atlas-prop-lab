@@ -7,9 +7,11 @@ const required = [
   "dist/index.html", "dist/styles.css", "dist/prop-manifests.js", "dist/app.js", "dist/three-lab.js", "dist/favicon.svg",
   "wokwi/diagram.json", "wokwi/scenarios/cast-and-special.yaml", "wokwi.toml",
   "firmware/spell-orb/platformio.ini", "firmware/spell-orb/src/main.cpp",
+  "firmware/guardian-shield/platformio.ini", "firmware/guardian-shield/src/main.cpp",
   "docs/event-contract.md", "docs/bom.md", "docs/assembly-32-steps.md",
   "docs/event-kit-v1.md", "docs/role-build-contract.md", "docs/guardian-production-pack.md", "docs/guardian-purchase-ledger.md",
-  "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg"
+  "dist/downloads/guardian-template-500mm.svg", "dist/downloads/guardian-rear-layout.svg",
+  "docs/guardian-electronics.md", "wokwi/guardian-diagram.json", "wokwi/scenarios/guardian-block.yaml", "wokwi-guardian.toml"
 ];
 
 for (const file of required) await access(resolve(root, file), constants.R_OK);
@@ -29,6 +31,15 @@ for (const token of ["ATLAS_PROP_READY", '"PLAYER_INTENT"', '"CAST"', '"SPECIAL"
   if (!firmware.includes(token.replaceAll('"', '\\"')) && !firmware.includes(token)) {
     throw new Error(`Firmware is missing ${token}`);
   }
+}
+const guardianFirmware = await readFile(resolve(root, "firmware/guardian-shield/src/main.cpp"), "utf8");
+for (const token of ["guardian-shield-01", 'emitEvent("BLOCK_START"', 'emitEvent("BLOCK_END"', 'emitEvent("TAUNT"', "VibrationDriver"]) {
+  if (!guardianFirmware.includes(token)) throw new Error(`Guardian firmware is missing ${token}`);
+}
+const guardianDiagram = JSON.parse(await readFile(resolve(root, "wokwi/guardian-diagram.json"), "utf8"));
+const guardianPartIds = new Set(guardianDiagram.parts.map(part => part.id));
+for (const requiredPart of ["esp", "imu", "trigger", "rim", "vibrationProxy"]) {
+  if (!guardianPartIds.has(requiredPart)) throw new Error(`Guardian Wokwi diagram is missing ${requiredPart}`);
 }
 
 const app = await readFile(resolve(root, "dist/app.js"), "utf8");
