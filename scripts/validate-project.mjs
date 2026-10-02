@@ -67,7 +67,7 @@ for (const token of ["const guardianProduction", "function renderGuardianProduct
   if (!app.includes(token)) throw new Error(`Missing Guardian production feature: ${token}`);
 }
 const threeLab = await readFile(resolve(root, "dist/three-lab.js"), "utf8");
-for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "atlas-field-action", "atlas-prop-change"]) {
+for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "plateGeometry", "ACESFilmicToneMapping", "atlas-field-action", "atlas-prop-change"]) {
   if (!threeLab.includes(token)) throw new Error(`Missing Three.js digital-twin feature: ${token}`);
 }
 if (html.includes('data-view="build"')) throw new Error("Legacy disconnected build tab still exists");

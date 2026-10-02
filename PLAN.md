@@ -6,7 +6,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 
 ## Phases
 
-1. **Role digital-twin lab:** six synchronized 3D prop profiles, exploded assembly layers, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser arena replay, and build guide.
+1. **Role digital-twin lab:** six synchronized, silhouette-correct 3D prop profiles with PBR detail, exploded assembly layers, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser arena replay, and build guide.
 2. **Guardian production readiness:** fit-derived cardboard dimensions, five physical layers, staged purchases, 3D step synchronization, and evidence-gated release before final material spend.
 3. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
 4. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.

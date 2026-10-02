@@ -2,7 +2,7 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.7 adds the first **production-readiness pack** on top of the browser digital twins and role-aware ESP32 lab:
+Revision 0.8 adds a **recognizable prop detail pass** on top of the production-readiness pack and role-aware ESP32 lab:
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
@@ -27,6 +27,9 @@ The Wokwi/firmware baseline remains a reusable bench proxy while each physical r
 - a browser field simulator for latency, packet loss, cooldowns, damage, and support healing
 - a clear warning that IMU/Hall thresholds, current, heat, radio range, fit, and durability still require real hardware
 - interactive Three.js digital twins for all six props, with orbit controls, exploded layers, electronics visibility, and selectable modules
+- recognizable production-inspired silhouettes for the layered shield, pointed sword, single-string recurve bow, paired daggers, crystal staff, and two-handed Boss hammer
+- upgraded physically based materials, emissive LED channels, softened shadows, filmic tone mapping, fasteners, grips, guards, and protected electronics housings
+- a Blender/glTF-ready model boundary: procedural web twins remain lightweight now and can later be replaced by authored `.glb` assets without changing the lab workflow
 - a lightweight Three.js arena replay that visualizes the same latency/loss events as the existing field simulator without duplicating Unity gameplay
 - a focused Guardian Shield fit calculator, five-layer construction contract, staged purchase checklist, five release gates, and downloadable measurement-aware production pack
 - synchronization between the eight guided assembly steps and the Guardian 3D twin, including part highlight and exploded state
@@ -42,6 +45,7 @@ The Wokwi/firmware baseline remains a reusable bench proxy while each physical r
 | `docs/` | Architecture, bill of materials, event contract, and 32 step assembly guide |
 | `docs/event-kit-v1.md` | Full event-kit target, role roster, Boss contract, and verification gates |
 | `docs/role-build-contract.md` | Required output contract for every role-specific build pack |
+| `docs/model-pipeline.md` | Free Blender-to-GLB upgrade contract and mobile model budgets |
 | `scripts/validate-project.mjs` | Fast repository consistency checks |
 | `.github/workflows/` | Firmware build, web validation, and optional Wokwi CI |
 

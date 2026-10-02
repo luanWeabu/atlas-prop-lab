@@ -1,1083 +1,19 @@
-const commonPropBom = [
-  ["ESP32-S3 DevKit", "1", "Hshop / maker shop", "Bench"],
-  ["MPU6050 IMU", "1", "Hshop / maker shop", "Bench"],
-  ["Momentary button", "2", "Maker shop", "Bench"],
-  ["WS2812B LED", "1 set", "Maker shop / marketplace", "Bench"],
-  ["USB data cable", "1", "Computer shop", "Bench"],
-  ["EVA foam sheets", "As cut plan", "Cosplay material shop", "Shell"]
-];
-
-const propKits = {
-  guardian: {
-    roleLabel: "GUARDIAN / DEFENCE", name: "Aegis Shield", kind: "shield", size: "Ã˜ 500 mm",
-    budget: "EST. 550Kâ€“1.2M VND",
-    purpose: "A broad defensive controller that makes block direction, timing, acknowledgement, and team protection visible.",
-    shell: "3-layer EVA, 45â€“55 cm, nylon arm straps", sensor: "MPU6050 + thumb trigger",
-    core: "Removable rear-center module", events: "BLOCK_START Â· BLOCK_END Â· TAUNT",
-    safety: "Rounded foam perimeter. No shield charge and no physical body contact.",
-    callouts: ["10 mm EVA face", "ESP32 service box", "MPU6050 at centre", "Thumb trigger", "WS2812B rim", "Adjustable arm straps"],
-    bom: [["10 mm EVA sheet", "2", "Cosplay material shop", "Shell"], ["Nylon strap + buckle", "2", "Sewing shop", "Shell"], ["Vibration motor", "1", "Maker shop", "Feedback"]],
-    assembly: ["Print the 500 mm shield template and make a cardboard fit mock-up.", "Build and test ESP32, IMU, trigger, and one LED segment over USB.", "Cut and laminate the EVA layers; keep the service-box cavity open.", "Mount the IMU flat at the geometric centre with its axis arrow facing up.", "Install the thumb trigger under the dominant-hand grip.", "Route the LED rim through a protected channel and add a quick connector.", "Attach adjustable straps, close the removable rear cover, and calibrate neutral angle.", "Run 100 block raises and record false triggers before paint."]
-  },
-  warrior: {
-    roleLabel: "WARRIOR / PRESSURE", name: "Pulse Sword", kind: "sword", size: "650 Ã— 110 mm",
-    budget: "EST. 450Kâ€“1.0M VND",
-    purpose: "A short foam sword that sends deliberate swing intent only while its grip trigger is held.",
-    shell: "Soft EVA blade, electronics confined to hilt", sensor: "MPU6050 + index trigger",
-    core: "Hilt service cartridge", events: "STRIKE Â· HEAVY_STRIKE Â· PARRY",
-    safety: "No metal or rigid full-length core. Performance gestures only; never strike another player.",
-    callouts: ["Soft EVA blade", "Diffused LED spine", "IMU in guard", "Index trigger", "ESP32 hilt cartridge", "Wrist retention loop"],
-    bom: [["5â€“10 mm EVA sheet", "2", "Cosplay material shop", "Shell"], ["Soft diffuser strip", "1", "Maker / craft shop", "Shell"], ["Wrist loop", "1", "Sewing shop", "Safety"]],
-    assembly: ["Make a full-size cardboard silhouette and confirm the 650 mm length.", "Bench-test trigger-gated gesture detection over USB.", "Laminate the EVA blade without a metal or wooden core.", "Cut a protected LED channel along the spine.", "Mount the IMU in the guard, aligned with the blade direction.", "Build the removable hilt cartridge with ESP32 and connectors.", "Fit a wrist retention loop and close all hard edges under foam.", "Run 100 deliberate and 100 accidental motions; tune the gesture threshold."]
-  },
-  archer: {
-    roleLabel: "ARCHER / RANGED", name: "Arc Bow", kind: "bow", size: "900 Ã— 430 mm",
-    budget: "EST. 650Kâ€“1.4M VND",
-    purpose: "A no-projectile bow that measures draw and release, while Unity creates the virtual arrow and hit.",
-    shell: "Light PVC/EVA limbs with low-tension elastic string", sensor: "Linear Hall sensor + magnet + IMU",
-    core: "Central grip compartment", events: "DRAW_START Â· DRAW_READY Â· FIRE",
-    safety: "No arrow, no launcher, and low string tension. The bow must never store projectile energy.",
-    callouts: ["Foam-wrapped limb", "Low-tension draw cord", "Draw magnet", "Hall sensor slot", "ESP32 grip", "Limb status LEDs"],
-    bom: [["Light PVC/EVA frame", "1", "Hardware + cosplay shop", "Shell"], ["Linear Hall sensor", "1", "Maker shop", "Input"], ["Small magnet", "1", "Maker shop", "Input"], ["Elastic draw cord", "1", "Craft shop", "Safety"]],
-    assembly: ["Build a powerless foam/PVC bow mock-up and confirm comfortable reach.", "Bench-test the Hall sensor and magnet travel over USB.", "Set the draw cord to low tension; confirm it cannot launch any object.", "Install the Hall sensor inside the grip and the magnet on the draw slider.", "Mount the ESP32 in the central grip with a removable cover.", "Add diffused LEDs to the limbs without weakening the frame.", "Calibrate rest, ready, and release thresholds for three different users.", "Run 100 draws, including partial releases, and record missed or duplicate FIRE events."]
-  },
-  assassin: {
-    roleLabel: "ASSASSIN / CONTROL", name: "Shade Daggers", kind: "dagger", size: "320 Ã— 75 mm",
-    budget: "EST. 450Kâ€“950K VND",
-    purpose: "A paired visual set with electronics in the dominant dagger; trap placement remains virtual in the MVP.",
-    shell: "Two short EVA daggers; one active and one passive", sensor: "MPU6050 + grip trigger",
-    core: "Dominant-hand hilt", events: "QUICK_STRIKE Â· HEAVY_STRIKE Â· PLACE_TRAP",
-    safety: "Short rounded foam blades. No thrust toward the head, torso, or another player.",
-    callouts: ["Active EVA dagger", "Passive off-hand dagger", "IMU in active guard", "Grip trigger", "ESP32 active hilt", "Trap button / wrist pad"],
-    bom: [["5â€“10 mm EVA sheet", "2", "Cosplay material shop", "Shell"], ["Wrist button pad", "1", "Maker + sewing shop", "Input"], ["Wrist retention loops", "2", "Sewing shop", "Safety"]],
-    assembly: ["Make two 320 mm cardboard templates with fully rounded tips.", "Bench-test the active dagger and separate trap button over USB.", "Laminate both EVA bodies; keep only the dominant hilt serviceable.", "Align the IMU with the active blade direction.", "Install grip trigger, ESP32 cartridge, and wrist retention loop.", "Build the off-hand dagger as a passive lightweight prop.", "Map trap placement to an arena zone; do not place electronics on the floor yet.", "Test rapid combinations and verify one physical motion creates at most one event."]
-  },
-  mage: {
-    roleLabel: "MAGE / SUPPORT", name: "Lumen Staff", kind: "staff", size: "1,100 Ã— 140 mm",
-    budget: "EST. 600Kâ€“1.3M VND",
-    purpose: "A support staff with a luminous orb for healing, shielding, channeling, and revive intent.",
-    shell: "Light PVC shaft fully wrapped in EVA; padded ends", sensor: "MPU6050 + CAST/SPECIAL buttons",
-    core: "Lower grip for balance", events: "CAST_HEAL Â· CHANNEL Â· TEAM_SHIELD",
-    safety: "Both ends padded. No spinning near other players and no ground impact.",
-    callouts: ["Diffused LED orb", "Padded upper head", "CAST thumb button", "IMU below grip", "ESP32 lower grip", "Padded lower end"],
-    bom: [["Light PVC tube", "1", "Hardware shop", "Shell"], ["EVA wrap + padding", "1 set", "Cosplay material shop", "Shell"], ["Diffused orb shell", "1", "Prop maker / 3D print", "Shell"], ["Vibration motor", "1", "Maker shop", "Feedback"]],
-    assembly: ["Confirm 1.0â€“1.2 m length with the shortest expected player.", "Bench-test CAST, SPECIAL, IMU, orb LED, and haptic over USB.", "Wrap the shaft completely and pad both ends.", "Mount the orb with a removable diffuser and no exposed hard point.", "Place the IMU below the upper grip and align its forward axis.", "Install ESP32 and connectors in the lower grip to balance the orb.", "Calibrate pointing and channel posture for three users.", "Run heal, shield, and cancelled-channel scenarios before paint."]
-  },
-  boss: {
-    roleLabel: "BOSS / RAID CONTROL", name: "Titan Warden Hammer", kind: "hammer", size: "1,150 Ã— 360 mm",
-    budget: "EST. 1.3Mâ€“3.0M VND",
-    purpose: "A high-visibility two-handed boss controller paired with a three-zone LED armour vest and phase feedback.",
-    shell: "Hollow EVA hammer head, foam-wrapped shaft, adjustable LED armour", sensor: "MPU6050 + two grip triggers",
-    core: "Lower hammer grip + separate armour receiver", events: "SWEEP Â· SLAM Â· MARK Â· PHASE_SKILL",
-    safety: "A hollow lightweight head, padded shaft, and zero-contact attacks. AoE exists only in Unity and arena cues.",
-    callouts: ["Hollow EVA hammer head", "Head effect LEDs", "Primary trigger", "IMU at balance point", "ESP32 lower grip", "3-zone LED armour"],
-    bom: [["10 mm EVA sheets", "3â€“4", "Cosplay material shop", "Shell"], ["Light PVC shaft", "1", "Hardware shop", "Shell"], ["Armour training bib", "1", "Sports shop", "Wearable"], ["LED armour panels", "3", "Maker + sewing shop", "Feedback"], ["Second receiver core", "1", "Maker shop", "Field"]],
-    assembly: ["Build the hollow hammer head at full size and weigh it before electronics.", "Bench-test two triggers, IMU, and head LEDs over USB.", "Wrap the shaft in foam and pad both ends.", "Install the IMU at the balance point and the ESP32 in the lower grip.", "Create an open-side adjustable armour bib with removable LED panels.", "Pair hammer input and armour feedback under one boss session identity.", "Calibrate SWEEP, SLAM, and MARK without physical contact.", "Run a five-minute phase test and reject the build if heat, discomfort, or false attacks appear."]
-  }
-};
-
-const propKitVi = {
-  guardian: {
-    roleLabel: "Há»˜ Vá»† / PHÃ’NG THá»¦", name: "KhiÃªn Aegis",
-    purpose: "Bá»™ Ä‘iá»u khiá»ƒn phÃ²ng thá»§ báº£n rá»™ng, thá»ƒ hiá»‡n rÃµ hÆ°á»›ng Ä‘á»¡, thá»i Ä‘iá»ƒm Ä‘á»¡, pháº£n há»“i vÃ  kháº£ nÄƒng báº£o vá»‡ Ä‘á»“ng Ä‘á»™i.",
-    shell: "EVA 3 lá»›p, 45â€“55 cm, quai Ä‘eo tay nylon", sensor: "MPU6050 + cÃ² ngÃ³n cÃ¡i",
-    core: "Module thÃ¡o rá»i á»Ÿ tÃ¢m máº·t sau", events: "Báº®T Äáº¦U Äá»  Â· Káº¾T THÃšC Äá»  Â· KHIÃŠU KHÃCH",
-    safety: "Viá»n foam Ä‘Æ°á»£c bo trÃ²n. KhÃ´ng lao khiÃªn vÃ  khÃ´ng tiáº¿p xÃºc cÆ¡ thá»ƒ.",
-    callouts: ["Máº·t khiÃªn EVA 10 mm", "Há»™p báº£o trÃ¬ ESP32", "MPU6050 táº¡i tÃ¢m", "CÃ² ngÃ³n cÃ¡i", "LED WS2812B quanh viá»n", "Quai Ä‘eo tay Ä‘iá»u chá»‰nh"],
-    assembly: ["In máº«u khiÃªn 500 mm vÃ  lÃ m báº£n thá»­ báº±ng bÃ¬a Ä‘á»ƒ kiá»ƒm tra Ä‘á»™ vá»«a tay.", "Láº¯p thá»­ ESP32, IMU, cÃ² vÃ  má»™t Ä‘oáº¡n LED qua USB.", "Cáº¯t rá»“i Ã©p cÃ¡c lá»›p EVA; Ä‘á»ƒ má»Ÿ khoang há»™p báº£o trÃ¬.", "Gáº¯n IMU náº±m pháº³ng táº¡i tÃ¢m hÃ¬nh há»c, mÅ©i tÃªn trá»¥c hÆ°á»›ng lÃªn.", "Láº¯p cÃ² ngÃ³n cÃ¡i dÆ°á»›i tay cáº§m thuáº­n.", "Äi dÃ¢y LED trong rÃ£nh báº£o vá»‡ vÃ  thÃªm Ä‘áº§u ná»‘i thÃ¡o nhanh.", "Gáº¯n quai Ä‘iá»u chá»‰nh, Ä‘Ã³ng náº¯p sau thÃ¡o rá»i vÃ  cÃ¢n chá»‰nh gÃ³c trung tÃ­nh.", "Thá»­ 100 láº§n nÃ¢ng khiÃªn vÃ  ghi láº¡i kÃ­ch hoáº¡t sai trÆ°á»›c khi sÆ¡n."]
-  },
-  warrior: {
-    roleLabel: "CHIáº¾N BINH / ÃP Lá»°C", name: "Kiáº¿m Pulse",
-    purpose: "Kiáº¿m foam ngáº¯n chá»‰ gá»­i Ã½ Ä‘á»‹nh vung khi ngÆ°á»i chÆ¡i chá»§ Ä‘á»™ng giá»¯ cÃ² á»Ÿ tay cáº§m.",
-    shell: "LÆ°á»¡i EVA má»m, Ä‘iá»‡n tá»­ chá»‰ náº±m trong chuÃ´i", sensor: "MPU6050 + cÃ² ngÃ³n trá»",
-    core: "Há»™p lÃµi thÃ¡o rá»i trong chuÃ´i", events: "CHÃ‰M Â· CHÃ‰M Máº NH Â· Äá»  ÄÃ’N",
-    safety: "KhÃ´ng dÃ¹ng kim loáº¡i hoáº·c lÃµi cá»©ng cháº¡y háº¿t lÆ°á»¡i. Chá»‰ biá»ƒu diá»…n Ä‘á»™ng tÃ¡c, khÃ´ng Ä‘Ã¡nh ngÆ°á»i chÆ¡i khÃ¡c.",
-    callouts: ["LÆ°á»¡i EVA má»m", "Dáº£i LED tÃ¡n sÃ¡ng", "IMU trong cháº¯n tay", "CÃ² ngÃ³n trá»", "Há»™p ESP32 trong chuÃ´i", "DÃ¢y giá»¯ cá»• tay"],
-    assembly: ["LÃ m máº«u bÃ¬a Ä‘Ãºng kÃ­ch thÆ°á»›c vÃ  xÃ¡c nháº­n chiá»u dÃ i 650 mm.", "Thá»­ nháº­n Ä‘á»™ng tÃ¡c cÃ³ giá»¯ cÃ² qua USB.", "Ã‰p cÃ¡c lá»›p lÆ°á»¡i EVA, khÃ´ng dÃ¹ng lÃµi kim loáº¡i hoáº·c gá»—.", "Cáº¯t rÃ£nh LED cÃ³ báº£o vá»‡ dá»c sá»‘ng kiáº¿m.", "Gáº¯n IMU trong cháº¯n tay, tháº³ng theo hÆ°á»›ng lÆ°á»¡i kiáº¿m.", "Láº¯p há»™p ESP32 vÃ  Ä‘áº§u ná»‘i thÃ¡o rá»i trong chuÃ´i.", "ThÃªm dÃ¢y giá»¯ cá»• tay vÃ  phá»§ foam lÃªn má»i cáº¡nh cá»©ng.", "Thá»­ 100 Ä‘á»™ng tÃ¡c chá»§ Ã½ vÃ  100 chuyá»ƒn Ä‘á»™ng ngáº«u nhiÃªn Ä‘á»ƒ chá»‰nh ngÆ°á»¡ng."]
-  },
-  archer: {
-    roleLabel: "CUNG THá»¦ / Táº¦M XA", name: "Cung Arc",
-    purpose: "Cung khÃ´ng cÃ³ tÃªn, Ä‘o tráº¡ng thÃ¡i kÃ©o vÃ  tháº£; Unity táº¡o mÅ©i tÃªn áº£o vÃ  quyáº¿t Ä‘á»‹nh trÃºng Ä‘Ã­ch.",
-    shell: "CÃ¡nh PVC/EVA nháº¹, dÃ¢y Ä‘Ã n há»“i lá»±c tháº¥p", sensor: "Hall tuyáº¿n tÃ­nh + nam chÃ¢m + IMU",
-    core: "Khoang giá»¯a tay cáº§m", events: "Báº®T Äáº¦U KÃ‰O Â· Sáº´N SÃ€NG Â· Báº®N",
-    safety: "KhÃ´ng tÃªn, khÃ´ng cÆ¡ cháº¿ phÃ³ng vÃ  dÃ¢y cÃ³ lá»±c tháº¥p. Cung khÃ´ng Ä‘Æ°á»£c tÃ­ch nÄƒng lÆ°á»£ng Ä‘á»ƒ phÃ³ng váº­t thá»ƒ.",
-    callouts: ["CÃ¡nh cung bá»c foam", "DÃ¢y kÃ©o lá»±c tháº¥p", "Nam chÃ¢m theo dÃ¢y kÃ©o", "Khe cáº£m biáº¿n Hall", "ESP32 trong tay cáº§m", "LED tráº¡ng thÃ¡i trÃªn cÃ¡nh"],
-    assembly: ["LÃ m khung cung foam/PVC khÃ´ng Ä‘iá»‡n vÃ  kiá»ƒm tra táº§m vá»›i thoáº£i mÃ¡i.", "Thá»­ hÃ nh trÃ¬nh Hall sensor vÃ  nam chÃ¢m qua USB.", "Äáº·t dÃ¢y kÃ©o lá»±c tháº¥p; xÃ¡c nháº­n khÃ´ng thá»ƒ phÃ³ng báº¥t ká»³ váº­t thá»ƒ nÃ o.", "Gáº¯n Hall sensor trong tay cáº§m vÃ  nam chÃ¢m trÃªn con trÆ°á»£t dÃ¢y.", "Gáº¯n ESP32 trong tay cáº§m giá»¯a vá»›i náº¯p thÃ¡o rá»i.", "ThÃªm LED tÃ¡n sÃ¡ng vÃ o cÃ¡nh cung mÃ  khÃ´ng lÃ m yáº¿u khung.", "CÃ¢n chá»‰nh vá»‹ trÃ­ nghá»‰, sáºµn sÃ ng vÃ  tháº£ cho ba ngÆ°á»i dÃ¹ng.", "Thá»­ 100 láº§n kÃ©o, gá»“m cáº£ tháº£ ná»­a chá»«ng, rá»“i ghi nháº­n sá»± kiá»‡n FIRE thiáº¿u hoáº·c láº·p."]
-  },
-  assassin: {
-    roleLabel: "SÃT THá»¦ / KIá»‚M SOÃT", name: "Dao Shade",
-    purpose: "Cáº·p dao hiá»ƒn thá»‹ Ä‘á»“ng bá»™ nhÆ°ng chá»‰ dao thuáº­n cÃ³ Ä‘iá»‡n tá»­; báº«y váº«n lÃ  Ä‘á»‘i tÆ°á»£ng áº£o trong MVP.",
-    shell: "Hai dao EVA ngáº¯n; má»™t chá»§ Ä‘á»™ng, má»™t thá»¥ Ä‘á»™ng", sensor: "MPU6050 + cÃ² tay cáº§m",
-    core: "ChuÃ´i tay thuáº­n", events: "ÄÃNH NHANH Â· ÄÃNH Máº NH Â· Äáº¶T BáºªY",
-    safety: "LÆ°á»¡i foam ngáº¯n, Ä‘áº§u bo trÃ²n. KhÃ´ng Ä‘Ã¢m vá» phÃ­a Ä‘áº§u, thÃ¢n hoáº·c ngÆ°á»i chÆ¡i khÃ¡c.",
-    callouts: ["Dao EVA chá»§ Ä‘á»™ng", "Dao tay phá»¥ thá»¥ Ä‘á»™ng", "IMU trong cháº¯n dao", "CÃ² tay cáº§m", "ESP32 trong chuÃ´i", "NÃºt báº«y Ä‘eo cá»• tay"],
-    assembly: ["LÃ m hai máº«u bÃ¬a dÃ i 320 mm vá»›i Ä‘áº§u Ä‘Æ°á»£c bo trÃ²n hoÃ n toÃ n.", "Thá»­ dao chá»§ Ä‘á»™ng vÃ  nÃºt báº«y riÃªng qua USB.", "Ã‰p hai thÃ¢n EVA; chá»‰ Ä‘á»ƒ chuÃ´i tay thuáº­n cÃ³ thá»ƒ báº£o trÃ¬.", "CÄƒn IMU tháº³ng theo hÆ°á»›ng lÆ°á»¡i dao chá»§ Ä‘á»™ng.", "Láº¯p cÃ² tay cáº§m, há»™p ESP32 vÃ  dÃ¢y giá»¯ cá»• tay.", "LÃ m dao tay phá»¥ thÃ nh prop thá»¥ Ä‘á»™ng nháº¹.", "Ãnh xáº¡ Ä‘áº·t báº«y vÃ o Ã´ Ä‘áº¥u; chÆ°a Ä‘áº·t Ä‘iá»‡n tá»­ xuá»‘ng sÃ n.", "Thá»­ combo nhanh vÃ  xÃ¡c nháº­n má»™t chuyá»ƒn Ä‘á»™ng chá»‰ táº¡o tá»‘i Ä‘a má»™t sá»± kiá»‡n."]
-  },
-  mage: {
-    roleLabel: "PHÃP SÆ¯ / Há»– TRá»¢", name: "Gáº­y Lumen",
-    purpose: "Gáº­y há»— trá»£ cÃ³ quáº£ cáº§u phÃ¡t sÃ¡ng cho há»“i mÃ¡u, táº¡o khiÃªn, niá»‡m phÃ©p vÃ  há»“i sinh.",
-    shell: "á»ng PVC nháº¹ bá»c EVA toÃ n bá»™; hai Ä‘áº§u cÃ³ Ä‘á»‡m", sensor: "MPU6050 + nÃºt CAST/SPECIAL",
-    core: "Tay cáº§m dÆ°á»›i Ä‘á»ƒ cÃ¢n báº±ng", events: "Há»’I MÃU Â· NIá»†M PHÃ‰P Â· KHIÃŠN Äá»˜I",
-    safety: "Hai Ä‘áº§u Ä‘Æ°á»£c Ä‘á»‡m má»m. KhÃ´ng xoay gáº­y gáº§n ngÆ°á»i khÃ¡c vÃ  khÃ´ng Ä‘áº­p xuá»‘ng Ä‘áº¥t.",
-    callouts: ["Quáº£ cáº§u LED tÃ¡n sÃ¡ng", "Äáº§u trÃªn bá»c Ä‘á»‡m", "NÃºt CAST ngÃ³n cÃ¡i", "IMU dÆ°á»›i tay cáº§m", "ESP32 trong tay cáº§m dÆ°á»›i", "Äáº§u dÆ°á»›i bá»c Ä‘á»‡m"],
-    assembly: ["XÃ¡c nháº­n chiá»u dÃ i 1,0â€“1,2 m vá»›i ngÆ°á»i chÆ¡i tháº¥p nháº¥t dá»± kiáº¿n.", "Thá»­ CAST, SPECIAL, IMU, LED quáº£ cáº§u vÃ  rung qua USB.", "Bá»c toÃ n bá»™ thÃ¢n gáº­y vÃ  Ä‘á»‡m má»m hai Ä‘áº§u.", "Gáº¯n quáº£ cáº§u báº±ng vá» tÃ¡n sÃ¡ng thÃ¡o rá»i, khÃ´ng Ä‘á»ƒ Ä‘iá»ƒm cá»©ng lá»™ ra.", "Äáº·t IMU dÆ°á»›i tay cáº§m trÃªn vÃ  cÄƒn trá»¥c trÆ°á»›c.", "Láº¯p ESP32 cÃ¹ng Ä‘áº§u ná»‘i á»Ÿ tay cáº§m dÆ°á»›i Ä‘á»ƒ cÃ¢n báº±ng quáº£ cáº§u.", "CÃ¢n chá»‰nh hÆ°á»›ng chá»‰ vÃ  tÆ° tháº¿ niá»‡m phÃ©p cho ba ngÆ°á»i.", "Cháº¡y cÃ¡c tÃ¬nh huá»‘ng há»“i mÃ¡u, táº¡o khiÃªn vÃ  há»§y niá»‡m trÆ°á»›c khi sÆ¡n."]
-  },
-  boss: {
-    roleLabel: "BOSS / KIá»‚M SOÃT TRáº¬N", name: "BÃºa Titan Warden",
-    purpose: "Bá»™ Ä‘iá»u khiá»ƒn Boss hai tay dá»… nháº­n diá»‡n, káº¿t há»£p Ã¡o giÃ¡p LED ba vÃ¹ng vÃ  pháº£n há»“i chuyá»ƒn phase.",
-    shell: "Äáº§u bÃºa EVA rá»—ng, cÃ¡n bá»c foam, Ã¡o giÃ¡p LED Ä‘iá»u chá»‰nh", sensor: "MPU6050 + hai cÃ² tay cáº§m",
-    core: "Tay cáº§m dÆ°á»›i + bá»™ nháº­n riÃªng trÃªn Ã¡o", events: "QUÃ‰T Â· Äáº¬P VÃ™NG Â· ÄÃNH Dáº¤U Â· Ká»¸ NÄ‚NG PHASE",
-    safety: "Äáº§u rá»—ng nháº¹, cÃ¡n bá»c Ä‘á»‡m vÃ  má»i Ä‘Ã²n Ä‘Ã¡nh Ä‘á»u khÃ´ng tiáº¿p xÃºc. AoE chá»‰ tá»“n táº¡i trong Unity vÃ  tÃ­n hiá»‡u sÃ¢n.",
-    callouts: ["Äáº§u bÃºa EVA rá»—ng", "LED hiá»‡u á»©ng Ä‘áº§u bÃºa", "CÃ² chÃ­nh", "IMU táº¡i Ä‘iá»ƒm cÃ¢n báº±ng", "ESP32 tay cáº§m dÆ°á»›i", "Ão giÃ¡p LED ba vÃ¹ng"],
-    assembly: ["LÃ m Ä‘áº§u bÃºa rá»—ng Ä‘Ãºng kÃ­ch thÆ°á»›c vÃ  cÃ¢n khá»‘i lÆ°á»£ng trÆ°á»›c khi gáº¯n Ä‘iá»‡n tá»­.", "Thá»­ hai cÃ², IMU vÃ  LED Ä‘áº§u bÃºa qua USB.", "Bá»c foam quanh cÃ¡n vÃ  Ä‘á»‡m má»m hai Ä‘áº§u.", "Gáº¯n IMU táº¡i Ä‘iá»ƒm cÃ¢n báº±ng vÃ  ESP32 á»Ÿ tay cáº§m dÆ°á»›i.", "Táº¡o Ã¡o bib má»Ÿ hai bÃªn vá»›i cÃ¡c táº¥m LED thÃ¡o rá»i.", "GhÃ©p input bÃºa vÃ  pháº£n há»“i Ã¡o vÃ o cÃ¹ng má»™t Ä‘á»‹nh danh phiÃªn Boss.", "CÃ¢n chá»‰nh SWEEP, SLAM vÃ  MARK mÃ  khÃ´ng cÃ³ tiáº¿p xÃºc cÆ¡ thá»ƒ.", "Cháº¡y thá»­ phase trong nÄƒm phÃºt; loáº¡i báº£n dá»±ng náº¿u nÃ³ng, khÃ³ chá»‹u hoáº·c kÃ­ch hoáº¡t sai."]
-  }
-};
-
-const staticTranslations = {
-  ".brand-copy span": ["ESP32 prototype workspace", "KhÃ´ng gian thá»­ nghiá»‡m ESP32"],
-  "#headerStatusText": ["V0.7 GUARDIAN PACK", "V0.7 Bá»˜ KHIÃŠN GUARDIAN"],
-  ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bá»™ thiáº¿t bá»‹"],
-  ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 XÆ°á»Ÿng ESP32"],
-  ".mode-tabs [data-view='field']": ["03 Field simulator", "03 MÃ´ phá»ng tráº­n"],
-  "#event-kit .section-heading .eyebrow": ["ATLAS EVENT KIT V1 / 1 BOSS VS 4 HEROES", "ATLAS EVENT KIT V1 / 1 BOSS Äáº¤U 4 HERO"],
-  "#event-kit-title": ["Prop build planner", "TrÃ¬nh láº­p káº¿ hoáº¡ch Ä‘áº¡o cá»¥"],
-  "#event-kit .section-note": ["The roster contains five hero kits. Load any four heroes plus Titan Warden for a match.", "Danh sÃ¡ch cÃ³ nÄƒm bá»™ Hero. Má»—i tráº­n chá»n bá»‘n Hero cÃ¹ng Titan Warden."],
-  ".kit-status-grid div:nth-child(1) span": ["role build packs", "bá»™ thiáº¿t káº¿ theo role"],
-  ".kit-status-grid div:nth-child(2) span": ["minimum play zone", "khu chÆ¡i tá»‘i thiá»ƒu"],
-  ".kit-status-grid div:nth-child(3) span": ["match target", "thá»i lÆ°á»£ng tráº­n"],
-  ".kit-status-grid div:nth-child(4) span": ["MVP: five players + hub", "MVP: nÄƒm ngÆ°á»i + hub"],
-  ".twin-panel .panel-label": ["Interactive digital twin", "Báº£n sao sá»‘ tÆ°Æ¡ng tÃ¡c"],
-  "#twinStatus": ["LIVE MODEL", "MÃ” HÃŒNH ÄANG CHáº Y"],
-  ".twin-controls .eyebrow": ["EXPLORE BEFORE BUILDING", "KHáº¢O SÃT TRÆ¯á»šC KHI CHáº¾ TÃC"],
-  "#twinIntro": ["Rotate the model, separate its layers, and select a component to inspect where it belongs.", "Xoay mÃ´ hÃ¬nh, tÃ¡ch cÃ¡c lá»›p vÃ  chá»n linh kiá»‡n Ä‘á»ƒ xem vá»‹ trÃ­ láº¯p."],
-  "#explodeLabel": ["Exploded view", "Má»©c tÃ¡ch lá»›p"],
-  "#electronicsLayerLabel": ["Show electronics layer", "Hiá»‡n lá»›p Ä‘iá»‡n tá»­"],
-  "#twinPartsLabel": ["Selectable modules", "CÃ¡c mÃ´-Ä‘un cÃ³ thá»ƒ chá»n"],
-  "#twinBoundary": ["Concept geometry only. Verify real dimensions with a cardboard or EVA mock-up before cutting final material.", "ÄÃ¢y lÃ  hÃ¬nh há»c Ã½ tÆ°á»Ÿng. Pháº£i xÃ¡c minh kÃ­ch thÆ°á»›c tháº­t báº±ng máº«u carton hoáº·c EVA trÆ°á»›c khi cáº¯t váº­t liá»‡u cuá»‘i."],
-  "#syncTwinLabel": ["Follow the current assembly step", "Theo bÆ°á»›c láº¯p rÃ¡p hiá»‡n táº¡i"],
-  ".production-heading .eyebrow": ["GUARDIAN / PRODUCTION READINESS", "GUARDIAN / Sáº´N SÃ€NG CHáº¾ TÃC"],
-  "#guardian-production-title": ["From design to first physical shield", "Tá»« thiáº¿t káº¿ tá»›i chiáº¿c khiÃªn váº­t lÃ½ Ä‘áº§u tiÃªn"],
-  ".production-heading .section-note": ["These values create a full-size cardboard starting point. The mock-up must pass before final EVA or electronics purchases.", "CÃ¡c giÃ¡ trá»‹ nÃ y táº¡o Ä‘iá»ƒm báº¯t Ä‘áº§u cho máº«u carton Ä‘Ãºng kÃ­ch thÆ°á»›c. Máº«u thá»­ pháº£i PASS trÆ°á»›c khi mua EVA cuá»‘i hoáº·c linh kiá»‡n Ä‘iá»‡n tá»­."],
-  ".fit-panel .panel-label": ["Fit calculator", "TÃ­nh kÃ­ch thÆ°á»›c thá»­"],
-  ".fit-panel .mono-pill": ["MOCK-UP VALUES", "GIÃ TRá»Š MáºªU THá»¬"],
-  "label[for='playerHeight'] span": ["Player height", "Chiá»u cao ngÆ°á»i chÆ¡i"],
-  "label[for='forearmLength'] span": ["Forearm length", "Chiá»u dÃ i cáº³ng tay"],
-  ".fit-results div:nth-child(1) span": ["Starting diameter", "ÄÆ°á»ng kÃ­nh khá»Ÿi Ä‘iá»ƒm"],
-  ".fit-results div:nth-child(1) small": ["Clamp: 45â€“55 cm", "Giá»›i háº¡n: 45â€“55 cm"],
-  ".fit-results div:nth-child(2) span": ["Strap centres", "Khoáº£ng tÃ¢m hai quai"],
-  ".fit-results div:nth-child(2) small": ["Keep both adjustable", "Cáº£ hai quai pháº£i chá»‰nh Ä‘Æ°á»£c"],
-  ".fit-results div:nth-child(3) span": ["Electronics cavity", "Khoang Ä‘iá»‡n tá»­"],
-  ".fit-results div:nth-child(3) small": ["Rear removable cover", "Náº¯p sau thÃ¡o rá»i"],
-  ".fit-results div:nth-child(4) span": ["Target mass", "Khá»‘i lÆ°á»£ng má»¥c tiÃªu"],
-  ".fit-results div:nth-child(4) small": ["Reject if wrist-heavy", "Loáº¡i náº¿u náº·ng cá»• tay"],
-  ".production-warning strong": ["Not a final cutting specification", "ChÆ°a pháº£i thÃ´ng sá»‘ cáº¯t cuá»‘i"],
-  "#fitWarningText": ["Print or draw this diameter on cardboard. Test three users and adjust it before transferring the outline to EVA.", "In hoáº·c váº½ Ä‘Æ°á»ng kÃ­nh nÃ y lÃªn carton. Thá»­ vá»›i ba ngÆ°á»i rá»“i Ä‘iá»u chá»‰nh trÆ°á»›c khi chuyá»ƒn biÃªn dáº¡ng sang EVA."],
-  ".layer-panel .panel-label": ["Physical layer stack", "Cáº¥u trÃºc lá»›p váº­t lÃ½"],
-  ".buy-gate-panel .panel-label": ["Purchase gates", "Cá»•ng mua Ä‘á»“"],
-  ".readiness-panel .panel-label": ["Release gates", "Cá»•ng cho phÃ©p cháº¿ tÃ¡c"],
-  "#clearGuardianGates": ["Clear checks", "XÃ³a Ä‘Ã¡nh dáº¥u"],
-  "#downloadGuardianProductionPack": ["Download Guardian production pack", "Táº£i bá»™ cháº¿ tÃ¡c Guardian"],
-  ".blueprint-panel .panel-label": ["Numbered assembly drawing", "Báº£n váº½ láº¯p rÃ¡p Ä‘Ã¡nh sá»‘"],
-  ".blueprint-scale small": ["Concept dimensions â€” verify on the first foam mock-up", "KÃ­ch thÆ°á»›c Ã½ tÆ°á»Ÿng â€” cáº§n xÃ¡c minh báº±ng máº«u foam Ä‘áº§u tiÃªn"],
-  ".spec-stack div:nth-child(1) span": ["Shell", "Vá» Ä‘áº¡o cá»¥"],
-  ".spec-stack div:nth-child(2) span": ["Sensor", "Cáº£m biáº¿n"],
-  ".spec-stack div:nth-child(3) span": ["Core location", "Vá»‹ trÃ­ lÃµi"],
-  ".spec-stack div:nth-child(4) span": ["Game events", "Sá»± kiá»‡n game"],
-  ".safety-note strong": ["Physical rule", "Quy táº¯c váº­t lÃ½"],
-  "#downloadBuildPack": ["Download role build pack", "Táº£i bá»™ hÆ°á»›ng dáº«n role"],
-  ".procurement-panel .panel-label": ["What to buy", "Cáº§n mua gÃ¬"],
-  ".procurement-panel thead th:nth-child(1)": ["Part", "Linh kiá»‡n"],
-  ".procurement-panel thead th:nth-child(2)": ["Qty", "SL"],
-  ".procurement-panel thead th:nth-child(3)": ["Source", "Nguá»“n mua"],
-  ".procurement-panel thead th:nth-child(4)": ["Stage", "Giai Ä‘oáº¡n"],
-  ".role-assembly-panel .panel-label": ["Assembly path", "Lá»™ trÃ¬nh láº¯p rÃ¡p"],
-  "#guidedBuildEyebrow": ["PARTS READY / GUIDED ASSEMBLY", "Äá»¦ LINH KIá»†N / HÆ¯á»šNG DáºªN Láº®P"],
-  "#guided-build-title": ["Build it one verified step at a time", "Láº¯p tá»«ng bÆ°á»›c vÃ  kiá»ƒm tra trÆ°á»›c khi tiáº¿p tá»¥c"],
-  "#guidedBuildIntro": ["The final drawing stays visible above. The numbered callout for the current operation is highlighted.", "Báº£n váº½ hoÃ n chá»‰nh luÃ´n hiá»ƒn thá»‹ phÃ­a trÃªn; vá»‹ trÃ­ cá»§a bÆ°á»›c hiá»‡n táº¡i sáº½ Ä‘Æ°á»£c lÃ m ná»•i báº­t."],
-  "#partsReadyLabel": ["I have checked all required parts", "TÃ´i Ä‘Ã£ kiá»ƒm tra Ä‘á»§ linh kiá»‡n"],
-  "#guidedPartsHeading": ["Parts for this step", "Linh kiá»‡n dÃ¹ng á»Ÿ bÆ°á»›c nÃ y"],
-  "#guidedActionHeading": ["Do this", "Thao tÃ¡c cáº§n lÃ m"],
-  "#guidedResultHeading": ["Expected result", "Káº¿t quáº£ mong Ä‘á»£i"],
-  "#guidedPassHeading": ["PASS before continuing", "Äiá»u kiá»‡n PASS Ä‘á»ƒ tiáº¿p tá»¥c"],
-  "#guidedPrev": ["Previous step", "BÆ°á»›c trÆ°á»›c"],
-  "#guidedComplete": ["Mark step complete", "ÄÃ¡nh dáº¥u hoÃ n thÃ nh"],
-  "#guidedNext": ["Next step", "BÆ°á»›c tiáº¿p"],
-  ".supplier-links a:nth-child(1)": ["ESP32-S3 source", "Nguá»“n mua ESP32-S3"],
-  ".supplier-links a:nth-child(2)": ["MPU6050 source", "Nguá»“n mua MPU6050"],
-  ".supplier-links a:nth-child(3)": ["EVA material source", "Nguá»“n mua EVA"],
-  ".supplier-links a:nth-child(4)": ["Hanoi prop shop", "Cá»­a hÃ ng Ä‘áº¡o cá»¥ HÃ  Ná»™i"],
-  ".supplier-links a:nth-child(5)": ["Cosplay marketplace", "Chá»£ Ä‘á»“ cosplay"],
-  ".procurement-panel .fine-print": ["Supplier links are references, not locked SKUs. Recheck stock, dimensions, shipping, and seller reliability before purchase.", "CÃ¡c link chá»‰ lÃ  nguá»“n tham kháº£o, chÆ°a khÃ³a SKU. HÃ£y kiá»ƒm tra láº¡i tá»“n kho, kÃ­ch thÆ°á»›c, phÃ­ giao vÃ  Ä‘á»™ uy tÃ­n trÆ°á»›c khi mua."],
-  ".kit-boundary div:nth-child(1) strong": ["What this planner proves", "Tool hiá»‡n chá»©ng minh Ä‘Æ°á»£c"],
-  ".kit-boundary div:nth-child(1) p": ["Role geometry, component placement, purchase categories, event names, and ordered assembly.", "HÃ¬nh dáº¡ng role, vá»‹ trÃ­ linh kiá»‡n, nhÃ³m Ä‘á»“ cáº§n mua, tÃªn sá»± kiá»‡n vÃ  thá»© tá»± láº¯p rÃ¡p."],
-  ".kit-boundary div:nth-child(2) strong": ["What still needs human proof", "Pháº§n váº«n cáº§n ngÆ°á»i tháº­t xÃ¡c minh"],
-  ".kit-boundary div:nth-child(2) p": ["Real measurements, comfort, impact safety, battery heat, radio range, false gestures, and Unity integration.", "KÃ­ch thÆ°á»›c tháº­t, Ä‘á»™ thoáº£i mÃ¡i, an toÃ n va cháº¡m, nhiá»‡t pin, sÃ³ng, nháº­n nháº§m Ä‘á»™ng tÃ¡c vÃ  tÃ­ch há»£p Unity."],
-  "#prototype-title": ["ESP32 Electronics Lab", "XÆ°á»Ÿng máº¡ch ESP32"],
-  "#prototype > .section-heading .eyebrow": ["ROLE ELECTRONICS / USB FIRST", "Máº CH THEO ROLE / USB TRÆ¯á»šC"],
-  "#prototype > .section-heading .section-note": ["Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.", "Äáº¡o cá»¥ Ä‘Ã£ chá»n á»Ÿ Trang 1 tá»± Ä‘i theo sang Ä‘Ã¢y, kÃ¨m linh kiá»‡n, sÆ¡ Ä‘á»“ GPIO, nÃºt thá»­ sá»± kiá»‡n vÃ  máº¡ch bÃ n cÃ³ thá»ƒ táº£i."],
-  "#prototype .controls-panel > .panel-label": ["Device configuration", "Cáº¥u hÃ¬nh thiáº¿t bá»‹"],
-  "label[for='roleSelect']": ["Selected prop", "Äáº¡o cá»¥ Ä‘Ã£ chá»n"],
-  "label[for='transportSelect']": ["Event transport", "KÃªnh truyá»n sá»± kiá»‡n"],
-  ".controls-panel .switch-row:nth-child(6) strong": ["LED feedback", "Pháº£n há»“i LED"],
-  ".controls-panel .switch-row:nth-child(6) small": ["Role colour and acknowledgement", "MÃ u role vÃ  xÃ¡c nháº­n"],
-  ".controls-panel .switch-row:nth-child(7) strong": ["Secondary feedback", "Pháº£n há»“i phá»¥"],
-  ".controls-panel .switch-row:nth-child(7) small": ["Vibration or short local tone", "Rung hoáº·c Ã¢m bÃ¡o ngáº¯n"],
-  ".circuit-panel .panel-label": ["Circuit map", "SÆ¡ Ä‘á»“ máº¡ch"],
-  ".map-panel > .panel-label": ["Pin contract", "Quy Æ°á»›c chÃ¢n"],
-  "#downloadDiagram": ["Download diagram.json", "Táº£i diagram.json"],
-  "#downloadConfig": ["Download device config", "Táº£i cáº¥u hÃ¬nh thiáº¿t bá»‹"],
-  ".download-stack a": ["Open Wokwi", "Má»Ÿ Wokwi"],
-  "#field-title": ["Field simulator", "MÃ´ phá»ng tráº­n Ä‘áº¥u"],
-  "#field .section-heading .eyebrow": ["EVENT PATH / FAILURE TEST", "LUá»’NG Sá»° KIá»†N / THá»¬ Lá»–I"],
-  "#field .section-note": ["Test how an input feels when delivery is delayed or lost.", "Kiá»ƒm tra cáº£m giÃ¡c khi tÃ­n hiá»‡u bá»‹ trá»… hoáº·c máº¥t gÃ³i."],
-  "#arenaViewLabel": ["Arena view", "GÃ³c nhÃ¬n sÃ¢n Ä‘áº¥u"],
-  "[data-arena-view='logic']": ["Logic map", "Báº£n Ä‘á»“ logic"],
-  ".arena-stats span": ["Boss HP", "MÃ¡u Boss"],
-  "#resetSim": ["Reset", "Äáº·t láº¡i"],
-  ".telemetry-panel > .panel-label": ["Network conditions", "Äiá»u kiá»‡n máº¡ng"],
-  "label[for='latencyRange'] span": ["Latency", "Äá»™ trá»…"],
-  "label[for='lossRange'] span": ["Packet loss", "Máº¥t gÃ³i"],
-  ".metric-grid div:nth-child(1) span": ["Sent", "ÄÃ£ gá»­i"],
-  ".metric-grid div:nth-child(2) span": ["Delivered", "ÄÃ£ nháº­n"],
-  ".metric-grid div:nth-child(3) span": ["Lost", "Bá»‹ máº¥t"],
-  ".metric-grid div:nth-child(4) span": ["Avg latency", "Trá»… TB"],
-  ".log-label": ["Event stream", "Luá»“ng sá»± kiá»‡n"],
-  "#core-build-title": ["32-step bench build", "Láº¯p máº¡ch bÃ n trong 32 bÆ°á»›c"],
-  ".core-build-heading .eyebrow": ["COMMON ESP32 CORE / ONE UNIT", "LÃ•I ESP32 CHUNG / Má»˜T Bá»˜"],
-  ".core-build-heading .section-note": ["Complete the reusable electronics core here, then mount it into the selected prop using Page 1.", "HoÃ n thÃ nh lÃµi Ä‘iá»‡n tá»­ dÃ¹ng láº¡i táº¡i Ä‘Ã¢y, rá»“i gáº¯n vÃ o Ä‘áº¡o cá»¥ Ä‘Ã£ chá»n theo Trang 1."],
-  ".bom-panel .panel-label": ["Bill of materials", "Báº£ng váº­t tÆ°"],
-  ".bom-panel thead th:nth-child(1)": ["Part", "Linh kiá»‡n"],
-  ".bom-panel thead th:nth-child(2)": ["Qty", "SL"],
-  ".bom-panel thead th:nth-child(3)": ["Stage", "Giai Ä‘oáº¡n"],
-  ".bom-panel .fine-print": ["Ranges are planning values. Recheck listings before purchase. The first proof uses USB power.", "Khoáº£ng giÃ¡ chá»‰ Ä‘á»ƒ láº­p káº¿ hoáº¡ch. Kiá»ƒm tra láº¡i tin bÃ¡n trÆ°á»›c khi mua. Báº£n thá»­ Ä‘áº§u dÃ¹ng nguá»“n USB."],
-  ".guide-panel .panel-label": ["32 step assembly", "Láº¯p rÃ¡p 32 bÆ°á»›c"],
-  "#clearChecklist": ["Clear checks", "XÃ³a Ä‘Ã¡nh dáº¥u"],
-  ".download-row > div:first-child strong": ["Repository build pack", "Bá»™ láº¯p rÃ¡p trong repository"],
-  ".download-row > div:first-child p": ["Firmware, Wokwi files, event contract, BOM, and full guide.", "Firmware, file Wokwi, quy Æ°á»›c sá»± kiá»‡n, BOM vÃ  hÆ°á»›ng dáº«n Ä‘áº§y Ä‘á»§."],
-  ".download-row a:nth-child(1)": ["Wokwi circuit", "Máº¡ch Wokwi"],
-  ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
-  ".download-row a:nth-child(3)": ["Assembly guide", "HÆ°á»›ng dáº«n láº¯p"],
-  "footer span:nth-child(2)": ["Planner revision 0.7 Â· Guardian production readiness, not field certification", "Báº£n 0.7 Â· chuáº©n bá»‹ cháº¿ tÃ¡c Guardian, chÆ°a pháº£i chá»©ng nháº­n thá»±c Ä‘á»‹a"]
-};
-
-const roleCardTranslations = {
-  guardian: ["Guardian", "Shield", "Há»™ vá»‡", "KhiÃªn"],
-  warrior: ["Warrior", "Sword", "Chiáº¿n binh", "Kiáº¿m"],
-  archer: ["Archer", "Bow", "Cung thá»§", "Cung"],
-  assassin: ["Assassin", "Daggers", "SÃ¡t thá»§", "Dao gÄƒm"],
-  mage: ["Mage", "Staff", "PhÃ¡p sÆ°", "Gáº­y phÃ©p"],
-  boss: ["Titan Warden", "Boss hammer", "Titan Warden", "BÃºa Boss"]
-};
-
-let activeProp = "guardian";
-let activeAssemblyStep = 0;
-let activeVisualView = "overview";
-let currentLanguage = ["vi", "en"].includes(localStorage.getItem("atlas-language")) ? localStorage.getItem("atlas-language") : "vi";
-
-const roles = {
-  guardian: { label: "GUARDIAN", color: "#f0b44d", cast: { damage: 8 }, special: { shield: 25 } },
-  archer: { label: "ARCHER", color: "#16a6c9", cast: { damage: 18 }, special: { damage: 34 } },
-  assassin: { label: "ASSASSIN", color: "#7057d9", cast: { damage: 14 }, special: { damage: 42 } },
-  support: { label: "SUPPORT", color: "#39cc93", cast: { heal: 8 }, special: { heal: 22 } }
-};
-
-const electronicsProfiles = {
-  guardian: { label: "GUARDIAN", name: "Aegis Shield", color: "#f0b44d", deviceId: "guardian-shield-01", parts: ["ESP32-S3", "MPU6050", "Thumb trigger", "WS2812B rim", "Vibration motor"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Thumb trigger", "CÃ² ngÃ³n cÃ¡i"], ["GPIO18", "LED rim data", "Dá»¯ liá»‡u LED viá»n"], ["GPIO27", "Vibration driver", "Driver motor rung"], ["5V / GND", "Shared power / ground", "Nguá»“n / GND chung"]], events: ["BLOCK_START", "BLOCK_END", "TAUNT"] },
-  warrior: { label: "WARRIOR", name: "Pulse Sword", color: "#16a6c9", deviceId: "warrior-sword-01", parts: ["ESP32-S3", "MPU6050", "Index trigger", "WS2812B spine", "Vibration motor"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Index trigger", "CÃ² ngÃ³n trá»"], ["GPIO18", "LED spine data", "Dá»¯ liá»‡u LED sá»‘ng kiáº¿m"], ["GPIO27", "Vibration driver", "Driver motor rung"], ["5V / GND", "Shared power / ground", "Nguá»“n / GND chung"]], events: ["STRIKE", "HEAVY_STRIKE", "PARRY"] },
-  archer: { label: "ARCHER", name: "Arc Bow", color: "#16a6c9", deviceId: "archer-bow-01", parts: ["ESP32-S3", "Linear Hall sensor", "Draw magnet", "Release trigger", "Status LEDs"], pins: [["GPIO34", "Hall sensor analog", "Hall analog"], ["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Release trigger", "CÃ² nháº£ dÃ¢y"], ["GPIO18", "Limb LED data", "Dá»¯ liá»‡u LED cÃ¡nh cung"], ["5V / GND", "Shared power / ground", "Nguá»“n / GND chung"]], events: ["DRAW_START", "DRAW_READY", "FIRE"] },
-  assassin: { label: "ASSASSIN", name: "Shade Daggers", color: "#7057d9", deviceId: "assassin-daggers-01", parts: ["ESP32-S3", "MPU6050", "Grip trigger", "Trap button", "Status LED"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Grip trigger", "CÃ² tay cáº§m"], ["GPIO26", "Trap button", "NÃºt Ä‘áº·t báº«y"], ["GPIO18", "Status LED data", "Dá»¯ liá»‡u LED tráº¡ng thÃ¡i"], ["5V / GND", "Shared power / ground", "Nguá»“n / GND chung"]], events: ["QUICK_STRIKE", "HEAVY_STRIKE", "PLACE_TRAP"] },
-  mage: { label: "MAGE", name: "Lumen Staff", color: "#39cc93", deviceId: "mage-staff-01", parts: ["ESP32-S3", "MPU6050", "CAST button", "SPECIAL button", "Orb LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "CAST button", "NÃºt CAST"], ["GPIO26", "SPECIAL button", "NÃºt SPECIAL"], ["GPIO18", "Orb LED data", "Dá»¯ liá»‡u LED quáº£ cáº§u"], ["GPIO27", "Vibration driver", "Driver motor rung"]], events: ["CAST_HEAL", "CHANNEL", "TEAM_SHIELD"] },
-  boss: { label: "BOSS", name: "Titan Warden", color: "#ef6b68", deviceId: "boss-hammer-01", parts: ["ESP32-S3", "MPU6050", "Primary trigger", "Secondary trigger", "Hammer + armour LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Primary trigger", "CÃ² chÃ­nh"], ["GPIO26", "Secondary trigger", "CÃ² phá»¥"], ["GPIO18", "Hammer LED data", "Dá»¯ liá»‡u LED Ä‘áº§u bÃºa"], ["GPIO16/17", "Armour receiver UART2", "Bá»™ nháº­n Ã¡o giÃ¡p UART2"]], events: ["SWEEP", "SLAM", "MARK", "PHASE_SKILL"] }
-};
-
-const guardianProduction = {
-  en: {
-    layers: [
-      ["5 mm cosmetic face", "Logo, diffuser openings and a soft replaceable front skin.", "5 mm EVA"],
-      ["10 mm structural ring", "Main shape; rounded perimeter with no rigid full-width core.", "10 mm EVA"],
-      ["Protected cable channel", "LED and trigger wiring with quick connectors and strain relief.", "5 mm route"],
-      ["Rear service plate", "Removable ESP32/IMU compartment; isolated from the forearm.", "5 mm EVA"],
-      ["Adjustable wearable layer", "Two padded nylon straps plus a reachable thumb trigger.", "25 mm webbing"]
-    ],
-    groups: [
-      { title: "BUY NOW Â· FIT MOCK-UP", items: [["Double-wall cardboard", "2 sheets Â· full-size fit proof"], ["Paper tape + marker", "1 set Â· outline and iteration"], ["25 mm nylon webbing", "1.5 m Â· strap position proof"], ["Adjustable buckles", "2 Â· verify quick release"], ["EVA offcut", "Small piece Â· edge and adhesive test"]] },
-      { title: "BUY AFTER FIT PASS", items: [["ESP32-S3 DevKit", "1 Â· USB-first controller"], ["MPU6050 module", "1 Â· centre-mounted IMU"], ["Momentary thumb trigger", "1 Â· deliberate input"], ["WS2812B strip", "1 m Â· protected rim feedback"], ["Wire + connectors", "1 set Â· removable service core"]] }
-    ],
-    gates: [
-      ["G0 Â· Gameplay contract frozen", "BLOCK_START, BLOCK_END and TAUNT names are accepted by the game."],
-      ["G1 Â· Cardboard fit PASS", "Three intended users wear it for five minutes; vision, wrist and quick removal all pass."],
-      ["G2 Â· USB electronics PASS", "100 trigger/motion cycles with no duplicate event, reset, short or unsafe heat."],
-      ["G3 Â· Integrated shell PASS", "30 cm mat drop and cable pull checks reveal no hard edge, loose layer or pinched wire."],
-      ["G4 Â· Field rehearsal PASS", "Five-minute match with no body contact, false block, discomfort or recovery failure."]
-    ]
-  },
-  vi: {
-    layers: [
-      ["Máº·t trang trÃ­ 5 mm", "Logo, khe tÃ¡n sÃ¡ng vÃ  lá»›p máº·t má»m cÃ³ thá»ƒ thay tháº¿.", "EVA 5 mm"],
-      ["VÃ²ng káº¿t cáº¥u 10 mm", "Táº¡o hÃ¬nh chÃ­nh; viá»n bo trÃ²n, khÃ´ng dÃ¹ng lÃµi cá»©ng cháº¡y toÃ n chiá»u rá»™ng.", "EVA 10 mm"],
-      ["RÃ£nh dÃ¢y cÃ³ báº£o vá»‡", "DÃ¢y LED vÃ  cÃ² dÃ¹ng Ä‘áº§u ná»‘i nhanh cÃ¹ng chá»‘ng kÃ©o.", "RÃ£nh 5 mm"],
-      ["Táº¥m báº£o trÃ¬ máº·t sau", "Khoang ESP32/IMU thÃ¡o rá»i, cÃ¡ch ly khá»i cáº³ng tay.", "EVA 5 mm"],
-      ["Lá»›p Ä‘eo Ä‘iá»u chá»‰nh", "Hai quai nylon cÃ³ Ä‘á»‡m cÃ¹ng cÃ² ngÃ³n cÃ¡i dá»… vá»›i tá»›i.", "Quai 25 mm"]
-    ],
-    groups: [
-      { title: "MUA NGAY Â· MáºªU THá»¬ Äá»˜ Vá»ªA", items: [["Carton hai lá»›p", "2 táº¥m Â· thá»­ kÃ­ch thÆ°á»›c tháº­t"], ["BÄƒng dÃ­nh giáº¥y + bÃºt", "1 bá»™ Â· váº½ biÃªn vÃ  chá»‰nh sá»­a"], ["Quai nylon 25 mm", "1,5 m Â· thá»­ vá»‹ trÃ­ quai"], ["KhÃ³a Ä‘iá»u chá»‰nh", "2 Â· kiá»ƒm tra thÃ¡o nhanh"], ["Miáº¿ng EVA thá»«a", "Máº£nh nhá» Â· thá»­ cáº¡nh vÃ  keo"]] },
-      { title: "MUA SAU KHI FIT PASS", items: [["ESP32-S3 DevKit", "1 Â· bá»™ Ä‘iá»u khiá»ƒn Æ°u tiÃªn USB"], ["Module MPU6050", "1 Â· IMU Ä‘áº·t táº¡i tÃ¢m"], ["CÃ² ngÃ³n cÃ¡i nháº¥n nháº£", "1 Â· input chá»§ Ä‘á»™ng"], ["Dáº£i WS2812B", "1 m Â· LED viá»n cÃ³ báº£o vá»‡"], ["DÃ¢y + Ä‘áº§u ná»‘i", "1 bá»™ Â· lÃµi báº£o trÃ¬ thÃ¡o rá»i"]] }
-    ],
-    gates: [
-      ["G0 Â· KhÃ³a gameplay contract", "Game Ä‘Ã£ cháº¥p nháº­n tÃªn BLOCK_START, BLOCK_END vÃ  TAUNT."],
-      ["G1 Â· Máº«u carton FIT PASS", "Ba ngÆ°á»i dá»± kiáº¿n Ä‘eo 5 phÃºt; táº§m nhÃ¬n, cá»• tay vÃ  thÃ¡o nhanh Ä‘á»u Ä‘áº¡t."],
-      ["G2 Â· Máº¡ch USB PASS", "100 chu ká»³ cÃ²/chuyá»ƒn Ä‘á»™ng khÃ´ng láº·p event, reset, cháº­p hoáº·c nÃ³ng nguy hiá»ƒm."],
-      ["G3 Â· Vá» tÃ­ch há»£p PASS", "Tháº£ 30 cm xuá»‘ng tháº£m vÃ  kÃ©o dÃ¢y khÃ´ng lá»™ cáº¡nh cá»©ng, bong lá»›p hoáº·c káº¹p dÃ¢y."],
-      ["G4 Â· Diá»…n táº­p tráº­n PASS", "Tráº­n 5 phÃºt khÃ´ng tiáº¿p xÃºc cÆ¡ thá»ƒ, block giáº£, khÃ³ chá»‹u hoáº·c lá»—i khÃ´i phá»¥c."]
-    ]
-  }
-};
-
-const pinMap = [
-  { pin: "GPIO25", name: "CAST button", color: "#16a6c9", optional: false },
-  { pin: "GPIO26", name: "SPECIAL button", color: "#7057d9", optional: false },
-  { pin: "GPIO18", name: "LED data", color: "#f0b44d", optional: "led" },
-  { pin: "GPIO27", name: "Buzzer signal", color: "#f29f4b", optional: "buzzer" },
-  { pin: "VIN", name: "5V feedback power", color: "#e05858", optional: "feedback" },
-  { pin: "GND", name: "Shared ground", color: "#718088", optional: false }
-];
-
-const pinNamesVi = {
-  "CAST button": "NÃºt CAST", "SPECIAL button": "NÃºt SPECIAL", "LED data": "Dá»¯ liá»‡u LED",
-  "Buzzer signal": "TÃ­n hiá»‡u buzzer", "5V feedback power": "Nguá»“n pháº£n há»“i 5V", "Shared ground": "GND chung"
-};
-
-const bom = [
-  ["ESP32 DevKit V1, 30 pin", "1", "Bench"], ["WS2812B 16 LED ring", "1", "Bench"],
-  ["12 mm momentary button", "2", "Bench"], ["Passive piezo buzzer", "1", "Bench"],
-  ["74AHCT125 level shifter", "1", "Bench"], ["330 Î© resistor", "1", "Bench"],
-  ["1000 ÂµF capacitor", "1", "Bench"], ["Half size breadboard", "1", "Bench"],
-  ["Dupont jumper set", "1", "Bench"], ["USB data cable", "1", "Bench"],
-  ["5V USB power bank", "1", "Field"], ["Prototype enclosure", "1", "Field"],
-  ["USB power meter", "1", "Recommended"]
-];
-
-const guideSteps = [
-  "Check every item against the bill of materials.", "Confirm the ESP32 is a 30 pin DevKit V1 board.",
-  "Use USB power only for the first build.", "Keep the ESP32 disconnected while wiring.",
-  "Place the ESP32 across the breadboard center gap.", "Identify VIN, 3V3, GND, GPIO18, GPIO25, GPIO26, and GPIO27.",
-  "Mark the CAST and SPECIAL buttons.", "Place both buttons across the breadboard center gap.",
-  "Connect one CAST contact to GPIO25.", "Connect the opposite CAST contact to GND.",
-  "Connect one SPECIAL contact to GPIO26.", "Connect the opposite SPECIAL contact to GND.",
-  "Check that neither button connects VIN to GND.", "Confirm the firmware uses INPUT_PULLUP for both buttons.",
-  "Place the passive buzzer on the breadboard.", "Connect buzzer positive to GPIO27.",
-  "Connect buzzer negative to GND.", "Place the 74AHCT125 level shifter across the center gap.",
-  "Connect level shifter VCC to VIN and GND to GND.", "Tie the selected channel enable pin low.",
-  "Connect GPIO18 to the selected level shifter input.", "Connect its matching output through 330 Î© to LED ring DIN.",
-  "Connect LED ring VCC to VIN.", "Connect LED ring GND to GND.",
-  "Place the 1000 ÂµF capacitor across ring VCC and GND, matching polarity.", "Compare every wire with the pin table before connecting USB.",
-  "Check for loose strands and accidental shorts.", "Connect the ESP32 with a data capable USB cable.",
-  "Build and upload firmware/spell-orb with PlatformIO.", "Open serial monitor at 115200 baud and wait for ATLAS_PROP_READY.",
-  "Press CAST, then SPECIAL; verify JSON, light, sound, and cooldown.", "Disconnect USB, label the revision, and record any difference before enclosure work."
-];
-
-const guideStepsVi = [
-  "Äá»‘i chiáº¿u tá»«ng mÃ³n vá»›i báº£ng váº­t tÆ°.", "XÃ¡c nháº­n ESP32 lÃ  board DevKit V1 loáº¡i 30 chÃ¢n.",
-  "Chá»‰ dÃ¹ng nguá»“n USB cho báº£n láº¯p Ä‘áº§u tiÃªn.", "Ngáº¯t ESP32 khá»i nguá»“n trong lÃºc Ä‘i dÃ¢y.",
-  "Äáº·t ESP32 báº¯c qua rÃ£nh giá»¯a breadboard.", "XÃ¡c Ä‘á»‹nh VIN, 3V3, GND, GPIO18, GPIO25, GPIO26 vÃ  GPIO27.",
-  "ÄÃ¡nh dáº¥u nÃºt CAST vÃ  SPECIAL.", "Äáº·t hai nÃºt báº¯c qua rÃ£nh giá»¯a breadboard.",
-  "Ná»‘i má»™t chÃ¢n CAST vÃ o GPIO25.", "Ná»‘i chÃ¢n CAST Ä‘á»‘i diá»‡n vÃ o GND.",
-  "Ná»‘i má»™t chÃ¢n SPECIAL vÃ o GPIO26.", "Ná»‘i chÃ¢n SPECIAL Ä‘á»‘i diá»‡n vÃ o GND.",
-  "Kiá»ƒm tra khÃ´ng nÃºt nÃ o ná»‘i táº¯t VIN vá»›i GND.", "XÃ¡c nháº­n firmware dÃ¹ng INPUT_PULLUP cho cáº£ hai nÃºt.",
-  "Äáº·t buzzer thá»¥ Ä‘á»™ng lÃªn breadboard.", "Ná»‘i cá»±c dÆ°Æ¡ng buzzer vÃ o GPIO27.",
-  "Ná»‘i cá»±c Ã¢m buzzer vÃ o GND.", "Äáº·t IC chuyá»ƒn má»©c 74AHCT125 báº¯c qua rÃ£nh giá»¯a.",
-  "Ná»‘i VCC cá»§a IC chuyá»ƒn má»©c vÃ o VIN vÃ  GND vÃ o GND.", "KÃ©o chÃ¢n enable cá»§a kÃªnh Ä‘Æ°á»£c chá»n xuá»‘ng má»©c tháº¥p.",
-  "Ná»‘i GPIO18 vÃ o Ä‘áº§u vÃ o kÃªnh Ä‘Ã£ chá»n.", "Ná»‘i Ä‘áº§u ra tÆ°Æ¡ng á»©ng qua Ä‘iá»‡n trá»Ÿ 330 Î© tá»›i DIN cá»§a vÃ²ng LED.",
-  "Ná»‘i VCC vÃ²ng LED vÃ o VIN.", "Ná»‘i GND vÃ²ng LED vÃ o GND.",
-  "Äáº·t tá»¥ 1000 ÂµF giá»¯a VCC vÃ  GND cá»§a vÃ²ng LED, Ä‘Ãºng cá»±c.", "So tá»«ng dÃ¢y vá»›i báº£ng chÃ¢n trÆ°á»›c khi cáº¯m USB.",
-  "Kiá»ƒm tra sá»£i dÃ¢y lá»ng vÃ  nguy cÆ¡ cháº­p máº¡ch.", "Káº¿t ná»‘i ESP32 báº±ng cÃ¡p USB cÃ³ truyá»n dá»¯ liá»‡u.",
-  "Build vÃ  náº¡p firmware/spell-orb báº±ng PlatformIO.", "Má»Ÿ Serial Monitor 115200 baud vÃ  Ä‘á»£i ATLAS_PROP_READY.",
-  "Nháº¥n CAST rá»“i SPECIAL; kiá»ƒm tra JSON, Ã¡nh sÃ¡ng, Ã¢m thanh vÃ  cooldown.", "RÃºt USB, dÃ¡n nhÃ£n phiÃªn báº£n vÃ  ghi láº¡i sai khÃ¡c trÆ°á»›c khi lÃ m vá»."
-];
-
-const guidedCallouts = {
-  guardian: [[1], [2, 3, 4, 5], [1], [3], [4], [5], [2, 6], [1, 2, 3, 4, 5, 6]],
-  warrior: [[1, 6], [3, 4, 5], [1], [2], [3], [4, 5], [6], [1, 2, 3, 4, 5, 6]],
-  archer: [[1, 2], [3, 4, 5], [2], [3, 4], [5], [1, 6], [3, 4], [1, 2, 3, 4, 5, 6]],
-  assassin: [[1, 2], [3, 4, 5, 6], [1, 2], [3], [4, 5], [2], [6], [1, 2, 3, 4, 5, 6]],
-  mage: [[1, 2, 6], [1, 3, 4, 5], [2, 6], [1], [4], [5], [3, 4], [1, 2, 3, 4, 5, 6]],
-  boss: [[1], [2, 3, 4, 5], [1], [4, 5], [6], [2, 5, 6], [3, 4], [1, 2, 3, 4, 5, 6]]
-};
-
-const guidedCopy = {
-  en: {
-    titles: ["Make a full-size fit mock-up", "Prove the electronics over USB", "Build the safe outer shell", "Install and align the motion sensor", "Install controls and removable wiring", "Install protected light feedback", "Close the serviceable wearable structure", "Calibrate and complete the abuse test"],
-    results: ["A powerless mock-up that shows size, reach, grip and clearance before any expensive work.", "Each input appears once in Serial Monitor and the LEDs respond without resets or hot parts.", "A light, rounded body with no exposed rigid point and an open service cavity.", "The sensor cannot shift; its axes match the direction shown on the drawing.", "Every control is reachable, strain-relieved and disconnects without cutting a wire.", "Light is visible through a diffuser; wires cannot be pinched during normal use.", "The prop fits the intended users, stays adjustable and opens again for repair.", "A labelled revision with recorded test results and no unresolved safety failure."],
-    passes: ["Three intended users can hold or wear it comfortably; no edge reaches the face during the planned motion.", "100 input presses/motions produce no duplicate event, brownout, short, or component above hand-warm temperature.", "Drop from 30 cm onto a mat: no exposed hard edge, loose laminate, or cracked load point.", "At rest the reading is stable; three repeated motions point in the same signed axis direction.", "Pull each wire gently and operate every control 30 times with no intermittent event.", "Run full brightness for 10 minutes: diffuser remains secure and the service area stays safe to touch.", "Fit the shortest and largest expected player for five minutes without numbness, slipping, or blocked quick removal.", "Complete the role's final motion count with no physical contact, no false event above the recorded threshold, and no heat or discomfort."],
-    parts: [
-      ["Full-size paper template", "Cardboard", "Ruler / tape measure", "Marker and low-tack tape"],
-      ["ESP32-S3", "Role sensor", "Buttons / triggers", "Breadboard, jumpers and USB data cable"],
-      ["Specified shell material", "EVA-safe adhesive", "Cutting tools", "Eye and hand protection"],
-      ["Motion / draw sensor", "Foam mounting pad", "Axis label", "Ruler or alignment guide"],
-      ["Buttons / trigger", "Flexible wire", "Quick connectors", "Heat-shrink and strain relief"],
-      ["WS2812B LEDs", "330 Î© resistor", "Diffuser", "Protected connector"],
-      ["Service cover", "Straps / hook-and-loop", "Comfort padding", "Cable ties or fabric channels"],
-      ["Laptop + Serial Monitor", "USB power meter", "Test log", "Second person as safety observer"]
-    ]
-  },
-  vi: {
-    titles: ["LÃ m máº«u thá»­ Ä‘Ãºng kÃ­ch thÆ°á»›c", "Chá»©ng minh máº¡ch Ä‘iá»‡n qua USB", "Táº¡o lá»›p vá» ngoÃ i an toÃ n", "Gáº¯n vÃ  cÄƒn cáº£m biáº¿n chuyá»ƒn Ä‘á»™ng", "Gáº¯n nÃºt Ä‘iá»u khiá»ƒn vÃ  dÃ¢y thÃ¡o rá»i", "Gáº¯n pháº£n há»“i Ã¡nh sÃ¡ng cÃ³ báº£o vá»‡", "ÄÃ³ng káº¿t cáº¥u Ä‘eo Ä‘Æ°á»£c nhÆ°ng váº«n báº£o trÃ¬", "CÃ¢n chá»‰nh vÃ  hoÃ n táº¥t thá»­ Ä‘á»™ bá»n"],
-    results: ["CÃ³ máº«u khÃ´ng Ä‘iá»‡n Ä‘á»ƒ kiá»ƒm tra kÃ­ch thÆ°á»›c, táº§m vá»›i, tay cáº§m vÃ  khoáº£ng trá»‘ng trÆ°á»›c khi tá»‘n tiá»n.", "Má»—i input xuáº¥t hiá»‡n Ä‘Ãºng má»™t láº§n trÃªn Serial Monitor; LED pháº£n há»“i, board khÃ´ng reset vÃ  khÃ´ng nÃ³ng báº¥t thÆ°á»ng.", "CÃ³ thÃ¢n nháº¹, bo trÃ²n, khÃ´ng lá»™ Ä‘iá»ƒm cá»©ng vÃ  váº«n chá»«a khoang báº£o trÃ¬.", "Cáº£m biáº¿n khÃ´ng xÃª dá»‹ch; cÃ¡c trá»¥c Ä‘Ãºng vá»›i hÆ°á»›ng thá»ƒ hiá»‡n trÃªn báº£n váº½.", "Má»i nÃºt Ä‘á»u dá»… báº¥m, dÃ¢y cÃ³ chá»‘ng kÃ©o vÃ  thÃ¡o Ä‘Æ°á»£c mÃ  khÃ´ng pháº£i cáº¯t.", "Ãnh sÃ¡ng nhÃ¬n rÃµ qua lá»›p tÃ¡n; dÃ¢y khÃ´ng bá»‹ káº¹p trong quÃ¡ trÃ¬nh sá»­ dá»¥ng.", "Äáº¡o cá»¥ vá»«a vá»›i nhÃ³m ngÆ°á»i dÃ¹ng dá»± kiáº¿n, Ä‘iá»u chá»‰nh Ä‘Æ°á»£c vÃ  má»Ÿ láº¡i Ä‘á»ƒ sá»­a chá»¯a.", "CÃ³ má»™t phiÃªn báº£n Ä‘Æ°á»£c dÃ¡n nhÃ£n, kÃ¨m káº¿t quáº£ thá»­ vÃ  khÃ´ng cÃ²n lá»—i an toÃ n chÆ°a xá»­ lÃ½."],
-    passes: ["Ba ngÆ°á»i dÃ¹ng dá»± kiáº¿n cáº§m hoáº·c máº·c thoáº£i mÃ¡i; khÃ´ng cáº¡nh nÃ o cháº¡m máº·t trong Ä‘á»™ng tÃ¡c Ä‘Ã£ Ä‘á»‹nh.", "100 láº§n báº¥m/chuyá»ƒn Ä‘á»™ng khÃ´ng táº¡o sá»± kiá»‡n láº·p, sá»¥t nguá»“n, cháº­p máº¡ch hoáº·c linh kiá»‡n nÃ³ng quÃ¡ má»©c cáº§m tay.", "Tháº£ tá»« 30 cm xuá»‘ng tháº£m: khÃ´ng lá»™ cáº¡nh cá»©ng, khÃ´ng bong lá»›p vÃ  khÃ´ng ná»©t Ä‘iá»ƒm chá»‹u lá»±c.", "Khi Ä‘á»©ng yÃªn sá»‘ Ä‘o á»•n Ä‘á»‹nh; ba láº§n láº·p cÃ¹ng Ä‘á»™ng tÃ¡c Ä‘á»u Ä‘i Ä‘Ãºng má»™t chiá»u trá»¥c.", "KÃ©o nháº¹ tá»«ng dÃ¢y vÃ  thao tÃ¡c má»—i nÃºt 30 láº§n, khÃ´ng cÃ³ tÃ­n hiá»‡u cháº­p chá»n.", "Cháº¡y sÃ¡ng tá»‘i Ä‘a 10 phÃºt: lá»›p tÃ¡n khÃ´ng rÆ¡i vÃ  khu vá»±c báº£o trÃ¬ váº«n an toÃ n khi cháº¡m.", "Cho ngÆ°á»i tháº¥p nháº¥t vÃ  lá»›n nháº¥t dá»± kiáº¿n dÃ¹ng 5 phÃºt: khÃ´ng tÃª, khÃ´ng tuá»™t vÃ  váº«n thÃ¡o nhanh Ä‘Æ°á»£c.", "HoÃ n táº¥t sá»‘ láº§n thá»­ cuá»‘i cá»§a role, khÃ´ng tiáº¿p xÃºc cÆ¡ thá»ƒ, khÃ´ng vÆ°á»£t ngÆ°á»¡ng nháº­n nháº§m Ä‘Ã£ ghi vÃ  khÃ´ng nÃ³ng/khÃ³ chá»‹u."],
-    parts: [
-      ["Máº«u giáº¥y Ä‘Ãºng kÃ­ch thÆ°á»›c", "BÃ¬a carton", "ThÆ°á»›c / thÆ°á»›c dÃ¢y", "BÃºt vÃ  bÄƒng dÃ­nh giáº¥y"],
-      ["ESP32-S3", "Cáº£m biáº¿n cá»§a role", "NÃºt / cÃ²", "Breadboard, dÃ¢y cáº¯m vÃ  cÃ¡p USB data"],
-      ["Váº­t liá»‡u vá» theo thiáº¿t káº¿", "Keo an toÃ n cho EVA", "Dá»¥ng cá»¥ cáº¯t", "Báº£o há»™ máº¯t vÃ  tay"],
-      ["Cáº£m biáº¿n chuyá»ƒn Ä‘á»™ng / kÃ©o", "Äá»‡m foam gáº¯n cáº£m biáº¿n", "NhÃ£n trá»¥c", "ThÆ°á»›c hoáº·c dÆ°á»¡ng cÄƒn"],
-      ["NÃºt / cÃ²", "DÃ¢y má»m", "Äáº§u ná»‘i thÃ¡o nhanh", "á»ng co nhiá»‡t vÃ  chá»‘ng kÃ©o"],
-      ["LED WS2812B", "Äiá»‡n trá»Ÿ 330 Î©", "Lá»›p tÃ¡n sÃ¡ng", "Äáº§u ná»‘i cÃ³ báº£o vá»‡"],
-      ["Náº¯p báº£o trÃ¬", "Quai / khÃ³a dÃ¡n", "Äá»‡m Ãªm", "DÃ¢y rÃºt hoáº·c rÃ£nh váº£i"],
-      ["Laptop + Serial Monitor", "Äá»“ng há»“ Ä‘o nguá»“n USB", "Phiáº¿u ghi thá»­ nghiá»‡m", "Má»™t ngÆ°á»i giÃ¡m sÃ¡t an toÃ n"]
-    ]
-  }
-};
-
-const bomViTerms = {
-  "MPU6050 IMU": "Cáº£m biáº¿n MPU6050", "Momentary button": "NÃºt nháº¥n nháº£", "WS2812B LED": "LED WS2812B",
-  "USB data cable": "CÃ¡p USB data", "EVA foam sheets": "Táº¥m foam EVA", "Maker shop": "Cá»­a hÃ ng linh kiá»‡n",
-  "Hshop / maker shop": "Hshop / cá»­a hÃ ng linh kiá»‡n", "Computer shop": "Cá»­a hÃ ng mÃ¡y tÃ­nh", "Cosplay material shop": "Cá»­a hÃ ng váº­t liá»‡u cosplay",
-  "Maker shop / marketplace": "Cá»­a hÃ ng linh kiá»‡n / sÃ n TMÄT", "Bench": "Máº¡ch thá»­", "Shell": "Vá»", "Field": "Thá»±c Ä‘á»‹a",
-  "Feedback": "Pháº£n há»“i", "Safety": "An toÃ n", "Input": "Äáº§u vÃ o", "Wearable": "Äá»“ máº·c", "Recommended": "Khuyáº¿n nghá»‹",
-  "As cut plan": "Theo báº£n cáº¯t", "1 set": "1 bá»™", "10 mm EVA sheet": "Táº¥m EVA 10 mm", "10 mm EVA sheets": "Táº¥m EVA 10 mm",
-  "5â€“10 mm EVA sheet": "Táº¥m EVA 5â€“10 mm", "Nylon strap + buckle": "Quai nylon + khÃ³a", "Vibration motor": "Motor rung",
-  "Soft diffuser strip": "Dáº£i tÃ¡n sÃ¡ng má»m", "Wrist loop": "DÃ¢y giá»¯ cá»• tay", "Wrist retention loops": "DÃ¢y giá»¯ cá»• tay",
-  "Light PVC/EVA frame": "Khung PVC/EVA nháº¹", "Linear Hall sensor": "Cáº£m biáº¿n Hall tuyáº¿n tÃ­nh", "Small magnet": "Nam chÃ¢m nhá»",
-  "Elastic draw cord": "DÃ¢y kÃ©o Ä‘Ã n há»“i", "Wrist button pad": "Äá»‡m nÃºt Ä‘eo cá»• tay", "Light PVC tube": "á»ng PVC nháº¹",
-  "Light PVC shaft": "CÃ¡n PVC nháº¹", "EVA wrap + padding": "EVA bá»c + Ä‘á»‡m", "Diffused orb shell": "Vá» cáº§u tÃ¡n sÃ¡ng",
-  "Armour training bib": "Ão bib lÃ m ná»n giÃ¡p", "LED armour panels": "Táº¥m LED giÃ¡p", "Second receiver core": "LÃµi nháº­n tÃ­n hiá»‡u thá»© hai",
-  "Sewing shop": "Cá»­a hÃ ng may", "Maker / craft shop": "Cá»­a hÃ ng linh kiá»‡n / thá»§ cÃ´ng", "Hardware + cosplay shop": "Cá»­a hÃ ng váº­t tÆ° + cosplay",
-  "Craft shop": "Cá»­a hÃ ng thá»§ cÃ´ng", "Maker + sewing shop": "Cá»­a hÃ ng linh kiá»‡n + may", "Hardware shop": "Cá»­a hÃ ng váº­t tÆ°",
-  "Prop maker / 3D print": "XÆ°á»Ÿng Ä‘áº¡o cá»¥ / in 3D", "Sports shop": "Cá»­a hÃ ng thá»ƒ thao",
-  "ESP32 DevKit V1, 30 pin": "ESP32 DevKit V1, 30 chÃ¢n", "WS2812B 16 LED ring": "VÃ²ng 16 LED WS2812B",
-  "12 mm momentary button": "NÃºt nháº¥n nháº£ 12 mm", "Passive piezo buzzer": "Buzzer piezo thá»¥ Ä‘á»™ng", "74AHCT125 level shifter": "IC chuyá»ƒn má»©c 74AHCT125",
-  "330 Î© resistor": "Äiá»‡n trá»Ÿ 330 Î©", "1000 ÂµF capacitor": "Tá»¥ 1000 ÂµF", "Half size breadboard": "Breadboard ná»­a cá»¡",
-  "Dupont jumper set": "Bá»™ dÃ¢y Dupont", "5V USB power bank": "Pin dá»± phÃ²ng USB 5V", "Prototype enclosure": "Há»™p máº«u thá»­", "USB power meter": "Äá»“ng há»“ Ä‘o nguá»“n USB"
-};
-
-const state = {
-  role: "archer", transport: "usb", led: true, buzzer: true,
-  latency: 60, loss: 5, bossHp: 520, sent: 0, delivered: 0, lost: 0,
-  latencyTotal: 0, sequence: 0, cooldown: { CAST: false, SPECIAL: false }
-};
-
-const $ = (selector, root = document) => root.querySelector(selector);
-const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-
-const blueprintFocus = {
-  guardian: { 1: [191, 72], 2: [310, 171], 3: [310, 132], 4: [388, 210], 5: [430, 170], 6: [240, 225] },
-  warrior: { 1: [284, 75], 2: [310, 135], 3: [342, 250], 4: [312, 289], 5: [310, 314], 6: [310, 340] },
-  archer: { 1: [178, 72], 2: [310, 92], 3: [310, 151], 4: [310, 180], 5: [310, 214], 6: [430, 92] },
-  assassin: { 1: [177, 92], 2: [433, 92], 3: [202, 239], 4: [177, 278], 5: [177, 306], 6: [433, 306] },
-  mage: { 1: [310, 64], 2: [310, 108], 3: [330, 154], 4: [306, 205], 5: [307, 246], 6: [310, 316] },
-  boss: { 1: [220, 52], 2: [382, 91], 3: [330, 181], 4: [310, 148], 5: [308, 257], 6: [505, 220] }
-};
-
-const guidedVisualCopy = {
-  en: {
-    heading: "Step images",
-    note: "Technical diagram â€” use the printed template for final dimensions.",
-    tabs: { overview: "Whole prop", detail: "Close-up", result: "After this step" },
-    overview: (kit, callouts) => `${kit.name} overview. Drawing positions ${callouts.join(" + ")} are highlighted for this operation.`,
-    detail: (names) => `Close-up of ${names.join("; ")}. Match the numbered positions before fastening anything.`,
-    result: (step) => `Expected visual state after step ${step}. Green markers show areas already handled in the build sequence.`,
-    location: "Install here",
-    completed: "Expected after step"
-  },
-  vi: {
-    heading: "HÃ¬nh áº£nh cá»§a bÆ°á»›c nÃ y",
-    note: "SÆ¡ Ä‘á»“ ká»¹ thuáº­t â€” dÃ¹ng máº«u in Ä‘á»ƒ chá»‘t kÃ­ch thÆ°á»›c cuá»‘i.",
-    tabs: { overview: "ToÃ n bá»™", detail: "Cáº­n cáº£nh", result: "Sau bÆ°á»›c nÃ y" },
-    overview: (kit, callouts) => `ToÃ n bá»™ ${kit.name}. CÃ¡c vá»‹ trÃ­ ${callouts.join(" + ")} Ä‘ang Ä‘Æ°á»£c lÃ m sÃ¡ng cho thao tÃ¡c nÃ y.`,
-    detail: (names) => `Cáº­n cáº£nh ${names.join("; ")}. Äá»‘i chiáº¿u Ä‘Ãºng vá»‹ trÃ­ Ä‘Ã¡nh sá»‘ trÆ°á»›c khi cá»‘ Ä‘á»‹nh.`,
-    result: (step) => `Tráº¡ng thÃ¡i dá»± kiáº¿n sau bÆ°á»›c ${step}. Dáº¥u mÃ u xanh thá»ƒ hiá»‡n nhá»¯ng vÃ¹ng Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½ trong quy trÃ¬nh.`,
-    location: "Láº¯p táº¡i Ä‘Ã¢y",
-    completed: "Káº¿t quáº£ sau bÆ°á»›c"
-  }
-};
-
-let blueprintRenderId = 0;
-
-function blueprintSvg(kind, options = {}) {
-  const viewBox = options.viewBox || "0 0 620 360";
-  const patternId = `bp-grid-${++blueprintRenderId}`;
-  const frame = (content, label) => `<svg viewBox="${viewBox}" role="img" aria-label="${label} numbered concept assembly drawing">
-    <defs><pattern id="${patternId}" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#183541" stroke-width="1"/></pattern></defs>
-    <rect width="620" height="360" fill="url(#${patternId})"/>
-    <g class="blueprint-object">${content}</g>
-    <path class="dimension-line" d="M70 330H550 M70 322V338 M550 322V338"/>
-  </svg>`;
-  const dot = (n, x, y, tx, ty) => `<g class="bp-callout" data-callout="${n}"><path d="M${x} ${y}L${tx} ${ty}"/><circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y + 4}" text-anchor="middle">${n}</text></g>`;
-  if (kind === "shield") return frame(`
-    <path d="M310 35C420 35 485 83 476 174C467 264 398 306 310 320C222 306 153 264 144 174C135 83 200 35 310 35Z"/>
-    <path d="M310 70C388 70 435 103 430 170C424 233 376 267 310 281C244 267 196 233 190 170C185 103 232 70 310 70Z"/>
-    <circle cx="310" cy="171" r="52"/><path d="M236 116Q310 76 384 116M236 228Q310 268 384 228"/>
-    ${dot(1,191,72,118,32)}${dot(2,310,171,520,104)}${dot(3,310,132,94,135)}${dot(4,388,210,530,238)}${dot(5,430,170,533,163)}${dot(6,240,225,104,273)}`, "Aegis Shield");
-  if (kind === "sword") return frame(`
-    <path d="M282 34L338 34L353 239L326 274H294L267 239Z"/><path d="M310 62V238"/>
-    <path d="M225 250H395L378 279H242Z"/><rect x="291" y="273" width="38" height="64" rx="13"/><circle cx="310" cy="337" r="18"/>
-    ${dot(1,284,75,118,48)}${dot(2,310,135,500,62)}${dot(3,342,250,520,190)}${dot(4,312,289,102,242)}${dot(5,310,314,496,302)}${dot(6,310,340,116,333)}`, "Pulse Sword");
-  if (kind === "bow") return frame(`
-    <path d="M194 45Q88 180 194 315M426 45Q532 180 426 315"/><path d="M194 45L310 180L194 315M426 45L310 180L426 315"/>
-    <rect x="291" y="126" width="38" height="108" rx="12"/><path d="M310 92V268"/><circle cx="310" cy="180" r="10"/>
-    ${dot(1,178,72,74,44)}${dot(2,310,92,500,46)}${dot(3,310,151,105,135)}${dot(4,310,180,520,176)}${dot(5,310,214,100,250)}${dot(6,430,92,526,112)}`, "Arc Bow");
-  if (kind === "dagger") return frame(`
-    <path d="M158 56L196 56L209 216L177 248L145 216Z"/><path d="M118 239H236L221 263H133Z"/><rect x="158" y="260" width="38" height="64" rx="12"/>
-    <path d="M414 56L452 56L465 216L433 248L401 216Z"/><path d="M374 239H492L477 263H389Z"/><rect x="414" y="260" width="38" height="64" rx="12"/>
-    ${dot(1,177,92,74,52)}${dot(2,433,92,548,46)}${dot(3,202,239,91,195)}${dot(4,177,278,80,288)}${dot(5,177,306,278,329)}${dot(6,433,306,545,302)}`, "Shade Daggers");
-  if (kind === "staff") return frame(`
-    <circle cx="310" cy="64" r="45"/><path d="M281 42L310 16L339 42M282 86L310 112L338 86"/>
-    <path d="M294 108H326L320 318H300Z"/><rect x="287" y="138" width="46" height="92" rx="18"/>
-    ${dot(1,310,64,494,42)}${dot(2,310,108,112,86)}${dot(3,330,154,504,135)}${dot(4,306,205,104,195)}${dot(5,307,246,508,255)}${dot(6,310,316,108,324)}`, "Lumen Staff");
-  return frame(`
-    <rect x="198" y="38" width="224" height="104" rx="34"/><path d="M230 62H390M230 117H390"/><path d="M290 142H330L324 329H296Z"/>
-    <rect x="282" y="174" width="56" height="106" rx="19"/><path d="M450 185l55-28 55 28v72l-55 35-55-35z"/><path d="M470 205h70v42h-70z"/>
-    ${dot(1,220,52,86,42)}${dot(2,382,91,538,67)}${dot(3,330,181,99,148)}${dot(4,310,148,505,132)}${dot(5,308,257,102,290)}${dot(6,505,220,554,300)}`, "Titan Warden Hammer and armour");
-}
-
-function focusedViewBox(role, callouts) {
-  const points = callouts.map(number => blueprintFocus[role][number]);
-  const minX = Math.min(...points.map(point => point[0]));
-  const maxX = Math.max(...points.map(point => point[0]));
-  const minY = Math.min(...points.map(point => point[1]));
-  const maxY = Math.max(...points.map(point => point[1]));
-  let width = Math.max(300, maxX - minX + 170);
-  let height = Math.max(175, maxY - minY + 110);
-  const targetRatio = 620 / 360;
-  if (width / height < targetRatio) width = height * targetRatio;
-  else height = width / targetRatio;
-  width = Math.min(620, width); height = Math.min(360, height);
-  const centerX = (minX + maxX) / 2; const centerY = (minY + maxY) / 2;
-  const x = Math.max(0, Math.min(620 - width, centerX - width / 2));
-  const y = Math.max(0, Math.min(360 - height, centerY - height / 2));
-  return `${x.toFixed(1)} ${y.toFixed(1)} ${width.toFixed(1)} ${height.toFixed(1)}`;
-}
-
-function renderGuidedVisual() {
-  const kit = localizedKit();
-  const copy = guidedVisualCopy[currentLanguage];
-  const callouts = guidedCallouts[activeProp][activeAssemblyStep];
-  const names = callouts.map(number => `#${number} ${kit.callouts[number - 1]}`);
-  const frame = $("#guidedVisualFrame");
-  $("#guidedVisualHeading").textContent = copy.heading;
-  $("#guidedVisualNote").textContent = copy.note;
-  $("#guidedVisualTabs").innerHTML = Object.entries(copy.tabs).map(([view, label]) => `<button type="button" data-visual-view="${view}" class="${activeVisualView === view ? "is-active" : ""}" aria-pressed="${activeVisualView === view}">${label}</button>`).join("");
-  frame.dataset.view = activeVisualView;
-  frame.className = `guided-visual-frame is-${activeVisualView}`;
-
-  if (activeVisualView === "detail") {
-    frame.innerHTML = `${blueprintSvg(kit.kind, { viewBox: focusedViewBox(activeProp, callouts) })}<div class="visual-location-card"><strong>${copy.location}</strong>${names.map(name => `<span>${name}</span>`).join("")}</div>`;
-    $("#guidedVisualCaption").textContent = copy.detail(names);
-  } else if (activeVisualView === "result") {
-    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-result-stamp"><b>âœ“</b><span>${copy.completed} ${String(activeAssemblyStep + 1).padStart(2, "0")}</span></div>`;
-    const assembled = new Set(guidedCallouts[activeProp].slice(0, activeAssemblyStep + 1).flat());
-    $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-assembled", assembled.has(Number(node.dataset.callout))));
-    $("#guidedVisualCaption").textContent = copy.result(activeAssemblyStep + 1);
-  } else {
-    frame.innerHTML = `${blueprintSvg(kit.kind)}<div class="visual-location-card compact"><strong>${copy.location}</strong><span>${callouts.map(number => `#${number}`).join(" Â· ")}</span></div>`;
-    $("#guidedVisualCaption").textContent = copy.overview(kit, callouts);
-  }
-  $$(".bp-callout", frame).forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));
-}
-
-function localizedKit() {
-  return currentLanguage === "vi"
-    ? { ...propKits[activeProp], ...propKitVi[activeProp] }
-    : propKits[activeProp];
-}
-
-function localizeBomCell(value) {
-  return currentLanguage === "vi" ? (bomViTerms[value] || value) : value;
-}
-
-function applyStaticTranslations() {
-  const index = currentLanguage === "vi" ? 1 : 0;
-  document.documentElement.lang = currentLanguage;
-  for (const [selector, values] of Object.entries(staticTranslations)) {
-    const element = $(selector);
-    if (element) element.textContent = values[index];
-  }
-  for (const [role, values] of Object.entries(roleCardTranslations)) {
-    const card = $(`.role-card[data-prop="${role}"]`);
-    if (!card) continue;
-    card.querySelector("strong").textContent = values[index ? 2 : 0];
-    card.querySelector("small").textContent = values[index ? 3 : 1];
-  }
-  $$(".language-switch button").forEach(button => button.classList.toggle("is-active", button.dataset.language === currentLanguage));
-  const roleOptions = {
-    guardian: ["Guardian shield", "KhiÃªn Há»™ vá»‡"], warrior: ["Warrior sword", "Kiáº¿m Chiáº¿n binh"], archer: ["Archer bow", "Cung Cung thá»§"],
-    assassin: ["Assassin daggers", "Dao gÄƒm SÃ¡t thá»§"], mage: ["Mage staff", "Gáº­y PhÃ¡p sÆ°"], boss: ["Titan Warden", "Titan Warden"]
-  };
-  for (const option of $$("#roleSelect option")) option.textContent = roleOptions[option.value][index];
-  const transportOptions = {
-    usb: ["USB serial Â· bench proof", "USB serial Â· thá»­ trÃªn bÃ n"],
-    websocket: ["WiFi WebSocket Â· next proof", "WiFi WebSocket Â· thá»­ tiáº¿p theo"],
-    espnow: ["ESP-NOW Â· field candidate", "ESP-NOW Â· á»©ng viÃªn thá»±c Ä‘á»‹a"]
-  };
-  for (const option of $$("#transportSelect option")) option.textContent = transportOptions[option.value][index];
-  localStorage.setItem("atlas-language", currentLanguage);
-}
-
-function guidedStorageKey() { return `atlas-guided-${activeProp}`; }
-function partsReadyStorageKey() { return `atlas-parts-ready-${activeProp}`; }
-
-function getCompletedGuidedSteps() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(guidedStorageKey()) || "[]");
-    return Array.isArray(saved) ? saved.filter(value => Number.isInteger(value) && value >= 0 && value < 8) : [];
-  } catch { return []; }
-}
-
-function renderGuidedAssembly() {
-  const kit = localizedKit();
-  const copy = guidedCopy[currentLanguage];
-  const completed = getCompletedGuidedSteps();
-  const callouts = guidedCallouts[activeProp][activeAssemblyStep];
-  const ready = localStorage.getItem(partsReadyStorageKey()) === "true";
-
-  $("#partsReadyCheck").checked = ready;
-  $("#guidedStepNav").innerHTML = kit.assembly.map((_, index) => {
-    const classes = [index === activeAssemblyStep ? "is-current" : "", completed.includes(index) ? "is-complete" : ""].filter(Boolean).join(" ");
-    const label = currentLanguage === "vi" ? `BÆ°á»›c ${index + 1}` : `Step ${index + 1}`;
-    return `<button type="button" data-guided-step="${index}" class="${classes}" aria-label="${label}"><span>${String(index + 1).padStart(2, "0")}</span><small>${copy.titles[index]}</small></button>`;
-  }).join("");
-  $("#guidedStepIndex").textContent = currentLanguage === "vi" ? `BÆ¯á»šC ${String(activeAssemblyStep + 1).padStart(2, "0")} / 08` : `STEP ${String(activeAssemblyStep + 1).padStart(2, "0")} / 08`;
-  $("#guidedStepLocation").textContent = `${currentLanguage === "vi" ? "Vá»Š TRÃ Báº¢N Váº¼" : "DRAWING"} ${callouts.map(value => String(value).padStart(2, "0")).join(" + ")}`;
-  $("#guidedStepTitle").textContent = copy.titles[activeAssemblyStep];
-  $("#guidedStepParts").innerHTML = copy.parts[activeAssemblyStep].map(item => `<li>${item}</li>`).join("");
-  $("#guidedStepAction").textContent = kit.assembly[activeAssemblyStep];
-  $("#guidedStepResult").textContent = copy.results[activeAssemblyStep];
-  $("#guidedStepPass").textContent = copy.passes[activeAssemblyStep];
-  $("#guidedProgress").style.width = `${completed.length / 8 * 100}%`;
-  $("#guidedProgressText").textContent = currentLanguage === "vi" ? `${completed.length} / 8 hoÃ n thÃ nh` : `${completed.length} / 8 complete`;
-  $("#guidedPrev").disabled = activeAssemblyStep === 0;
-  $("#guidedNext").disabled = activeAssemblyStep === 7;
-  $("#guidedComplete").disabled = !ready;
-  $("#guidedComplete").classList.toggle("is-complete", completed.includes(activeAssemblyStep));
-  $("#guidedComplete").textContent = completed.includes(activeAssemblyStep)
-    ? (currentLanguage === "vi" ? "Bá» Ä‘Ã¡nh dáº¥u hoÃ n thÃ nh" : "Undo completion")
-    : (currentLanguage === "vi" ? "ÄÃ¡nh dáº¥u hoÃ n thÃ nh" : "Mark step complete");
-  renderGuidedVisual();
-  $$(".bp-callout").forEach(node => node.classList.toggle("is-highlighted", callouts.includes(Number(node.dataset.callout))));
-  $$("#propCallouts > div").forEach((node, index) => node.classList.toggle("is-highlighted", callouts.includes(index + 1)));
-  window.dispatchEvent(new CustomEvent("atlas-guided-step-change", { detail: { prop: activeProp, step: activeAssemblyStep } }));
-}
-
-function renderPropKit() {
-  const kit = localizedKit();
-  document.documentElement.style.setProperty("--kit-accent", activeProp === "boss" ? "#ef6b68" : activeProp === "mage" ? "#39cc93" : activeProp === "guardian" ? "#f0b44d" : "#16a6c9");
-  $("#propBlueprint").innerHTML = blueprintSvg(kit.kind);
-  $("#propSize").textContent = kit.size;
-  $("#propRoleLabel").textContent = kit.roleLabel;
-  $("#propName").textContent = kit.name;
-  $("#propPurpose").textContent = kit.purpose;
-  $("#propShell").textContent = kit.shell;
-  $("#propSensor").textContent = kit.sensor;
-  $("#propCore").textContent = kit.core;
-  $("#propEvents").textContent = kit.events;
-  $("#propSafety").textContent = kit.safety;
-  $("#propBudget").textContent = currentLanguage === "vi" ? kit.budget.replace("EST.", "Dá»° KIáº¾N") : kit.budget;
-  $("#propStatus").textContent = currentLanguage === "vi" ? (activeProp === "boss" ? "Bá»˜ THIáº¾T Káº¾ BOSS" : "Bá»˜ THIáº¾T Káº¾ HERO") : (activeProp === "boss" ? "BOSS DESIGN PACK" : "HERO DESIGN PACK");
-  $("#propCallouts").innerHTML = kit.callouts.map((item, index) => `<div><b>${index + 1}</b><span>${item}</span></div>`).join("");
-  const rows = [...commonPropBom, ...kit.bom];
-  $("#propBomBody").innerHTML = rows.map(([part, qty, source, stage]) => `<tr><td>${localizeBomCell(part)}</td><td>${localizeBomCell(qty)}</td><td>${localizeBomCell(source)}</td><td><span class="stage-tag ${stage === "Bench" ? "" : "later"}">${localizeBomCell(stage)}</span></td></tr>`).join("");
-  $("#propAssembly").innerHTML = kit.assembly.map(step => `<li><span></span><p>${step}</p></li>`).join("");
-  $$(".role-card").forEach(card => card.classList.toggle("is-active", card.dataset.prop === activeProp));
-  $("#guardianProductionPack").hidden = activeProp !== "guardian";
-  renderGuidedAssembly();
-  window.dispatchEvent(new CustomEvent("atlas-prop-change", { detail: { prop: activeProp } }));
-}
-
-function downloadRoleBuildPack() {
-  const kit = localizedKit();
-  const rows = [...commonPropBom, ...kit.bom];
-  const vi = currentLanguage === "vi";
-  const markdown = [
-    `# ${kit.name} â€” ${vi ? "Bá»™ hÆ°á»›ng dáº«n láº¯p Atlas" : "Atlas role build pack"}`, "", `${vi ? "Role" : "Role"}: ${kit.roleLabel}`, `${vi ? "KÃ­ch thÆ°á»›c Ã½ tÆ°á»Ÿng" : "Concept size"}: ${kit.size}`, `${vi ? "NgÃ¢n sÃ¡ch dá»± kiáº¿n" : "Planning budget"}: ${kit.budget}`, "",
-    `## ${vi ? "Má»¥c Ä‘Ã­ch" : "Purpose"}`, "", kit.purpose, "", `## ${vi ? "Cáº¥u trÃºc" : "Construction contract"}`, "", `- ${vi ? "Vá»" : "Shell"}: ${kit.shell}`, `- ${vi ? "Cáº£m biáº¿n" : "Sensor"}: ${kit.sensor}`, `- ${vi ? "Vá»‹ trÃ­ lÃµi" : "Core"}: ${kit.core}`, `- ${vi ? "Sá»± kiá»‡n" : "Events"}: ${kit.events}`, `- ${vi ? "An toÃ n" : "Safety"}: ${kit.safety}`, "",
-    `## ${vi ? "CÃ¡c vá»‹ trÃ­ Ä‘Ã¡nh sá»‘" : "Numbered modules"}`, "", ...kit.callouts.map((item, index) => `${index + 1}. ${item}`), "",
-    `## ${vi ? "Báº£ng váº­t tÆ°" : "Bill of materials"}`, "", vi ? "| Linh kiá»‡n | SL | Nguá»“n mua | Giai Ä‘oáº¡n |" : "| Part | Qty | Source | Stage |", "| --- | ---: | --- | --- |", ...rows.map(row => `| ${row.map(localizeBomCell).join(" | ")} |`), "",
-    `## ${vi ? "Láº¯p rÃ¡p tá»«ng bÆ°á»›c" : "Assembly path"}`, "", ...kit.assembly.map((step, index) => `${index + 1}. ${step}`), "",
-    `## ${vi ? "Giá»›i háº¡n báº±ng chá»©ng" : "Evidence boundary"}`, "", vi ? "ÄÃ¢y lÃ  bá»™ thiáº¿t káº¿. Pháº£i hoÃ n táº¥t kiá»ƒm tra an toÃ n váº­t lÃ½, nguá»“n, Ä‘á»™ thoáº£i mÃ¡i, sÃ³ng, nháº­n nháº§m Ä‘á»™ng tÃ¡c vÃ  tÃ­ch há»£p Unity trÆ°á»›c khi dÃ¹ng thá»±c Ä‘á»‹a." : "This is a design pack. Complete physical safety, power, comfort, radio, false-trigger, and Unity integration tests before field use.", ""
-  ].join("\n");
-  const blob = new Blob([markdown], { type: "text/markdown" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `atlas-${activeProp}-build-pack.md`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 500);
-  toast(vi ? `ÄÃ£ táº¡o hÆ°á»›ng dáº«n ${kit.name}` : `${kit.name} build pack generated`);
-}
-
-function buildRingDots() {
-  const root = $("#ringDots");
-  if (!root) return;
-  root.innerHTML = Array.from({ length: 16 }, (_, index) => {
-    const angle = (index / 16) * Math.PI * 2 - Math.PI / 2;
-    const x = 500 + Math.cos(angle) * 50;
-    const y = 276 + Math.sin(angle) * 50;
-    return `<circle class="ring-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;
-  }).join("");
-}
-
-function currentDiagram() {
-  const profile = electronicsProfiles[activeProp];
-  const parts = [
-    { type: "wokwi-esp32-devkit-v1", id: "esp", top: 38.4, left: 8.2, attrs: {} },
-    { type: "wokwi-pushbutton", id: "primaryButton", top: 28.6, left: 258.1, attrs: { color: profile.color, label: profile.events[0], key: "C" } },
-    { type: "wokwi-pushbutton", id: "secondaryButton", top: 106.8, left: 258.1, attrs: { color: "#7057d9", label: profile.events[1], key: "S" } }
-  ];
-  const connections = [
-    ["esp:25", "primaryButton:1.l", profile.color, []], ["primaryButton:2.l", "esp:GND.1", "#5d6672", []],
-    ["esp:26", "secondaryButton:1.l", "#7057d9", []], ["secondaryButton:2.l", "esp:GND.1", "#5d6672", []]
-  ];
-  if (state.led) {
-    parts.push({ type: "wokwi-led-ring", id: "ring", top: 190.1, left: 234.4, attrs: { pixels: "16" } });
-    connections.push(["esp:18", "ring:DIN", "#f2c94c", []], ["esp:VIN", "ring:VCC", "#e05858", []], ["esp:GND.1", "ring:GND", "#5d6672", []]);
-  }
-  if (state.buzzer) {
-    parts.push({ type: "wokwi-buzzer", id: "buzzer", top: 221.4, left: 34.7, attrs: { volume: "0.2" } });
-    connections.push(["esp:27", "buzzer:2", "#f29f4b", []], ["esp:GND.1", "buzzer:1", "#5d6672", []]);
-  }
-  return { version: 1, author: "Atlas Prop Lab", editor: "wokwi", parts, connections, dependencies: {}, atlasProfile: { prop: activeProp, deviceId: profile.deviceId, exactParts: profile.parts, pinContract: profile.pins, events: profile.events, note: "Buttons proxy motion/special sensors in browser. Validate thresholds on real hardware." } };
-}
-
-function escapeXml(value) {
-  return String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[character]);
-}
-
-function electronicsDiagramSvg(profile) {
-  const rows = profile.pins.map((pin, index) => {
-    const y = 58 + index * 67;
-    const name = currentLanguage === "vi" ? pin[2] : pin[1];
-    return `<path d="M235 ${y + 22} C315 ${y + 22} 300 ${y + 22} 375 ${y + 22}" class="role-wire"/><circle cx="235" cy="${y + 22}" r="4"/><rect x="375" y="${y}" width="240" height="45" rx="8"/><text x="392" y="${y + 18}">${escapeXml(pin[0])}</text><text x="392" y="${y + 34}" class="role-subtext">${escapeXml(name)}</text>`;
-  }).join("");
-  return `<svg viewBox="0 0 660 410" role="img" aria-label="${escapeXml(profile.name)} ESP32 pin diagram"><defs><pattern id="roleGrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#17303a"/></pattern></defs><rect width="660" height="410" fill="url(#roleGrid)" opacity=".7"/><g class="role-board"><rect x="55" y="63" width="180" height="275" rx="18"/><rect x="90" y="88" width="110" height="50" rx="7"/><text x="145" y="112" text-anchor="middle">ESP32-S3</text><text x="145" y="128" text-anchor="middle" class="role-subtext">USB BENCH CORE</text><rect x="85" y="166" width="120" height="120" rx="8"/><text x="145" y="221" text-anchor="middle">${escapeXml(profile.label)}</text><text x="145" y="241" text-anchor="middle" class="role-subtext">${escapeXml(profile.name)}</text></g><g class="role-modules">${rows}</g><text x="375" y="389" class="role-footnote">${currentLanguage === "vi" ? "ÄÆ°á»ng mÃ u = tÃ­n hiá»‡u Â· luÃ´n dÃ¹ng GND chung" : "Colour line = signal Â· always share GND"}</text></svg>`;
-}
-
-function testElectronicsEvent(action) {
-  const profile = electronicsProfiles[activeProp];
-  const item = document.createElement("li");
-  const stamp = new Date().toLocaleTimeString([], { minute: "2-digit", second: "2-digit" });
-  item.innerHTML = `<span>${stamp}</span><b>PASS Â· ${escapeXml(action)}</b>`;
-  $("#electronicsTestLog").prepend(item);
-  while ($("#electronicsTestLog").children.length > 5) $("#electronicsTestLog").lastElementChild.remove();
-  const button = $(`[data-electronics-event="${action}"]`);
-  button?.classList.add("is-firing"); setTimeout(() => button?.classList.remove("is-firing"), 350);
-  toast(currentLanguage === "vi" ? `ÄÃ£ mÃ´ phá»ng ${action} tá»« ${profile.name}` : `${action} simulated from ${profile.name}`);
-}
-
-function renderConfig() {
-  const profile = electronicsProfiles[activeProp];
-  document.documentElement.style.setProperty("--role", profile.color);
-  $("#roleSelect").value = activeProp;
-  $("#roleBadge").textContent = profile.label;
-  $("#deviceId").textContent = profile.deviceId;
-  $("#transportBadge").textContent = { usb: "USB SERIAL", websocket: "WIFI / WEBSOCKET", espnow: "ESP-NOW" }[state.transport];
-  const diagram = currentDiagram();
-  $("#partCount").textContent = currentLanguage === "vi" ? `${diagram.parts.length} LINH KIá»†N Â· ${diagram.connections.length} DÃ‚Y` : `${diagram.parts.length} PARTS Â· ${diagram.connections.length} WIRES`;
-  $("#roleCircuitGraphic").innerHTML = electronicsDiagramSvg(profile);
-  $("#pinList").innerHTML = profile.pins.map(item => `<div class="pin-row"><code>${item[0]}</code><span>${currentLanguage === "vi" ? item[2] : item[1]}</span><i style="color:${profile.color}"></i></div>`).join("");
-  $("#electronicsProfileSummary").innerHTML = `<strong>${currentLanguage === "vi" ? "Linh kiá»‡n riÃªng cá»§a role" : "Role-specific parts"}</strong><p>${profile.parts.join(" Â· ")}</p>`;
-  $("#electronicsEventButtons").innerHTML = profile.events.map(event => `<button type="button" data-electronics-event="${event}">${event}</button>`).join("");
-  const bench = state.transport === "usb";
-  const vi = currentLanguage === "vi";
-  $("#validationBox").innerHTML = bench
-    ? `<span class="validation-icon">âœ“</span><div><strong>${vi ? "Äiá»ƒm khá»Ÿi Ä‘áº§u an toÃ n trÃªn bÃ n" : "Bench safe starting point"}</strong><p>${vi ? "Nguá»“n USB loáº¡i bá» biáº¿n sá»‘ pin vÃ  sÃ³ng trong láº§n chá»©ng minh Ä‘áº§u." : "USB power keeps battery and radio variables out of the first proof."}</p></div>`
-    : `<span class="validation-icon" style="background:var(--amber)">!</span><div><strong>${vi ? "á»¨ng viÃªn thá»­ thá»±c Ä‘á»‹a" : "Field candidate"}</strong><p>${vi ? "DÃ¹ng mÃ´ phá»ng trÆ°á»›c; sau Ä‘Ã³ má»›i xÃ¡c minh káº¿t ná»‘i láº¡i, táº§m sÃ³ng vÃ  nhiá»…u trÃªn pháº§n cá»©ng tháº­t." : "Use the simulator now; validate reconnect, range, and interference on real hardware later."}</p></div>`;
-  $("#electronicsLimitTitle").textContent = vi ? "TrÃ¬nh duyá»‡t chá»©ng minh Ä‘Æ°á»£c" : "Browser proof boundary";
-  $("#electronicsLimitText").textContent = vi ? "Luá»“ng chÃ¢n GPIO, cáº¥u trÃºc payload, tráº¡ng thÃ¡i nÃºt vÃ  pháº£n há»“i LED/Ã¢m/rung á»Ÿ má»©c logic." : "GPIO flow, payload shape, button states, and LED/sound/vibration feedback logic.";
-  $("#electronicsNextTitle").textContent = vi ? "Báº¯t buá»™c thá»­ ngoÃ i Ä‘á»i" : "Required real-world proof";
-  $("#electronicsNextText").textContent = vi ? "NgÆ°á»¡ng IMU/Hall, nhiá»…u, nhiá»‡t, dÃ²ng LED, Ä‘á»™ bá»n dÃ¢y, táº§m sÃ³ng vÃ  cáº£m giÃ¡c khi máº·c/cáº§m. Wokwi á»Ÿ Ä‘Ã¢y dÃ¹ng nÃºt lÃ m proxy cho cáº£m biáº¿n chÆ°a Ä‘Æ°á»£c mÃ´ phá»ng chÃ­nh xÃ¡c." : "IMU/Hall thresholds, noise, heat, LED current, cable durability, radio range, and human fit. Wokwi uses buttons as proxies for sensors it cannot reproduce exactly here.";
-  $$(".hero-token").forEach(token => token.classList.toggle("is-selected", token.dataset.role === state.role));
-}
-
-function downloadJson(name, value) {
-  const blob = new Blob([JSON.stringify(value, null, 2) + "\n"], { type: "application/json" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob); link.download = name; link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 500);
-  toast(`${name} generated`);
-}
-
-function toast(message) {
-  const el = $("#toast"); el.textContent = message; el.classList.add("is-visible");
-  clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove("is-visible"), 1800);
-}
-
-function showView(id) {
-  $$(".view").forEach(view => view.classList.toggle("is-active", view.id === id));
-  $$(".tab").forEach(tab => tab.classList.toggle("is-active", tab.dataset.view === id));
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function eventPayload(action) {
-  return { v: 1, deviceId: `${state.role}-orb-01`, role: roles[state.role].label, seq: ++state.sequence, type: "PLAYER_INTENT", action, atMs: Math.round(performance.now()) };
-}
-
-function addLog(status, payload, detail) {
-  const item = document.createElement("li");
-  const stamp = new Date().toLocaleTimeString([], { minute: "2-digit", second: "2-digit" });
-  item.innerHTML = `<span>${stamp}</span><b class="${status}">${payload.action} Â· ${detail}</b>`;
-  $("#eventLog").prepend(item);
-  while ($("#eventLog").children.length > 12) $("#eventLog").lastElementChild.remove();
-}
-
-function updateMetrics() {
-  $("#sentMetric").textContent = state.sent;
-  $("#deliveredMetric").textContent = state.delivered;
-  $("#lostMetric").textContent = state.lost;
-  $("#avgMetric").textContent = state.delivered ? `${Math.round(state.latencyTotal / state.delivered)} ms` : "â€”";
-  $("#bossHpText").textContent = `${state.bossHp} / 520`;
-  $("#bossHpBar").style.width = `${(state.bossHp / 520) * 100}%`;
-  window.dispatchEvent(new CustomEvent("atlas-field-state", { detail: { bossHp: state.bossHp, role: state.role } }));
-}
-
-function animatePacket(isLost, duration) {
-  const arena = $("#arena"); const packet = $("#packet");
-  const hero = $(`.hero-token[data-role="${state.role}"]`); const boss = $(".boss-token");
-  const area = arena.getBoundingClientRect(); const start = hero.getBoundingClientRect(); const end = boss.getBoundingClientRect();
-  const x1 = start.left + start.width / 2 - area.left - 6; const y1 = start.top + start.height / 2 - area.top - 6;
-  const x2 = end.left + end.width / 2 - area.left - 6; const y2 = end.top + end.height / 2 - area.top - 6;
-  packet.classList.toggle("is-lost", isLost); packet.style.opacity = "1"; packet.style.left = `${x1}px`; packet.style.top = `${y1}px`;
-  const targetX = isLost ? x1 + (x2 - x1) * .55 : x2; const targetY = isLost ? y1 + (y2 - y1) * .55 : y2;
-  const animation = packet.animate([{ transform: "scale(.8)" }, { left: `${targetX}px`, top: `${targetY}px`, transform: isLost ? "scale(.25)" : "scale(1.3)" }], { duration: Math.max(180, duration), easing: "cubic-bezier(.2,.7,.2,1)" });
-  animation.onfinish = () => { packet.style.opacity = "0"; packet.style.left = `${targetX}px`; packet.style.top = `${targetY}px`; };
-}
-
-function applyAction(action) {
-  const profile = roles[state.role]; const effect = action === "CAST" ? profile.cast : profile.special;
-  if (effect.damage) {
-    state.bossHp = Math.max(0, state.bossHp - effect.damage);
-    return `accepted Â· ${effect.damage} damage`;
-  }
-  if (effect.heal) return `accepted Â· team +${effect.heal} HP`;
-  return `accepted Â· team shield +${effect.shield}`;
-}
-
-function triggerAction(action) {
-  if (!roles[state.role] || !["CAST", "SPECIAL"].includes(action)) throw new Error("Unsupported action");
-  if (state.cooldown[action]) { toast(`${action} is cooling down`); return { status: "cooldown" }; }
-  state.cooldown[action] = true;
-  const button = $(`.action-button[data-action="${action}"]`); button.disabled = true;
-  setTimeout(() => { state.cooldown[action] = false; button.disabled = false; }, action === "CAST" ? 700 : 4000);
-
-  const payload = eventPayload(action); const jitter = Math.round((Math.random() - .5) * state.latency * .25);
-  const travel = Math.max(0, state.latency + jitter); const lost = Math.random() * 100 < state.loss;
-  window.dispatchEvent(new CustomEvent("atlas-field-action", { detail: { role: state.role, action, lost, duration: Math.max(180, travel) } }));
-  state.sent++; updateMetrics(); addLog("", payload, "sent"); animatePacket(lost, travel);
-  setTimeout(() => {
-    if (lost) { state.lost++; addLog("lost", payload, "lost"); }
-    else { state.delivered++; state.latencyTotal += travel; addLog("good", payload, `${applyAction(action)} Â· ${travel} ms`); }
-    updateMetrics();
-  }, Math.max(180, travel));
-  return { status: lost ? "scheduled_loss" : "scheduled_delivery", payload, latencyMs: travel };
-}
-
-function resetSimulation() {
-  Object.assign(state, { bossHp: 520, sent: 0, delivered: 0, lost: 0, latencyTotal: 0, sequence: 0 });
-  $("#eventLog").innerHTML = ""; updateMetrics(); window.dispatchEvent(new CustomEvent("atlas-field-reset")); toast(currentLanguage === "vi" ? "ÄÃ£ Ä‘áº·t láº¡i mÃ´ phá»ng" : "Simulation reset");
-}
-
-function renderBuildPack() {
-  $("#bomBody").innerHTML = bom.map(([part, qty, stage]) => `<tr><td>${localizeBomCell(part)}</td><td>${localizeBomCell(qty)}</td><td><span class="stage-tag ${stage === "Bench" ? "" : "later"}">${localizeBomCell(stage)}</span></td></tr>`).join("");
-  let saved = [];
-  try { saved = JSON.parse(localStorage.getItem("atlas-guide-checks") || "[]"); } catch { saved = []; }
-  const steps = currentLanguage === "vi" ? guideStepsVi : guideSteps;
-  $("#guideList").innerHTML = steps.map((step, index) => `<li><label><input type="checkbox" data-step="${index}" ${saved.includes(index) ? "checked" : ""}/><span>${step}</span></label></li>`).join("");
-  updateGuideProgress();
-}
-
-function guardianPurchaseKey() { return "atlas-guardian-purchases"; }
-function guardianGateKey() { return "atlas-guardian-gates"; }
-function guardianFitKey() { return "atlas-guardian-fit"; }
-function readStoredIndexes(key, max) {
-  try {
-    const values = JSON.parse(localStorage.getItem(key) || "[]");
-    return Array.isArray(values) ? values.filter(value => Number.isInteger(value) && value >= 0 && value < max) : [];
-  } catch { return []; }
-}
-
-function renderGuardianProduction() {
-  const content = guardianProduction[currentLanguage];
-  const purchases = readStoredIndexes(guardianPurchaseKey(), 10);
-  const gates = readStoredIndexes(guardianGateKey(), 5);
-  $("#guardianLayerStack").innerHTML = content.layers.map(([title, detail, material], index) => `<li><b>${String(index + 1).padStart(2, "0")}</b><div><strong>${title}</strong><p>${detail}</p></div><span>${material}</span></li>`).join("");
-  let itemIndex = 0;
-  $("#guardianPurchaseList").innerHTML = content.groups.map(group => `<section class="purchase-group"><h3>${group.title}</h3>${group.items.map(([title, detail]) => { const index = itemIndex++; return `<label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label>`; }).join("")}</section>`).join("");
-  $("#guardianGateList").innerHTML = content.gates.map(([title, detail], index) => `<li><label><input type="checkbox" data-guardian-gate="${index}" ${gates.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label></li>`).join("");
-  try {
-    const fit = JSON.parse(localStorage.getItem(guardianFitKey()) || "{}");
-    if (Number.isFinite(fit.height)) $("#playerHeight").value = String(fit.height);
-    if (Number.isFinite(fit.forearm)) $("#forearmLength").value = String(fit.forearm);
-  } catch {}
-  updateGuardianProductionProgress(false);
-  updateGuardianFit();
-}
-
-function updateGuardianFit() {
-  const height = Number($("#playerHeight").value);
-  const forearm = Number($("#forearmLength").value);
-  const diameter = Math.round(Math.max(45, Math.min(55, height * .3)));
-  const strapSpacing = Math.round(forearm * .55);
-  $("#playerHeightValue").textContent = height;
-  $("#forearmLengthValue").textContent = forearm;
-  $("#shieldDiameterResult").textContent = `${diameter} cm`;
-  $("#strapSpacingResult").textContent = `${strapSpacing} cm`;
-  localStorage.setItem(guardianFitKey(), JSON.stringify({ height, forearm }));
-  window.dispatchEvent(new CustomEvent("atlas-guardian-fit-change", { detail: { heightCm: height, forearmCm: forearm, diameterCm: diameter, strapSpacingCm: strapSpacing } }));
-}
-
-function updateGuardianProductionProgress(save = true) {
-  const purchases = $$("#guardianPurchaseList input:checked").map(input => Number(input.dataset.purchaseIndex));
-  const gates = $$("#guardianGateList input:checked").map(input => Number(input.dataset.guardianGate));
-  if (save) { localStorage.setItem(guardianPurchaseKey(), JSON.stringify(purchases)); localStorage.setItem(guardianGateKey(), JSON.stringify(gates)); }
-  $("#purchaseGateCount").textContent = currentLanguage === "vi" ? `${purchases.length} / 10 Sáº´N SÃ€NG` : `${purchases.length} / 10 READY`;
-  $("#guardianGateCount").textContent = `${gates.length} / 5 PASS`;
-  $("#guardianGateProgress").style.width = `${gates.length / 5 * 100}%`;
-}
-
-function downloadGuardianProductionPack() {
-  const vi = currentLanguage === "vi";
-  const content = guardianProduction[currentLanguage];
-  const height = Number($("#playerHeight").value); const forearm = Number($("#forearmLength").value);
-  const diameter = Math.round(Math.max(45, Math.min(55, height * .3))); const straps = Math.round(forearm * .55);
-  const markdown = [
-    `# Guardian Aegis Shield â€” ${vi ? "Bá»™ chuáº©n bá»‹ cháº¿ tÃ¡c" : "Production readiness pack"}`, "",
-    `> ${vi ? "ChÆ°a pháº£i thÃ´ng sá»‘ cáº¯t cuá»‘i. Pháº£i thá»­ máº«u carton vá»›i ba ngÆ°á»i trÆ°á»›c khi chuyá»ƒn sang EVA." : "Not a final cutting specification. Fit-test a cardboard mock-up with three users before transferring to EVA."}`, "",
-    `## ${vi ? "KÃ­ch thÆ°á»›c máº«u thá»­" : "Mock-up dimensions"}`, "", `- ${vi ? "Chiá»u cao ngÆ°á»i chÆ¡i" : "Player height"}: ${height} cm`, `- ${vi ? "Chiá»u dÃ i cáº³ng tay" : "Forearm length"}: ${forearm} cm`, `- ${vi ? "ÄÆ°á»ng kÃ­nh khá»Ÿi Ä‘iá»ƒm" : "Starting diameter"}: ${diameter} cm`, `- ${vi ? "Khoáº£ng tÃ¢m quai" : "Strap centres"}: ${straps} cm`, `- ${vi ? "Khoang Ä‘iá»‡n tá»­" : "Electronics cavity"}: 110 Ã— 85 Ã— 28 mm`, `- ${vi ? "Khá»‘i lÆ°á»£ng má»¥c tiÃªu" : "Target mass"}: < 1.2 kg`, "",
-    `## ${vi ? "Cáº¥u trÃºc lá»›p" : "Layer stack"}`, "", ...content.layers.map((row, index) => `${index + 1}. **${row[0]} â€” ${row[2]}**: ${row[1]}`), "",
-    `## ${vi ? "Cá»•ng mua Ä‘á»“" : "Purchase gates"}`, "", ...content.groups.flatMap(group => [`### ${group.title}`, ...group.items.map(item => `- [ ] **${item[0]}** â€” ${item[1]}`), ""]),
-    `## ${vi ? "Cá»•ng cho phÃ©p cháº¿ tÃ¡c" : "Release gates"}`, "", ...content.gates.map((gate, index) => `${index + 1}. [ ] **${gate[0]}** â€” ${gate[1]}`), "",
-    `## ${vi ? "Giá»›i háº¡n" : "Boundary"}`, "", vi ? "Pháº£i xÃ¡c minh Ä‘á»™ vá»«a, cáº¡nh má»m, nhiá»‡t, nguá»“n, ngÆ°á»¡ng IMU, Ä‘á»™ bá»n dÃ¢y vÃ  khÃ´ng tiáº¿p xÃºc cÆ¡ thá»ƒ trÃªn thiáº¿t bá»‹ tháº­t trÆ°á»›c khi dÃ¹ng táº¡i sá»± kiá»‡n." : "Verify fit, soft edges, heat, power, IMU thresholds, cable durability, and no-contact play on real hardware before event use.", ""
-  ].join("\n");
-  const blob = new Blob([markdown], { type: "text/markdown" }); const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob); link.download = `atlas-guardian-production-${diameter}cm.md`; link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 500);
-  toast(vi ? "ÄÃ£ táº¡o bá»™ cháº¿ tÃ¡c Guardian" : "Guardian production pack generated");
-}
-
-function updateGuideProgress() {
-  const checked = $$("#guideList input:checked").map(input => Number(input.dataset.step));
-  localStorage.setItem("atlas-guide-checks", JSON.stringify(checked));
-  $("#guideCount").textContent = `${checked.length} / 32`;
-  $("#guideProgress").style.width = `${checked.length / 32 * 100}%`;
-}
-
-function registerWebMcp() {
-  const context = document.modelContext;
-  if (!context?.registerTool) return;
-  const tools = [
-    {
-      name: "configure_atlas_prop", title: "Configure Atlas prop",
-      description: "Set the active prop electronics profile, transport, LED feedback, and secondary feedback in the visible ESP32 lab.",
-      inputSchema: { type: "object", properties: { role: { enum: Object.keys(electronicsProfiles) }, transport: { enum: ["usb", "websocket", "espnow"] }, led: { type: "boolean" }, buzzer: { type: "boolean" } }, additionalProperties: false },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      execute(input) {
-        if (input.role !== undefined && !electronicsProfiles[input.role]) throw new Error("Invalid role");
-        if (input.transport !== undefined && !["usb", "websocket", "espnow"].includes(input.transport)) throw new Error("Invalid transport");
-        if (input.role !== undefined) activeProp = input.role;
-        if (input.transport !== undefined) state.transport = input.transport;
-        if (input.led !== undefined) state.led = Boolean(input.led);
-        if (input.buzzer !== undefined) state.buzzer = Boolean(input.buzzer);
-        $("#roleSelect").value = activeProp; $("#transportSelect").value = state.transport; $("#ledToggle").checked = state.led; $("#buzzerToggle").checked = state.buzzer;
-        renderPropKit(); renderConfig(); showView("prototype");
-        return { role: activeProp, transport: state.transport, led: state.led, buzzer: state.buzzer };
-      }
-    },
-    {
-      name: "select_atlas_build_pack", title: "Select Atlas build pack",
-      description: "Open one role-specific prop plan with its drawing, bill of materials, sensor placement, and assembly path.",
-      inputSchema: { type: "object", properties: { prop: { enum: Object.keys(propKits) } }, required: ["prop"], additionalProperties: false },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      execute(input) {
-        if (!propKits[input.prop]) throw new Error("Unknown prop build");
-        activeProp = input.prop;
-        renderPropKit(); renderConfig();
-        showView("event-kit");
-        return { prop: activeProp, name: propKits[activeProp].name, status: "design_pack" };
-      }
-    },
-    {
-      name: "trigger_atlas_prop_action", title: "Trigger prop action",
-      description: "Send CAST or SPECIAL through the visible Atlas field simulator with the current latency and packet loss.",
-      inputSchema: { type: "object", properties: { action: { enum: ["CAST", "SPECIAL"] } }, required: ["action"], additionalProperties: false },
-      annotations: { readOnlyHint: false, untrustedContentHint: false },
-      execute(input) { showView("field"); return triggerAction(input.action); }
-    },
-    {
-      name: "read_atlas_lab_state", title: "Read Atlas lab state",
-      description: "Read the active prop configuration and field simulation metrics.",
-      inputSchema: { type: "object", properties: {}, additionalProperties: false },
-      annotations: { readOnlyHint: true, untrustedContentHint: false },
-      execute() { return { activeBuildPack: activeProp, role: state.role, transport: state.transport, led: state.led, buzzer: state.buzzer, simulation: { bossHp: state.bossHp, sent: state.sent, delivered: state.delivered, lost: state.lost } }; }
-    }
-  ];
-  tools.forEach(tool => { try { Promise.resolve(context.registerTool(tool)).catch(() => {}); } catch {} });
-}
-
-function init() {
-  buildRingDots(); applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack(); updateMetrics();
-  $$(".tab").forEach(tab => tab.addEventListener("click", () => showView(tab.dataset.view)));
-  $$(".language-switch button").forEach(button => button.addEventListener("click", () => {
-    currentLanguage = button.dataset.language;
-    applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack();
-    window.dispatchEvent(new CustomEvent("atlas-language-change", { detail: { language: currentLanguage } }));
-  }));
-  $$(".role-card").forEach(card => card.addEventListener("click", () => { activeProp = card.dataset.prop; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); }));
-  $("#downloadBuildPack").addEventListener("click", downloadRoleBuildPack);
-  $("#playerHeight").addEventListener("input", updateGuardianFit);
-  $("#forearmLength").addEventListener("input", updateGuardianFit);
-  $("#guardianPurchaseList").addEventListener("change", () => updateGuardianProductionProgress());
-  $("#guardianGateList").addEventListener("change", () => updateGuardianProductionProgress());
-  $("#clearGuardianGates").addEventListener("click", () => { $$("#guardianGateList input").forEach(input => input.checked = false); updateGuardianProductionProgress(); });
-  $("#downloadGuardianProductionPack").addEventListener("click", downloadGuardianProductionPack);
-  $("#guidedVisualTabs").addEventListener("click", event => {
-    const button = event.target.closest("[data-visual-view]");
-    if (!button) return;
-    activeVisualView = button.dataset.visualView; renderGuidedVisual();
-  });
-  $("#guidedStepNav").addEventListener("click", event => {
-    const button = event.target.closest("[data-guided-step]");
-    if (!button) return;
-    activeAssemblyStep = Number(button.dataset.guidedStep); activeVisualView = "overview"; renderGuidedAssembly();
-  });
-  $("#guidedPrev").addEventListener("click", () => { activeAssemblyStep = Math.max(0, activeAssemblyStep - 1); activeVisualView = "overview"; renderGuidedAssembly(); });
-  $("#guidedNext").addEventListener("click", () => { activeAssemblyStep = Math.min(7, activeAssemblyStep + 1); activeVisualView = "overview"; renderGuidedAssembly(); });
-  $("#partsReadyCheck").addEventListener("change", event => {
-    localStorage.setItem(partsReadyStorageKey(), String(event.target.checked)); renderGuidedAssembly();
-  });
-  $("#guidedComplete").addEventListener("click", () => {
-    if (!$("#partsReadyCheck").checked) {
-      toast(currentLanguage === "vi" ? "HÃ£y xÃ¡c nháº­n Ä‘Ã£ Ä‘á»§ linh kiá»‡n trÆ°á»›c" : "Confirm all parts are ready first"); return;
-    }
-    const completed = getCompletedGuidedSteps();
-    const existing = completed.indexOf(activeAssemblyStep);
-    if (existing >= 0) completed.splice(existing, 1); else completed.push(activeAssemblyStep);
-    localStorage.setItem(guidedStorageKey(), JSON.stringify(completed));
-    if (existing < 0 && activeAssemblyStep < 7) { activeAssemblyStep += 1; activeVisualView = "overview"; }
-    renderGuidedAssembly();
-  });
-  $("#roleSelect").addEventListener("change", event => { activeProp = event.target.value; activeAssemblyStep = 0; activeVisualView = "overview"; renderPropKit(); renderConfig(); });
-  $("#transportSelect").addEventListener("change", event => { state.transport = event.target.value; renderConfig(); });
-  $("#ledToggle").addEventListener("change", event => { state.led = event.target.checked; renderConfig(); });
-  $("#buzzerToggle").addEventListener("change", event => { state.buzzer = event.target.checked; renderConfig(); });
-  $("#downloadDiagram").addEventListener("click", () => downloadJson("diagram.json", currentDiagram()));
-  $("#downloadConfig").addEventListener("click", () => { const profile = electronicsProfiles[activeProp]; downloadJson("atlas-prop-config.json", { version: 1, deviceId: profile.deviceId, role: profile.label, prop: activeProp, transport: state.transport, features: { ledFeedback: state.led, secondaryFeedback: state.buzzer }, parts: profile.parts, pins: profile.pins, events: profile.events }); });
-  $("#electronicsEventButtons").addEventListener("click", event => { const button = event.target.closest("[data-electronics-event]"); if (button) testElectronicsEvent(button.dataset.electronicsEvent); });
-  $$(".hero-token").forEach(token => token.addEventListener("click", () => { state.role = token.dataset.role; renderConfig(); }));
-  window.addEventListener("atlas-select-field-role", event => { if (roles[event.detail?.role]) { state.role = event.detail.role; renderConfig(); } });
-  $$(".action-button").forEach(button => button.addEventListener("click", () => triggerAction(button.dataset.action)));
-  $("#resetSim").addEventListener("click", resetSimulation);
-  $("#latencyRange").addEventListener("input", event => { state.latency = Number(event.target.value); $("#latencyValue").textContent = `${state.latency} ms`; });
-  $("#lossRange").addEventListener("input", event => { state.loss = Number(event.target.value); $("#lossValue").textContent = `${state.loss}%`; });
-  $("#guideList").addEventListener("change", updateGuideProgress);
-  $("#clearChecklist").addEventListener("click", () => { $$("#guideList input").forEach(input => input.checked = false); updateGuideProgress(); });
-  registerWebMcp();
-}
-
-init();
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éíß}|á:-jZ.¶›­–)Ş³V6öç7B6öÖÖöå&÷&öÒÒ°¢²$U53"Õ32FWd¶—B"Â#"Â$‡6†÷òÖ¶W"6†÷"Â$&Væ6‚%ÒÀ¢²$ÕScS”ÕR"Â#"Â$‡6†÷òÖ¶W"6†÷"Â$&Væ6‚%ÒÀ¢²$ÖöÖVçF'’'WGFöâ"Â#""Â$Ö¶W"6†÷"Â$&Væ6‚%ÒÀ¢²%u3#ƒ$"ÄTB"Â#6WB"Â$Ö¶W"6†÷òÖ&¶WGÆ6R"Â$&Væ6‚%ÒÀ¢²%U4"FF6&ÆR"Â#"Â$6ö×WFW"6†÷"Â$&Væ6‚%ÒÀ¢²$UdföÒ6†VWG2"Â$27WBÆâ"Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%Ğ¥Ó° ¦6öç7B&÷¶—G2Ò°¢wV&F–ã¢°¢&öÆTÆ&VÃ¢$uT$D”âòDTdTä4R"ÂæÖS¢$Vv—26†–VÆB"Â¶–æC¢'6†–VÆB"Â6—¦S¢,9‚SÖÒ"À¢'VFvWC¢$U5BâSS¾(	3ã$ÒdäB"À¢W'÷6S¢$'&öBFVfVç6—fR6öçG&öÆÆW"F†BÖ¶W2&Æö6²F—&V7F–öâÂF–Ö–ærÂ6¶æ÷vÆVFvVÖVçBÂæBFVÒ&÷FV7F–öâf—6–&ÆRâ"À¢6†VÆÃ¢#2ÖÆ–W"UdÂC^(	3SR6ÒÂç–Æöâ&Ò7G&2"Â6Vç6÷#¢$ÕScS²F‡VÖ"G&–vvW""À¢6÷&S¢%&VÖ÷f&ÆR&V"Ö6VçFW"ÖöGVÆR"ÂWfVçG3¢$$Äô4µõ5D%B+r$Äô4µôTäB+rDTåB"À¢6fWG“¢%&÷VæFVBföÒW&–ÖWFW"âæò6†–VÆB6†&vRæBæò‡—6–6Â&öG’6öçF7Bâ"À¢6ÆÆ÷WG3¢²#ÖÒUdf6R"Â$U53"6W'f–6R&÷‚"Â$ÕScSB6VçG&R"Â%F‡VÖ"G&–vvW""Â%u3#ƒ$"&–Ò"Â$F§W7F&ÆR&Ò7G&2%ÒÀ¢&öÓ¢µ²#ÖÒUd6†VWB"Â#""Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%ÒÂ²$ç–Æöâ7G&²'V6¶ÆR"Â#""Â%6Wv–ær6†÷"Â%6†VÆÂ%ÒÂ²%f–'&F–öâÖ÷F÷""Â#"Â$Ö¶W"6†÷"Â$fVVF&6²%ÕÒÀ¢76VÖ&Ç“¢²%&–çBF†RSÖÒ6†–VÆBFV×ÆFRæBÖ¶R6&F&ö&Bf—BÖö6²×Wâ"Â$'V–ÆBæBFW7BU53"Â”ÕRÂG&–vvW"ÂæBöæRÄTB6VvÖVçB÷fW"U4"â"Â$7WBæBÆÖ–æFRF†RUdÆ–W'3²¶VWF†R6W'f–6RÖ&÷‚6f—G’÷Vââ"Â$Ö÷VçBF†R”ÕRfÆBBF†RvVöÖWG&–26VçG&Rv—F‚—G2†—2'&÷rf6–ærWâ"Â$–ç7FÆÂF†RF‡VÖ"G&–vvW"VæFW"F†RFöÖ–æçBÖ†æBw&—â"Â%&÷WFRF†RÄTB&–ÒF‡&÷Vv‚&÷FV7FVB6†ææVÂæBFBV–6²6öææV7F÷"â"Â$GF6‚F§W7F&ÆR7G&2Â6Æ÷6RF†R&VÖ÷f&ÆR&V"6÷fW"ÂæB6Æ–'&FRæWWG&ÂævÆRâ"Â%'Vâ&Æö6²&—6W2æB&V6÷&BfÇ6RG&–vvW'2&Vf÷&R–çBâ%Ğ¢ÒÀ¢v'&–÷#¢°¢&öÆTÆ&VÃ¢%t%$”õ"ò$U55U$R"ÂæÖS¢%VÇ6R7v÷&B"Â¶–æC¢'7v÷&B"Â6—¦S¢#cS9rÖÒ"À¢'VFvWC¢$U5BâCS¾(	3ãÒdäB"À¢W'÷6S¢$6†÷'BföÒ7v÷&BF†B6VæG2FVÆ–&W&FR7v–ær–çFVçBöæÇ’v†–ÆR—G2w&—G&–vvW"—2†VÆBâ"À¢6†VÆÃ¢%6ögBUd&ÆFRÂVÆV7G&öæ–726öæf–æVBFò†–ÇB"Â6Vç6÷#¢$ÕScS²–æFW‚G&–vvW""À¢6÷&S¢$†–ÇB6W'f–6R6'G&–FvR"ÂWfVçG3¢%5E$”´R+r„Te•õ5E$”´R+r%%’"À¢6fWG“¢$æòÖWFÂ÷"&–v–BgVÆÂÖÆVæwF‚6÷&RâW&f÷&Öæ6RvW7GW&W2öæÇ“²æWfW"7G&–¶Ræ÷F†W"Æ–W"â"À¢6ÆÆ÷WG3¢²%6ögBUd&ÆFR"Â$F–fgW6VBÄTB7–æR"Â$”ÕR–âwV&B"Â$–æFW‚G&–vvW""Â$U53"†–ÇB6'G&–FvR"Â%w&—7B&WFVçF–öâÆö÷%ÒÀ¢&öÓ¢µ²#^(	3ÖÒUd6†VWB"Â#""Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%ÒÂ²%6ögBF–fgW6W"7G&—"Â#"Â$Ö¶W"ò7&gB6†÷"Â%6†VÆÂ%ÒÂ²%w&—7BÆö÷"Â#"Â%6Wv–ær6†÷"Â%6fWG’%ÕÒÀ¢76VÖ&Ç“¢²$Ö¶RgVÆÂ×6—¦R6&F&ö&B6–Æ†÷VWGFRæB6öæf—&ÒF†RcSÖÒÆVæwF‚â"Â$&Væ6‚×FW7BG&–vvW"ÖvFVBvW7GW&RFWFV7F–öâ÷fW"U4"â"Â$ÆÖ–æFRF†RUd&ÆFRv—F†÷WBÖWFÂ÷"vööFVâ6÷&Râ"Â$7WB&÷FV7FVBÄTB6†ææVÂÆöærF†R7–æRâ"Â$Ö÷VçBF†R”ÕR–âF†RwV&BÂÆ–væVBv—F‚F†R&ÆFRF—&V7F–öââ"Â$'V–ÆBF†R&VÖ÷f&ÆR†–ÇB6'G&–FvRv—F‚U53"æB6öææV7F÷'2â"Â$f—Bw&—7B&WFVçF–öâÆö÷æB6Æ÷6RÆÂ†&BVFvW2VæFW"föÒâ"Â%'VâFVÆ–&W&FRæB66–FVçFÂÖ÷F–öç3²GVæRF†RvW7GW&RF‡&W6†öÆBâ%Ğ¢ÒÀ¢&6†W#¢°¢&öÆTÆ&VÃ¢$$4„U"ò$ätTB"ÂæÖS¢$&2&÷r"Â¶–æC¢&&÷r"Â6—¦S¢#“9rC3ÖÒ"À¢'VFvWC¢$U5BâcS¾(	3ãDÒdäB"À¢W'÷6S¢$æò×&ö¦V7F–ÆR&÷rF†BÖV7W&W2G&ræB&VÆV6RÂv†–ÆRVæ—G’7&VFW2F†Rf—'GVÂ'&÷ræB†—Bâ"À¢6†VÆÃ¢$Æ–v‡Bd2ôUdÆ–Ö'2v—F‚Æ÷r×FVç6–öâVÆ7F–27G&–ær"Â6Vç6÷#¢$Æ–æV"†ÆÂ6Vç6÷"²ÖvæWB²”ÕR"À¢6÷&S¢$6VçG&Âw&—6ö×'FÖVçB"ÂWfVçG3¢$E$uõ5D%B+rE$uõ$TE’+rd•$R"À¢6fWG“¢$æò'&÷rÂæòÆVæ6†W"ÂæBÆ÷r7G&–ærFVç6–öââF†R&÷r×W7BæWfW"7F÷&R&ö¦V7F–ÆRVæW&w’â"À¢6ÆÆ÷WG3¢²$föÒ×w&VBÆ–Ö""Â$Æ÷r×FVç6–öâG&r6÷&B"Â$G&rÖvæWB"Â$†ÆÂ6Vç6÷"6Æ÷B"Â$U53"w&—"Â$Æ–Ö"7FGW2ÄTG2%ÒÀ¢&öÓ¢µ²$Æ–v‡Bd2ôUdg&ÖR"Â#"Â$†&Gv&R²6÷7Æ’6†÷"Â%6†VÆÂ%ÒÂ²$Æ–æV"†ÆÂ6Vç6÷""Â#"Â$Ö¶W"6†÷"Â$–çWB%ÒÂ²%6ÖÆÂÖvæWB"Â#"Â$Ö¶W"6†÷"Â$–çWB%ÒÂ²$VÆ7F–2G&r6÷&B"Â#"Â$7&gB6†÷"Â%6fWG’%ÕÒÀ¢76VÖ&Ç“¢²$'V–ÆB÷vW&ÆW72föÒõd2&÷rÖö6²×WæB6öæf—&Ò6öÖf÷'F&ÆR&V6‚â"Â$&Væ6‚×FW7BF†R†ÆÂ6Vç6÷"æBÖvæWBG&fVÂ÷fW"U4"â"Â%6WBF†RG&r6÷&BFòÆ÷rFVç6–öã²6öæf—&Ò—B6ææ÷BÆVæ6‚ç’ö&¦V7Bâ"Â$–ç7FÆÂF†R†ÆÂ6Vç6÷"–ç6–FRF†Rw&—æBF†RÖvæWBöâF†RG&r6Æ–FW"â"Â$Ö÷VçBF†RU53"–âF†R6VçG&Âw&—v—F‚&VÖ÷f&ÆR6÷fW"â"Â$FBF–fgW6VBÄTG2FòF†RÆ–Ö'2v—F†÷WBvV¶Væ–ærF†Rg&ÖRâ"Â$6Æ–'&FR&W7BÂ&VG’ÂæB&VÆV6RF‡&W6†öÆG2f÷"F‡&VRF–ffW&VçBW6W'2â"Â%'VâG&w2Â–æ6ÇVF–ær'F–Â&VÆV6W2ÂæB&V6÷&BÖ—76VB÷"GWÆ–6FRd•$RWfVçG2â%Ğ¢ÒÀ¢7676–ã¢°¢&öÆTÆ&VÃ¢$5454”âò4ôåE$ôÂ"ÂæÖS¢%6†FRFvvW'2"Â¶–æC¢&FvvW""Â6—¦S¢#3#9rsRÖÒ"À¢'VFvWC¢$U5BâCS¾(	3“S²däB"À¢W'÷6S¢$—&VBf—7VÂ6WBv—F‚VÆV7G&öæ–72–âF†RFöÖ–æçBFvvW#²G&Æ6VÖVçB&VÖ–ç2f—'GVÂ–âF†RÕeâ"À¢6†VÆÃ¢%Gvò6†÷'BUdFvvW'3²öæR7F—fRæBöæR76—fR"Â6Vç6÷#¢$ÕScS²w&—G&–vvW""À¢6÷&S¢$FöÖ–æçBÖ†æB†–ÇB"ÂWfVçG3¢%T”4µõ5E$”´R+r„Te•õ5E$”´R+rÄ4UõE$"À¢6fWG“¢%6†÷'B&÷VæFVBföÒ&ÆFW2âæòF‡'W7BF÷v&BF†R†VBÂF÷'6òÂ÷"æ÷F†W"Æ–W"â"À¢6ÆÆ÷WG3¢²$7F—fRUdFvvW""Â%76—fRöfbÖ†æBFvvW""Â$”ÕR–â7F—fRwV&B"Â$w&—G&–vvW""Â$U53"7F—fR†–ÇB"Â%G&'WGFöâòw&—7BB%ÒÀ¢&öÓ¢µ²#^(	3ÖÒUd6†VWB"Â#""Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%ÒÂ²%w&—7B'WGFöâB"Â#"Â$Ö¶W"²6Wv–ær6†÷"Â$–çWB%ÒÂ²%w&—7B&WFVçF–öâÆö÷2"Â#""Â%6Wv–ær6†÷"Â%6fWG’%ÕÒÀ¢76VÖ&Ç“¢²$Ö¶RGvò3#ÖÒ6&F&ö&BFV×ÆFW2v—F‚gVÆÇ’&÷VæFVBF—2â"Â$&Væ6‚×FW7BF†R7F—fRFvvW"æB6W&FRG&'WGFöâ÷fW"U4"â"Â$ÆÖ–æFR&÷F‚Ud&öF–W3²¶VWöæÇ’F†RFöÖ–æçB†–ÇB6W'f–6V&ÆRâ"Â$Æ–vâF†R”ÕRv—F‚F†R7F—fR&ÆFRF—&V7F–öââ"Â$–ç7FÆÂw&—G&–vvW"ÂU53"6'G&–FvRÂæBw&—7B&WFVçF–öâÆö÷â"Â$'V–ÆBF†RöfbÖ†æBFvvW"276—fRÆ–v‡GvV–v‡B&÷â"Â$ÖG&Æ6VÖVçBFòâ&Væ¦öæS²Fòæ÷BÆ6RVÆV7G&öæ–72öâF†RfÆö÷"–WBâ"Â%FW7B&–B6öÖ&–æF–öç2æBfW&–g’öæR‡—6–6ÂÖ÷F–öâ7&VFW2BÖ÷7BöæRWfVçBâ%Ğ¢ÒÀ¢ÖvS¢°¢&öÆTÆ&VÃ¢$ÔtRò5Uõ%B"ÂæÖS¢$ÇVÖVâ7Ffb"Â¶–æC¢'7Ffb"Â6—¦S¢#Ã9rCÖÒ"À¢'VFvWC¢$U5Bâc¾(	3ã4ÒdäB"À¢W'÷6S¢$7W÷'B7Ffbv—F‚ÇVÖ–æ÷W2÷&"f÷"†VÆ–ærÂ6†–VÆF–ærÂ6†ææVÆ–ærÂæB&Wf—fR–çFVçBâ"À¢6†VÆÃ¢$Æ–v‡Bd26†gBgVÆÇ’w&VB–âUd²FFVBVæG2"Â6Vç6÷#¢$ÕScS²45Bõ5T4”Â'WGFöç2"À¢6÷&S¢$Æ÷vW"w&—f÷"&Ææ6R"ÂWfVçG3¢$45Eô„TÂ+r4„ääTÂ+rDTÕõ4„”TÄB"À¢6fWG“¢$&÷F‚VæG2FFVBâæò7–ææ–æræV"÷F†W"Æ–W'2æBæòw&÷VæB–×7Bâ"À¢6ÆÆ÷WG3¢²$F–fgW6VBÄTB÷&""Â%FFVBWW"†VB"Â$45BF‡VÖ"'WGFöâ"Â$”ÕR&VÆ÷rw&—"Â$U53"Æ÷vW"w&—"Â%FFVBÆ÷vW"VæB%ÒÀ¢&öÓ¢µ²$Æ–v‡Bd2GV&R"Â#"Â$†&Gv&R6†÷"Â%6†VÆÂ%ÒÂ²$Udw&²FF–ær"Â#6WB"Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%ÒÂ²$F–fgW6VB÷&"6†VÆÂ"Â#"Â%&÷Ö¶W"ò4B&–çB"Â%6†VÆÂ%ÒÂ²%f–'&F–öâÖ÷F÷""Â#"Â$Ö¶W"6†÷"Â$fVVF&6²%ÕÒÀ¢76VÖ&Ç“¢²$6öæf—&Òã(	3ã"ÒÆVæwF‚v—F‚F†R6†÷'FW7BW‡V7FVBÆ–W"â"Â$&Væ6‚×FW7B45BÂ5T4”ÂÂ”ÕRÂ÷&"ÄTBÂæB†F–2÷fW"U4"â"Â%w&F†R6†gB6ö×ÆWFVÇ’æBB&÷F‚VæG2â"Â$Ö÷VçBF†R÷&"v—F‚&VÖ÷f&ÆRF–fgW6W"æBæòW‡÷6VB†&Bö–çBâ"Â%Æ6RF†R”ÕR&VÆ÷rF†RWW"w&—æBÆ–vâ—G2f÷'v&B†—2â"Â$–ç7FÆÂU53"æB6öææV7F÷'2–âF†RÆ÷vW"w&—Fò&Ææ6RF†R÷&"â"Â$6Æ–'&FRö–çF–æræB6†ææVÂ÷7GW&Rf÷"F‡&VRW6W'2â"Â%'Vâ†VÂÂ6†–VÆBÂæB6æ6VÆÆVBÖ6†ææVÂ66Væ&–÷2&Vf÷&R–çBâ%Ğ¢ÒÀ¢&÷73¢°¢&öÆTÆ&VÃ¢$$õ52ò$”B4ôåE$ôÂ"ÂæÖS¢%F—Fâv&FVâ†ÖÖW""Â¶–æC¢&†ÖÖW""Â6—¦S¢#ÃS9r3cÖÒ"À¢'VFvWC¢$U5Bâã4Ş(	32ãÒdäB"À¢W'÷6S¢$†–v‚×f—6–&–Æ—G’GvòÖ†æFVB&÷726öçG&öÆÆW"—&VBv—F‚F‡&VR×¦öæRÄTB&Ö÷W"fW7BæB†6RfVVF&6²â"À¢6†VÆÃ¢$†öÆÆ÷rUd†ÖÖW"†VBÂföÒ×w&VB6†gBÂF§W7F&ÆRÄTB&Ö÷W""Â6Vç6÷#¢$ÕScS²Gvòw&—G&–vvW'2"À¢6÷&S¢$Æ÷vW"†ÖÖW"w&—²6W&FR&Ö÷W"&V6V—fW""ÂWfVçG3¢%5tTU+r4ÄÒ+rÔ$²+r„4Uõ4´”ÄÂ"À¢6fWG“¢$†öÆÆ÷rÆ–v‡GvV–v‡B†VBÂFFVB6†gBÂæB¦W&òÖ6öçF7BGF6·2âôRW†—7G2öæÇ’–âVæ—G’æB&Væ7VW2â"À¢6ÆÆ÷WG3¢²$†öÆÆ÷rUd†ÖÖW"†VB"Â$†VBVffV7BÄTG2"Â%&–Ö'’G&–vvW""Â$”ÕRB&Ææ6Rö–çB"Â$U53"Æ÷vW"w&—"Â#2×¦öæRÄTB&Ö÷W"%ÒÀ¢&öÓ¢µ²#ÖÒUd6†VWG2"Â#>(	3B"Â$6÷7Æ’ÖFW&–Â6†÷"Â%6†VÆÂ%ÒÂ²$Æ–v‡Bd26†gB"Â#"Â$†&Gv&R6†÷"Â%6†VÆÂ%ÒÂ²$&Ö÷W"G&–æ–ær&–""Â#"Â%7÷'G26†÷"Â%vV&&ÆR%ÒÂ²$ÄTB&Ö÷W"æVÇ2"Â#2"Â$Ö¶W"²6Wv–ær6†÷"Â$fVVF&6²%ÒÂ²%6V6öæB&V6V—fW"6÷&R"Â#"Â$Ö¶W"6†÷"Â$f–VÆB%ÕÒÀ¢76VÖ&Ç“¢²$'V–ÆBF†R†öÆÆ÷r†ÖÖW"†VBBgVÆÂ6—¦RæBvV–v‚—B&Vf÷&RVÆV7G&öæ–72â"Â$&Væ6‚×FW7BGvòG&–vvW'2Â”ÕRÂæB†VBÄTG2÷fW"U4"â"Â%w&F†R6†gB–âföÒæBB&÷F‚VæG2â"Â$–ç7FÆÂF†R”ÕRBF†R&Ææ6Rö–çBæBF†RU53"–âF†RÆ÷vW"w&—â"Â$7&VFRâ÷Vâ×6–FRF§W7F&ÆR&Ö÷W"&–"v—F‚&VÖ÷f&ÆRÄTBæVÇ2â"Â%—"†ÖÖW"–çWBæB&Ö÷W"fVVF&6²VæFW"öæR&÷726W76–öâ–FVçF—G’â"Â$6Æ–'&FR5tTUÂ4ÄÒÂæBÔ$²v—F†÷WB‡—6–6Â6öçF7Bâ"Â%'Vâf—fRÖÖ–çWFR†6RFW7BæB&V¦V7BF†R'V–ÆB–b†VBÂF—66öÖf÷'BÂ÷"fÇ6RGF6·2V"â%Ğ¢Ğ§Ó° ¦6öç7B&÷¶—Ef’Ò°¢wV&F–ã¢°¢&öÆTÆ&VÃ¢$¹‚n¸bòŒ9$ärDºb"ÂæÖS¢$¶†œ:¦âVv—2"À¢W'÷6S¢$.¹’I¸R¶†¸6âŒ;&ærFºr.ª6â.¹–ærÂF¸2†¸vâ,;RŒk¹¶ærIºÂF¹Ö’I¸6ÒIºÂª6â¹6’l:¶ª2ìH6ær.ª6òn¸rI¹6ærI¹–’â"À¢6†VÆÃ¢$Ud2Î¹·ÂC^(	3SR6ÒÂV’IVòF’ç–Æöâ"Â6Vç6÷#¢$ÕScS²<;"æ|;6â<:’"À¢6÷&S¢$ÖöGVÆRFŒ:ò.¹Ö’¹òL:&ÒŞ«wB6R"ÂWfVçG3¢$.ªåBIªeRIº+r¾«åBDŒ9¤2Iº+r´„œ8¥R´Œ8Ô4‚"À¢6fWG“¢%f¸âföÒIkº62&òG,;&ââ¶Œ;FærÆò¶†œ:¦âl:¶Œ;FærF«÷Œ;¦2<jF¸2â"À¢6ÆÆ÷WG3¢²$Ş«wB¶†œ:¦âUdÖÒ"Â$¹—.ª6òG,:ÂU53""Â$ÕScSNª’L:&Ò"Â$<;"æ|;6â<:’"Â$ÄTBu3#ƒ$"Væ‚f¸â"Â%V’IVòF’I¸R6¸–æ‚%ÒÀ¢76VÖ&Ç“¢²$–âŞª·R¶†œ:¦âSÖÒl:Ì:Ò.ª6âFºÒ.«ær,:ÆI¸2¶¸6ÒG&I¹’nº¶F’â"Â$Îª÷FºÒU53"Â”ÕRÂ<;"l:Ş¹—BIşªâÄTBVU4"â"Â$>ª÷B.¹6’:—<:2Î¹·Ud²I¸2Ş¹ò¶†öær¹—.ª6òG,:Ââ"Â$~ªöâ”ÕRî«Ò«6ærNª’L:&ÒŒ:Ææ‚¸Ö2ÂÜZ–’L:¦âG.ºV2Œk¹¶ærÌ:¦ââ"Â$Îª÷<;"æ|;6â<:’Lk¹¶’F’>ªvÒF‡^ªÖââ"Â,I’L:'’ÄTBG&öær,:6æ‚.ª6òn¸rl:FŒ:¦ÒIªwRî¹’FŒ:òæ†æ‚â"Â$~ªöâV’I¸R6¸–æ‚ÂI;6ærîª÷6RFŒ:ò.¹Ö’l:<:&â6¸–æ‚|;62G'VærL:Öæ‚â"Â%FºÒÎªvâì:&ær¶†œ:¦âl:v†’Îª’¼:Ö6‚†şªB6’G,k¹¶2¶†’<jââ%Ğ¢ÒÀ¢v'&–÷#¢°¢&öÆTÆ&VÃ¢$4„«äâ$”ä‚ò8Î»2"ÂæÖS¢$¶«öÒVÇ6R"À¢W'÷6S¢$¶«öÒföÒæ~ªöâ6¸’~ºÖ’;ÒI¸¶æ‚gVær¶†’æ|k¹Ö’6Œj’6ºrI¹–ærvºò<;"¹òF’>ªvÒâ"À¢6†VÆÃ¢$Ìkº’UdŞ¸ÒÂI¸vâNºÒ6¸’î«ÒG&öær6‡\;F’"Â6Vç6÷#¢$ÕScS²<;"æ|;6âG.¸ò"À¢6÷&S¢$¹—Ì;V’FŒ:ò.¹Ö’G&öær6‡\;F’"ÂWfVçG3¢$4Œ8”Ò+r4Œ8”ÒŞªä‚+rIºI9$â"À¢6fWG“¢$¶Œ;FærL;–ær¶–ÒÆşª’†ş«v2Ì;V’>º–ær6ª’«÷BÌkº’â6¸’&¸7RF¸VâI¹–ærL:2Â¶Œ;FærI:æ‚æ|k¹Ö’6Œj’¶Œ:2â"À¢6ÆÆ÷WG3¢²$Ìkº’UdŞ¸Ò"Â$Nª6’ÄTBL:â<:ær"Â$”ÕRG&öær6ªöâF’"Â$<;"æ|;6âG.¸ò"Â$¹—U53"G&öær6‡\;F’"Â$L:'’vºò>¹RF’%ÒÀ¢76VÖ&Ç“¢²$Ì:ÒŞª·R,:ÆI;¦ær¼:Ö6‚FŒk¹¶2l:Œ:2æªÖâ6†¸RL:’cSÖÒâ"Â%FºÒæªÖâI¹–ærL:2<;2vºò<;"VU4"â"Â,8—<:2Î¹·Ìkº’UdÂ¶Œ;FærL;–ærÌ;V’¶–ÒÆşª’†ş«v2~¹râ"Â$>ª÷B,:6æ‚ÄTB<;2.ª6òn¸rN¸Ö2>¹ær¶«öÒâ"Â$~ªöâ”ÕRG&öær6ªöâF’ÂF«6ærF†VòŒk¹¶ærÌkº’¶«öÒâ"Â$Îª÷¹—U53"l:IªwRî¹’FŒ:ò.¹Ö’G&öær6‡\;F’â"Â%FŒ:¦ÒL:'’vºò>¹RF’l:ºrföÒÌ:¦âŞ¸Ö’>ªæ‚>º–ærâ"Â%FºÒI¹–ærL:26ºr;Òl:6‡W¸6âI¹–æræ~ª·Ræ†œ:¦âI¸26¸–æ‚æ|kºærâ%Ğ¢ÒÀ¢&6†W#¢°¢&öÆTÆ&VÃ¢$5TärDºbòNªdÒ„"ÂæÖS¢$7Vær&2"À¢W'÷6S¢$7Vær¶Œ;Fær<;2L:¦âÂIòG.ªærFŒ:’¼:–òl:Fª3²Væ—G’NªòÜZ–’L:¦âª6òl:W«÷BI¸¶æ‚G,;¦ærI:Ö6‚â"À¢6†VÆÃ¢$<:æ‚d2ôUdæ«’ÂL:'’I:â¹6’Î»2FªW"Â6Vç6÷#¢$†ÆÂGW«öâL:Öæ‚²æÒ6Œ:&Ò²”ÕR"À¢6÷&S¢$¶†öærvºöF’>ªvÒ"ÂWfVçG3¢$.ªåBIªeR¼8”ò+r>«Dâ<8är+r.ªäâ"À¢6fWG“¢$¶Œ;FærL:¦âÂ¶Œ;Fær<j6«òŒ;6ærl:L:'’<;2Î»2FªWâ7Vær¶Œ;FærIkº62L:Ö6‚ìH6ærÌkº6ærI¸2Œ;6ærnª×BF¸2â"À¢6ÆÆ÷WG3¢²$<:æ‚7Vær.¸Ö2föÒ"Â$L:'’¼:–òÎ»2FªW"Â$æÒ6Œ:&ÒF†VòL:'’¼:–ò"Â$¶†R>ª6Ò&«öâ†ÆÂ"Â$U53"G&öærF’>ªvÒ"Â$ÄTBG.ªærFŒ:’G,:¦â<:æ‚%ÒÀ¢76VÖ&Ç“¢²$Ì:Ò¶‡Vær7VærföÒõd2¶Œ;FærI¸vâl:¶¸6ÒG&NªvÒn¹¶’F†şª6’Ü:’â"Â%FºÒŒ:æ‚G,:Ææ‚†ÆÂ6Vç6÷"l:æÒ6Œ:&ÒVU4"â"Â,I«wBL:'’¼:–òÎ»2FªW²Œ:2æªÖâ¶Œ;FærF¸2Œ;6ær.ªWB¾»2nª×BF¸2ì:òâ"Â$~ªöâ†ÆÂ6Vç6÷"G&öærF’>ªvÒl:æÒ6Œ:&ÒG,:¦â6öâG,kº7BL:'’â"Â$~ªöâU53"G&öærF’>ªvÒvºön¹¶’îª÷FŒ:ò.¹Ö’â"Â%FŒ:¦ÒÄTBL:â<:ærl:ò<:æ‚7VærÜ:¶Œ;FærÌ:Ò«÷R¶‡Værâ"Â$<:&â6¸–æ‚n¸²G,:Òæv¸’Â>«Vâ<:ærl:Fª26†ò&æ|k¹Ö’L;–ærâ"Â%FºÒÎªvâ¼:–òÂ~¹6Ò>ª2Fª2îºÖ6º¶ærÂ.¹6’v†’æªÖâ>»¶¸vâd•$RF†«÷R†ş«v2Î«wâ%Ğ¢ÒÀ¢7676–ã¢°¢&öÆTÆ&VÃ¢%<8BDºbò´¸$Ò4ü8B"ÂæÖS¢$Fò6†FR"À¢W'÷6S¢$>«wFò†¸6âF¸²I¹6ær.¹’æŒkær6¸’FòF‡^ªÖâ<;2I¸vâNºÓ².ª·’nª¶âÌ:I¹’Lkº6ærª6òG&öærÕeâ"À¢6†VÆÃ¢$†’FòUdæ~ªöã²Ş¹—B6ºrI¹–ærÂŞ¹—BFºRI¹–ær"Â6Vç6÷#¢$ÕScS²<;"F’>ªvÒ"À¢6÷&S¢$6‡\;F’F’F‡^ªÖâ"ÂWfVçG3¢,I8ä‚ä„ä‚+rI8ä‚Şªä‚+rI«eB.ª¥’"À¢6fWG“¢$Ìkº’föÒæ~ªöâÂIªwR&òG,;&ââ¶Œ;FærI:&Òn¸Œ:ÖIªwRÂFŒ:&â†ş«v2æ|k¹Ö’6Œj’¶Œ:2â"À¢6ÆÆ÷WG3¢²$FòUd6ºrI¹–ær"Â$FòF’ºRFºRI¹–ær"Â$”ÕRG&öær6ªöâFò"Â$<;"F’>ªvÒ"Â$U53"G&öær6‡\;F’"Â$ì;§B.ª·’IVò>¹RF’%ÒÀ¢76VÖ&Ç“¢²$Ì:Ò†’Şª·R,:ÆL:’3#ÖÒn¹¶’IªwRIkº62&òG,;&â†ü:âFü:ââ"Â%FºÒFò6ºrI¹–ærl:ì;§B.ª·’&œ:¦ærVU4"â"Â,8—†’FŒ:&âUd²6¸’I¸26‡\;F’F’F‡^ªÖâ<;2F¸2.ª6òG,:Ââ"Â$<H6â”ÕRF«6ærF†VòŒk¹¶ærÌkº’Fò6ºrI¹–ærâ"Â$Îª÷<;"F’>ªvÒÂ¹—U53"l:L:'’vºò>¹RF’â"Â$Ì:ÒFòF’ºRFŒ:æ‚&÷FºRI¹–æræ«’â"Â,8æ‚ªI«wB.ª·’l:ò;BIªWS²6ŒkI«wBI¸vâNºÒ‡^¹ær<:ââ"Â%FºÒ6öÖ&òæ†æ‚l:Œ:2æªÖâŞ¹—B6‡W¸6âI¹–ær6¸’NªòN¹’IŞ¹—B>»¶¸vââ%Ğ¢ÒÀ¢ÖvS¢°¢&öÆTÆ&VÃ¢%Œ8<jòò¹bE.º""ÂæÖS¢$~ª×’ÇVÖVâ"À¢W'÷6S¢$~ª×’¹rG.º2<;2^ª2>ªwRŒ:B<:ær6†ò¹6’Ü:RÂNªò¶†œ:¦âÂæ¸vÒŒ:—l:¹6’6–æ‚â"À¢6†VÆÃ¢.¹ærd2æ«’.¸Ö2UdFü:â.¹“²†’IªwR<;2I¸vÒ"Â6Vç6÷#¢$ÕScS²ì;§B45Bõ5T4”Â"À¢6÷&S¢%F’>ªvÒLk¹¶’I¸2<:&â.«ær"ÂWfVçG3¢$¹$’Ü8R+rä¸dÒŒ8•+r´„œ8¤âI¹„’"À¢6fWG“¢$†’IªwRIkº62I¸vÒŞ¸Òâ¶Œ;Fær†ö’~ª×’~ªvâæ|k¹Ö’¶Œ:2l:¶Œ;FærIª×‡^¹ærIªWBâ"À¢6ÆÆ÷WG3¢²%^ª2>ªwRÄTBL:â<:ær"Â,IªwRG,:¦â.¸Ö2I¸vÒ"Â$ì;§B45Bæ|;6â<:’"Â$”ÕRLk¹¶’F’>ªvÒ"Â$U53"G&öærF’>ªvÒLk¹¶’"Â,IªwRLk¹¶’.¸Ö2I¸vÒ%ÒÀ¢76VÖ&Ç“¢²%Œ:2æªÖâ6†¸RL:’Ã(	3Ã"Òn¹¶’æ|k¹Ö’6Œj’FªWæªWBN»¶«öââ"Â%FºÒ45BÂ5T4”ÂÂ”ÕRÂÄTB^ª2>ªwRl:'VærVU4"â"Â$.¸Ö2Fü:â.¹’FŒ:&â~ª×’l:I¸vÒŞ¸Ò†’IªwRâ"Â$~ªöâ^ª2>ªwR.«ærn¸òL:â<:ærFŒ:ò.¹Ö’Â¶Œ;FærI¸2I¸6Ò>º–ærÎ¹’&â"Â,I«wB”ÕRLk¹¶’F’>ªvÒG,:¦âl:<H6âG.ºV2G,k¹¶2â"Â$Îª÷U53"<;–ærIªwRî¹’¹òF’>ªvÒLk¹¶’I¸2<:&â.«ær^ª2>ªwRâ"Â$<:&â6¸–æ‚Œk¹¶ær6¸’l:LkF«òæ¸vÒŒ:—6†ò&æ|k¹Ö’â"Â$6ª’<:2L:Ææ‚‡^¹ær¹6’Ü:RÂNªò¶†œ:¦âl:ºw’æ¸vÒG,k¹¶2¶†’<jââ%Ğ¢ÒÀ¢&÷73¢°¢&öÆTÆ&VÃ¢$$õ52ò´¸$Ò4ü8BE.ªÄâ"ÂæÖS¢$,;¦F—Fâv&FVâ"À¢W'÷6S¢$.¹’I¸R¶†¸6â&÷72†’F’N¸RæªÖâF¸vâÂ¾«÷Bº7:òvœ:ÄTB&l;–ærl:ª6â¹6’6‡W¸6â†6Râ"À¢6†VÆÃ¢,IªwR,;¦Ud.¹værÂ<:â.¸Ö2föÒÂ:òvœ:ÄTBI¸R6¸–æ‚"Â6Vç6÷#¢$ÕScS²†’<;"F’>ªvÒ"À¢6÷&S¢%F’>ªvÒLk¹¶’².¹’æªÖâ&œ:¦ærG,:¦â:ò"ÂWfVçG3¢%\8•B+rIªÅl9”är+rI8ä‚NªER+r¾»‚ìH$är„4R"À¢6fWG“¢,IªwR.¹væræ«’Â<:â.¸Ö2I¸vÒl:Ş¸Ö’I;&âI:æ‚I¸R¶Œ;FærF«÷Œ;¦2âôR6¸’N¹6âNª’G&öærVæ—G’l:L:Öâ†¸wR<:&ââ"À¢6ÆÆ÷WG3¢²,IªwR,;¦Ud.¹vær"Â$ÄTB†¸wRº–ærIªwR,;¦"Â$<;"6Œ:Öæ‚"Â$”ÕRNª’I¸6Ò<:&â.«ær"Â$U53"F’>ªvÒLk¹¶’"Â,8òvœ:ÄTB&l;–ær%ÒÀ¢76VÖ&Ç“¢²$Ì:ÒIªwR,;¦.¹værI;¦ær¼:Ö6‚FŒk¹¶2l:<:&â¶¹’Ìkº6ærG,k¹¶2¶†’~ªöâI¸vâNºÒâ"Â%FºÒ†’<;"Â”ÕRl:ÄTBIªwR,;¦VU4"â"Â$.¸Ö2föÒVæ‚<:âl:I¸vÒŞ¸Ò†’IªwRâ"Â$~ªöâ”ÕRNª’I¸6Ò<:&â.«ærl:U53"¹òF’>ªvÒLk¹¶’â"Â%Nªò:ò&–"Ş¹ò†’,:¦ân¹¶’<:2NªVÒÄTBFŒ:ò.¹Ö’â"Â$vŒ:—–çWB,;¦l:ª6â¹6’:òl:ò<;–ærŞ¹—BI¸¶æ‚Fæ‚†œ:¦â&÷72â"Â$<:&â6¸–æ‚5tTUÂ4ÄÒl:Ô$²Ü:¶Œ;Fær<;2F«÷Œ;¦2<jF¸2â"Â$6ª’FºÒ†6RG&öærìH6ÒŒ;§C²Æşª’.ª6âN»ærî«÷Rì;6ærÂ¶Œ;26¸·R†ş«v2¼:Ö6‚†şªB6’â%Ğ¢Ğ§Ó° ¦6öç7B7FF–5G&ç6ÆF–öç2Ò°¢"æ'&æBÖ6÷’7â#¢²$U53"&÷F÷G—Rv÷&·76R"Â$¶Œ;Færv–âFºÒæv†¸vÒU53"%ÒÀ¢"6†VFW%7FGW5FW‡B#¢²%cãruT$D”â4²"Â%cãr.¹‚´„œ8¤âuT$D”â%ÒÀ¢"æÖöFR×F'2¶FF×f–WsÒvWfVçBÖ¶—BuÒ#¢²#WfVçB¶—B"Â#.¹’F†«÷B.¸²%ÒÀ¢"æÖöFR×F'2¶FF×f–WsÒw&÷F÷G—RuÒ#¢²#"U53"Æ""Â#"Œk¹öærU53"%ÒÀ¢"æÖöFR×F'2¶FF×f–WsÒvf–VÆBuÒ#¢²#2f–VÆB6–×VÆF÷""Â#2Ü;B¸öærG.ªÖâ%ÒÀ¢"6WfVçBÖ¶—Bç6V7F–öâÖ†VF–æræW–V'&÷r#¢²$DÄ2UdTåB´•Bcò$õ52e2B„U$ôU2"Â$DÄ2UdTåB´•Bcò$õ52IªERB„U$ò%ÒÀ¢"6WfVçBÖ¶—B×F—FÆR#¢²%&÷'V–ÆBÆææW""Â%G,:Ææ‚Îª×¾«ò†şª6‚Iªò>ºR%ÒÀ¢"6WfVçBÖ¶—Bç6V7F–öâÖæ÷FR#¢²%F†R&÷7FW"6öçF–ç2f—fR†W&ò¶—G2âÆöBç’f÷W"†W&öW2ÇW2F—Fâv&FVâf÷"ÖF6‚â"Â$Fæ‚<:6‚<;2ìH6Ò.¹’†W&òâŞ¹v’G.ªÖâ6¸Öâ.¹â†W&ò<;–ærF—Fâv&FVââ%ÒÀ¢"æ¶—B×7FGW2Öw&–BF—c¦çF‚Ö6†–ÆBƒ’7â#¢²'&öÆR'V–ÆB6·2"Â&.¹’F†«÷B¾«òF†Vò&öÆR%ÒÀ¢"æ¶—B×7FGW2Öw&–BF—c¦çF‚Ö6†–ÆBƒ"’7â#¢²&Ö–æ–×VÒÆ’¦öæR"Â&¶‡R6Œj’N¹’F†¸7R%ÒÀ¢"æ¶—B×7FGW2Öw&–BF—c¦çF‚Ö6†–ÆBƒ2’7â#¢²&ÖF6‚F&vWB"Â'F¹Ö’Ìkº6ærG.ªÖâ%ÒÀ¢"æ¶—B×7FGW2Öw&–BF—c¦çF‚Ö6†–ÆBƒB’7â#¢²$Õe¢f—fRÆ–W'2²‡V""Â$Õe¢ìH6Òæ|k¹Ö’²‡V"%ÒÀ¢"çGv–â×æVÂçæVÂÖÆ&VÂ#¢²$–çFW&7F—fRF–v—FÂGv–â"Â$.ª6â6ò>¹LkjærL:2%ÒÀ¢"7Gv–å7FGW2#¢²$DUD”Â52cã‚"Â$.ª$â4„’D«åBcã‚%ÒÀ¢"çGv–âÖ6öçG&öÇ2æW–V'&÷r#¢²$U…Äõ$R$Tdõ$R%T”ÄD”är"Â$´ª$ò<8BE,jş¹¤2´„’4«âL82%ÒÀ¢"7Gv–ä–çG&ò#¢²%&÷FFRF†RÖöFVÂÂ6W&FR—G2Æ–W'2ÂæB6VÆV7B6ö×öæVçBFò–ç7V7Bv†W&R—B&VÆöæw2â"Â%†ö’Ü;BŒ:Ææ‚ÂL:6‚<:2Î¹·l:6¸ÖâÆ–æ‚¶¸vâI¸2†VÒn¸²G,:ÒÎª÷â%ÒÀ¢"6W‡ÆöFTÆ&VÂ#¢²$W‡ÆöFVBf–Wr"Â$Şº–2L:6‚Î¹·%ÒÀ¢"6VÆV7G&öæ–74Æ–W$Æ&VÂ#¢²%6†÷rVÆV7G&öæ–72Æ–W""Â$†¸vâÎ¹·I¸vâNºÒ%ÒÀ¢"7Gv–å'G4Æ&VÂ#¢²%6VÆV7F&ÆRÖöGVÆW2"Â$<:2Ü;BÜIVâ<;2F¸26¸Öâ%ÒÀ¢"7Gv–ä&÷VæF'’#¢²$FWF–ÆVBvV"Gv–âÂæ÷Bf–æÂÖçVf7GW&–ærvVöÖWG'’âfW&–g’&VÂF–ÖVç6–öç2v—F‚6&F&ö&B÷"UdÖö6²×W&Vf÷&R7WGF–ærf–æÂÖFW&–Ââ"Â$.ª6â6òvV"I:2<;26–Æ†÷VWGFRl:nª×BÆ¸wR6†’F«÷BÂ6Œkª6’Œ:Ææ‚¸Ö2>ª6â‡^ªWB7^¹’âª6’Œ:2Ö–æ‚¼:Ö6‚FŒk¹¶2Fª×B.«ærŞª·R6'Föâ†ş«v2UdG,k¹¶2¶†’>ª÷Bnª×BÆ¸wRâ%ÒÀ¢"77–æ5Gv–äÆ&VÂ#¢²$föÆÆ÷rF†R7W'&VçB76VÖ&Ç’7FW"Â%F†Vò,k¹¶2Îª÷,:†¸vâNª’%ÒÀ¢"ç&öGV7F–öâÖ†VF–æræW–V'&÷r#¢²$uT$D”âò$ôET5D”ôâ$TD”äU52"Â$uT$D”âò>«Dâ<8är4«âL82%ÒÀ¢"6wV&F–â×&öGV7F–öâ×F—FÆR#¢²$g&öÒFW6–vâFòf—'7B‡—6–6Â6†–VÆB"Â%Nº²F†«÷B¾«òN¹¶’6†«ö2¶†œ:¦ânª×BÌ;ÒIªwRFœ:¦â%ÒÀ¢"ç&öGV7F–öâÖ†VF–ærç6V7F–öâÖæ÷FR#¢²%F†W6RfÇVW27&VFRgVÆÂ×6—¦R6&F&ö&B7F'F–ærö–çBâF†RÖö6²×W×W7B72&Vf÷&Rf–æÂUd÷"VÆV7G&öæ–72W&6†6W2â"Â$<:2vœ:G.¸²ì:’NªòI¸6Ò.ª÷BIªwR6†òŞª·R6'FöâI;¦ær¼:Ö6‚FŒk¹¶2âŞª·RFºÒª6’52G,k¹¶2¶†’×VUd7^¹’†ş«v2Æ–æ‚¶¸vâI¸vâNºÒâ%ÒÀ¢"æf—B×æVÂçæVÂÖÆ&VÂ#¢²$f—B6Æ7VÆF÷""Â%L:Öæ‚¼:Ö6‚FŒk¹¶2FºÒ%ÒÀ¢"æf—B×æVÂæÖöæò×–ÆÂ#¢²$Ôô4²ÕUdÅTU2"Â$tœ8E.¸¢Şª¥RDºÂ%ÒÀ¢&Æ&VÅ¶f÷#ÒwÆ–W$†V–v‡BuÒ7â#¢²%Æ–W"†V–v‡B"Â$6†¸R6òæ|k¹Ö’6Œj’%ÒÀ¢&Æ&VÅ¶f÷#Òvf÷&V&ÔÆVæwF‚uÒ7â#¢²$f÷&V&ÒÆVæwF‚"Â$6†¸RL:’>«6ærF’%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ’7â#¢²%7F'F–ærF–ÖWFW""Â,Ik¹Öær¼:Öæ‚¶¹ö’I¸6Ò%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ’6ÖÆÂ#¢²$6Æ×¢C^(	3SR6Ò"Â$v¹¶’ªã¢C^(	3SR6Ò%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ"’7â#¢²%7G&6VçG&W2"Â$¶†şª6ærL:&Ò†’V’%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ"’6ÖÆÂ#¢²$¶VW&÷F‚F§W7F&ÆR"Â$>ª2†’V’ª6’6¸–æ‚Ikº62%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ2’7â#¢²$VÆV7G&öæ–726f—G’"Â$¶†öærI¸vâNºÒ%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒ2’6ÖÆÂ#¢²%&V"&VÖ÷f&ÆR6÷fW""Â$îª÷6RFŒ:ò.¹Ö’%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒB’7â#¢²%F&vWBÖ72"Â$¶¹’Ìkº6ærŞºV2Fœ:§R%ÒÀ¢"æf—B×&W7VÇG2F—c¦çF‚Ö6†–ÆBƒB’6ÖÆÂ#¢²%&V¦V7B–bw&—7BÖ†Vg’"Â$Æşª’î«÷Rî«vær>¹RF’%ÒÀ¢"ç&öGV7F–öâ×v&æ–ær7G&öær#¢²$æ÷Bf–æÂ7WGF–ær7V6–f–6F–öâ"Â$6Œkª6’FŒ;Fær>¹>ª÷B7^¹’%ÒÀ¢"6f—Ev&æ–æuFW‡B#¢²%&–çB÷"G&rF†—2F–ÖWFW"öâ6&F&ö&BâFW7BF‡&VRW6W'2æBF§W7B—B&Vf÷&RG&ç6fW'&–ærF†R÷WFÆ–æRFòUdâ"Â$–â†ş«v2n«ÒIk¹Öær¼:Öæ‚ì:’Ì:¦â6'FöââFºÒn¹¶’&æ|k¹Ö’.¹6’I¸R6¸–æ‚G,k¹¶2¶†’6‡W¸6â&œ:¦âNªær6ærUdâ%ÒÀ¢"æÆ–W"×æVÂçæVÂÖÆ&VÂ#¢²%‡—6–6ÂÆ–W"7F6²"Â$>ªWRG,;¦2Î¹·nª×BÌ;Ò%ÒÀ¢"æ'W’ÖvFR×æVÂçæVÂÖÆ&VÂ#¢²%W&6†6RvFW2"Â$>¹Vær×VI¹2%ÒÀ¢"ç&VF–æW72×æVÂçæVÂÖÆ&VÂ#¢²%&VÆV6RvFW2"Â$>¹Vær6†òŒ:—6«òL:2%ÒÀ¢"66ÆV$wV&F–ävFW2#¢²$6ÆV"6†V6·2"Â%Œ;6I:æ‚NªWR%ÒÀ¢"6F÷væÆöDwV&F–å&öGV7F–öå6²#¢²$F÷væÆöBwV&F–â&öGV7F–öâ6²"Â%Nª6’.¹’6«òL:2wV&F–â%ÒÀ¢"æ&ÇVW&–çB×æVÂçæVÂÖÆ&VÂ#¢²$çVÖ&W&VB76VÖ&Ç’G&v–ær"Â$.ª6ân«ÒÎª÷,:I:æ‚>¹%ÒÀ¢"æ&ÇVW&–çB×66ÆR6ÖÆÂ#¢²$6öæ6WBF–ÖVç6–öç2(	BfW&–g’öâF†Rf—'7BföÒÖö6²×W"Â$¼:Ö6‚FŒk¹¶2;ÒLk¹öær(	B>ªvâŒ:2Ö–æ‚.«ærŞª·RföÒIªwRFœ:¦â%ÒÀ¢"ç7V2×7F6²F—c¦çF‚Ö6†–ÆBƒ’7â#¢²%6†VÆÂ"Â%n¸òIªò>ºR%ÒÀ¢"ç7V2×7F6²F—c¦çF‚Ö6†–ÆBƒ"’7â#¢²%6Vç6÷""Â$>ª6Ò&«öâ%ÒÀ¢"ç7V2×7F6²F—c¦çF‚Ö6†–ÆBƒ2’7â#¢²$6÷&RÆö6F–öâ"Â%n¸²G,:ÒÌ;V’%ÒÀ¢"ç7V2×7F6²F—c¦çF‚Ö6†–ÆBƒB’7â#¢²$vÖRWfVçG2"Â%>»¶¸vâvÖR%ÒÀ¢"ç6fWG’Öæ÷FR7G&öær#¢²%‡—6–6Â'VÆR"Â%W’Nªö2nª×BÌ;Ò%ÒÀ¢"6F÷væÆöD'V–ÆE6²#¢²$F÷væÆöB&öÆR'V–ÆB6²"Â%Nª6’.¹’Œk¹¶ærNª¶â&öÆR%ÒÀ¢"ç&ö7W&VÖVçB×æVÂçæVÂÖÆ&VÂ#¢²%v†BFò'W’"Â$>ªvâ×V|:Â%ÒÀ¢"ç&ö7W&VÖVçB×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ’#¢²%'B"Â$Æ–æ‚¶¸vâ%ÒÀ¢"ç&ö7W&VÖVçB×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ"’#¢²%G’"Â%4Â%ÒÀ¢"ç&ö7W&VÖVçB×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ2’#¢²%6÷W&6R"Â$æw^¹6â×V%ÒÀ¢"ç&ö7W&VÖVçB×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒB’#¢²%7FvR"Â$v–’Işªâ%ÒÀ¢"ç&öÆRÖ76VÖ&Ç’×æVÂçæVÂÖÆ&VÂ#¢²$76VÖ&Ç’F‚"Â$Î¹’G,:Ææ‚Îª÷,:%ÒÀ¢"6wV–FVD'V–ÆDW–V'&÷r#¢²%%E2$TE’òuT”DTB54TÔ$Å’"Â,IºbÄ”ä‚´¸dâòŒjş¹¤ärNª¤âÎªå%ÒÀ¢"6wV–FVBÖ'V–ÆB×F—FÆR#¢²$'V–ÆB—BöæRfW&–f–VB7FWBF–ÖR"Â$Îª÷Nº¶ær,k¹¶2l:¶¸6ÒG&G,k¹¶2¶†’F«÷NºV2%ÒÀ¢"6wV–FVD'V–ÆD–çG&ò#¢²%F†Rf–æÂG&v–ær7F—2f—6–&ÆR&÷fRâF†RçVÖ&W&VB6ÆÆ÷WBf÷"F†R7W'&VçB÷W&F–öâ—2†–v†Æ–v‡FVBâ"Â$.ª6ân«Ò†ü:â6¸–æ‚Ç\;Fâ†¸6âF¸²Œ:ÖG,:¦ã²n¸²G,:Ò>ºv,k¹¶2†¸vâNª’>«ÒIkº62Ì:Òî¹V’.ª×Bâ%ÒÀ¢"7'G5&VG”Æ&VÂ#¢²$’†fR6†V6¶VBÆÂ&WV—&VB'G2"Â%L;F’I:2¶¸6ÒG&IºrÆ–æ‚¶¸vâ%ÒÀ¢"6wV–FVE'G4†VF–ær#¢²%'G2f÷"F†—27FW"Â$Æ–æ‚¶¸vâL;–ær¹ò,k¹¶2ì:’%ÒÀ¢"6wV–FVD7F–öä†VF–ær#¢²$FòF†—2"Â%F†òL:2>ªvâÌ:Ò%ÒÀ¢"6wV–FVE&W7VÇD†VF–ær#¢²$W‡V7FVB&W7VÇB"Â$¾«÷B^ª2ÖöærIº6’%ÒÀ¢"6wV–FVE74†VF–ær#¢²%52&Vf÷&R6öçF–çV–ær"Â,I¸R¶¸vâ52I¸2F«÷NºV2%ÒÀ¢"6wV–FVE&Wb#¢²%&Wf–÷W27FW"Â$,k¹¶2G,k¹¶2%ÒÀ¢"6wV–FVD6ö×ÆWFR#¢²$Ö&²7FW6ö×ÆWFR"Â,I:æ‚NªWR†ü:âFŒ:æ‚%ÒÀ¢"6wV–FVDæW‡B#¢²$æW‡B7FW"Â$,k¹¶2F«÷%ÒÀ¢"ç7WÆ–W"ÖÆ–æ·2¦çF‚Ö6†–ÆBƒ’#¢²$U53"Õ326÷W&6R"Â$æw^¹6â×VU53"Õ32%ÒÀ¢"ç7WÆ–W"ÖÆ–æ·2¦çF‚Ö6†–ÆBƒ"’#¢²$ÕScS6÷W&6R"Â$æw^¹6â×VÕScS%ÒÀ¢"ç7WÆ–W"ÖÆ–æ·2¦çF‚Ö6†–ÆBƒ2’#¢²$UdÖFW&–Â6÷W&6R"Â$æw^¹6â×VUd%ÒÀ¢"ç7WÆ–W"ÖÆ–æ·2¦çF‚Ö6†–ÆBƒB’#¢²$†æö’&÷6†÷"Â$>ºÖŒ:ærIªò>ºRŒ:î¹–’%ÒÀ¢"ç7WÆ–W"ÖÆ–æ·2¦çF‚Ö6†–ÆBƒR’#¢²$6÷7Æ’Ö&¶WGÆ6R"Â$6º2I¹26÷7Æ’%ÒÀ¢"ç&ö7W&VÖVçB×æVÂæf–æR×&–çB#¢²%7WÆ–W"Æ–æ·2&R&VfW&Væ6W2Âæ÷BÆö6¶VB4µW2â&V6†V6²7Fö6²ÂF–ÖVç6–öç2Â6†—–ærÂæB6VÆÆW"&VÆ–&–Æ—G’&Vf÷&RW&6†6Râ"Â$<:2Æ–æ²6¸’Ì:æw^¹6âF†Ò¶ª6òÂ6Œk¶Œ;64µRâŒ:7’¶¸6ÒG&Îª’N¹6â¶†òÂ¼:Ö6‚FŒk¹¶2ÂŒ:Òv–òl:I¹’W’L:ÖâG,k¹¶2¶†’×Vâ%ÒÀ¢"æ¶—BÖ&÷VæF'’F—c¦çF‚Ö6†–ÆBƒ’7G&öær#¢²%v†BF†—2ÆææW"&÷fW2"Â%FööÂ†¸vâ6º–ærÖ–æ‚Ikº62%ÒÀ¢"æ¶—BÖ&÷VæF'’F—c¦çF‚Ö6†–ÆBƒ’#¢²%&öÆRvVöÖWG'’Â6ö×öæVçBÆ6VÖVçBÂW&6†6R6FVv÷&–W2ÂWfVçBæÖW2ÂæB÷&FW&VB76VÖ&Ç’â"Â$Œ:Ææ‚Nªær&öÆRÂn¸²G,:ÒÆ–æ‚¶¸vâÂæŒ;6ÒI¹2>ªvâ×VÂL:¦â>»¶¸vâl:Fº’N»Îª÷,:â%ÒÀ¢"æ¶—BÖ&÷VæF'’F—c¦çF‚Ö6†–ÆBƒ"’7G&öær#¢²%v†B7F–ÆÂæVVG2‡VÖâ&ööb"Â%ªvânª¶â>ªvâæ|k¹Ö’Fª×BŒ:2Ö–æ‚%ÒÀ¢"æ¶—BÖ&÷VæF'’F—c¦çF‚Ö6†–ÆBƒ"’#¢²%&VÂÖV7W&VÖVçG2Â6öÖf÷'BÂ–×7B6fWG’Â&GFW'’†VBÂ&F–ò&ævRÂfÇ6RvW7GW&W2ÂæBVæ—G’–çFVw&F–öââ"Â$¼:Ö6‚FŒk¹¶2Fª×BÂI¹’F†şª6’Ü:’ÂâFü:âf6ªÒÂæ†¸wB–âÂ<;6ærÂæªÖâæªvÒI¹–ærL:2l:L:Ö6‚º7Væ—G’â%ÒÀ¢"7&÷F÷G—R×F—FÆR#¢²$U53"VÆV7G&öæ–72Æ""Â%Œk¹öærŞª6‚U53"%ÒÀ¢"7&÷F÷G—Râç6V7F–öâÖ†VF–æræW–V'&÷r#¢²%$ôÄRTÄT5E$ôä”52òU4"d•%5B"Â$Şª4‚D„Tò$ôÄRòU4"E,jş¹¤2%ÒÀ¢"7&÷F÷G—Râç6V7F–öâÖ†VF–ærç6V7F–öâÖæ÷FR#¢²%–÷W"vR&÷föÆÆ÷w2–÷R†W&Rv—F‚—G2÷vâ'G2Âu”òÖÂWfVçBFW7G2ÂæBF÷væÆöF&ÆR&Væ6‚6—&7V—Bâ"Â,Iªò>ºRI:26¸Öâ¹òG&ærN»I’F†Vò6ærI:'’Â¼:†ÒÆ–æ‚¶¸vâÂ<jI¹2u”òÂì;§BFºÒ>»¶¸vâl:Şª6‚,:â<;2F¸2Nª6’â%ÒÀ¢"7&÷F÷G—Ræ6öçG&öÇ2×æVÂâçæVÂÖÆ&VÂ#¢²$FWf–6R6öæf–wW&F–öâ"Â$>ªWRŒ:Ææ‚F†«÷B.¸²%ÒÀ¢&Æ&VÅ¶f÷#Òw&öÆU6VÆV7BuÒ#¢²%6VÆV7FVB&÷"Â,Iªò>ºRI:26¸Öâ%ÒÀ¢&Æ&VÅ¶f÷#ÒwG&ç7÷'E6VÆV7BuÒ#¢²$WfVçBG&ç7÷'B"Â$¼:¦æ‚G'W¸â>»¶¸vâ%ÒÀ¢"æ6öçG&öÇ2×æVÂç7v—F6‚×&÷s¦çF‚Ö6†–ÆBƒb’7G&öær#¢²$ÄTBfVVF&6²"Â%ª6â¹6’ÄTB%ÒÀ¢"æ6öçG&öÇ2×æVÂç7v—F6‚×&÷s¦çF‚Ö6†–ÆBƒb’6ÖÆÂ#¢²%&öÆR6öÆ÷W"æB6¶æ÷vÆVFvVÖVçB"Â$Ü:R&öÆRl:Œ:2æªÖâ%ÒÀ¢"æ6öçG&öÇ2×æVÂç7v—F6‚×&÷s¦çF‚Ö6†–ÆBƒr’7G&öær#¢²%6V6öæF'’fVVF&6²"Â%ª6â¹6’ºR%ÒÀ¢"æ6öçG&öÇ2×æVÂç7v—F6‚×&÷s¦çF‚Ö6†–ÆBƒr’6ÖÆÂ#¢²%f–'&F–öâ÷"6†÷'BÆö6ÂFöæR"Â%'Vær†ş«v2:&Ò,:òæ~ªöâ%ÒÀ¢"æ6—&7V—B×æVÂçæVÂÖÆ&VÂ#¢²$6—&7V—BÖ"Â%<jI¹2Şª6‚%ÒÀ¢"æÖ×æVÂâçæVÂÖÆ&VÂ#¢²%–â6öçG&7B"Â%W’k¹¶26Œ:&â%ÒÀ¢"6F÷væÆöDF–w&Ò#¢²$F÷væÆöBF–w&Òæ§6öâ"Â%Nª6’F–w&Òæ§6öâ%ÒÀ¢"6F÷væÆöD6öæf–r#¢²$F÷væÆöBFWf–6R6öæf–r"Â%Nª6’>ªWRŒ:Ææ‚F†«÷B.¸²%ÒÀ¢"æF÷væÆöB×7F6²#¢²$÷Vâvö·v’"Â$Ş¹òvö·v’%ÒÀ¢"6f–VÆB×F—FÆR#¢²$f–VÆB6–×VÆF÷""Â$Ü;B¸öærG.ªÖâIªWR%ÒÀ¢"6f–VÆBç6V7F–öâÖ†VF–æræW–V'&÷r#¢²$UdTåBD‚òd”ÅU$RDU5B"Â$Å^¹$är>»´¸dâòDºÂÎ¹d’%ÒÀ¢"6f–VÆBç6V7F–öâÖæ÷FR#¢²%FW7B†÷râ–çWBfVVÇ2v†VâFVÆ—fW'’—2FVÆ–VB÷"Æ÷7Bâ"Â$¶¸6ÒG&>ª6Òvœ:2¶†’L:Öâ†¸wR.¸²G.¸R†ş«v2ŞªWB|;6’â%ÒÀ¢"6&Væf–WtÆ&VÂ#¢²$&Væf–Wr"Â$|;62æŒ:Æâ<:&âIªWR%ÒÀ¢%¶FFÖ&Væ×f–WsÒvÆöv–2uÒ#¢²$Æöv–2Ö"Â$.ª6âI¹2Æöv–2%ÒÀ¢"æ&Væ×7FG27â#¢²$&÷72…"Â$Ü:R&÷72%ÒÀ¢"7&W6WE6–Ò#¢²%&W6WB"Â,I«wBÎª’%ÒÀ¢"çFVÆVÖWG'’×æVÂâçæVÂÖÆ&VÂ#¢²$æWGv÷&²6öæF—F–öç2"Â,I¸R¶¸vâŞªær%ÒÀ¢&Æ&VÅ¶f÷#ÒvÆFVæ7•&ævRuÒ7â#¢²$ÆFVæ7’"Â,I¹’G.¸R%ÒÀ¢&Æ&VÅ¶f÷#ÒvÆ÷75&ævRuÒ7â#¢²%6¶WBÆ÷72"Â$ŞªWB|;6’%ÒÀ¢"æÖWG&–2Öw&–BF—c¦çF‚Ö6†–ÆBƒ’7â#¢²%6VçB"Â,I:2~ºÖ’%ÒÀ¢"æÖWG&–2Öw&–BF—c¦çF‚Ö6†–ÆBƒ"’7â#¢²$FVÆ—fW&VB"Â,I:2æªÖâ%ÒÀ¢"æÖWG&–2Öw&–BF—c¦çF‚Ö6†–ÆBƒ2’7â#¢²$Æ÷7B"Â$.¸²ŞªWB%ÒÀ¢"æÖWG&–2Öw&–BF—c¦çF‚Ö6†–ÆBƒB’7â#¢²$frÆFVæ7’"Â%G.¸RD"%ÒÀ¢"æÆörÖÆ&VÂ#¢²$WfVçB7G&VÒ"Â$Ç^¹6ær>»¶¸vâ%ÒÀ¢"66÷&RÖ'V–ÆB×F—FÆR#¢²#3"×7FW&Væ6‚'V–ÆB"Â$Îª÷Şª6‚,:âG&öær3",k¹¶2%ÒÀ¢"æ6÷&RÖ'V–ÆBÖ†VF–æræW–V'&÷r#¢²$4ôÔÔôâU53"4õ$RòôäRTä•B"Â$Ì9T’U53"4…TäròŞ¹…B.¹‚%ÒÀ¢"æ6÷&RÖ'V–ÆBÖ†VF–ærç6V7F–öâÖæ÷FR#¢²$6ö×ÆWFRF†R&WW6&ÆRVÆV7G&öæ–726÷&R†W&RÂF†VâÖ÷VçB—B–çFòF†R6VÆV7FVB&÷W6–ærvRâ"Â$†ü:âFŒ:æ‚Ì;V’I¸vâNºÒL;–ærÎª’Nª’I:'’Â.¹6’~ªöâl:òIªò>ºRI:26¸ÖâF†VòG&ærâ%ÒÀ¢"æ&öÒ×æVÂçæVÂÖÆ&VÂ#¢²$&–ÆÂöbÖFW&–Ç2"Â$.ª6ærnª×BLk%ÒÀ¢"æ&öÒ×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ’#¢²%'B"Â$Æ–æ‚¶¸vâ%ÒÀ¢"æ&öÒ×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ"’#¢²%G’"Â%4Â%ÒÀ¢"æ&öÒ×æVÂF†VBFƒ¦çF‚Ö6†–ÆBƒ2’#¢²%7FvR"Â$v–’Işªâ%ÒÀ¢"æ&öÒ×æVÂæf–æR×&–çB#¢²%&ævW2&RÆææ–ærfÇVW2â&V6†V6²Æ—7F–æw2&Vf÷&RW&6†6RâF†Rf—'7B&ööbW6W2U4"÷vW"â"Â$¶†şª6ærvœ:6¸’I¸2Îª×¾«ò†şª6‚â¶¸6ÒG&Îª’F–â,:âG,k¹¶2¶†’×Vâ.ª6âFºÒIªwRL;–æræw^¹6âU4"â%ÒÀ¢"æwV–FR×æVÂçæVÂÖÆ&VÂ#¢²#3"7FW76VÖ&Ç’"Â$Îª÷,:3",k¹¶2%ÒÀ¢"66ÆV$6†V6¶Æ—7B#¢²$6ÆV"6†V6·2"Â%Œ;6I:æ‚NªWR%ÒÀ¢"æF÷væÆöB×&÷râF—c¦f—'7BÖ6†–ÆB7G&öær#¢²%&W÷6—F÷'’'V–ÆB6²"Â$.¹’Îª÷,:G&öær&W÷6—F÷'’%ÒÀ¢"æF÷væÆöB×&÷râF—c¦f—'7BÖ6†–ÆB#¢²$f—&×v&RÂvö·v’f–ÆW2ÂWfVçB6öçG&7BÂ$ôÒÂæBgVÆÂwV–FRâ"Â$f—&×v&RÂf–ÆRvö·v’ÂW’k¹¶2>»¶¸vâÂ$ôÒl:Œk¹¶ærNª¶âIªw’Iºrâ%ÒÀ¢"æF÷væÆöB×&÷r¦çF‚Ö6†–ÆBƒ’#¢²%vö·v’6—&7V—B"Â$Şª6‚vö·v’%ÒÀ¢"æF÷væÆöB×&÷r¦çF‚Ö6†–ÆBƒ"’#¢²$U53"f—&×v&R"Â$f—&×v&RU53"%ÒÀ¢"æF÷væÆöB×&÷r¦çF‚Ö6†–ÆBƒ2’#¢²$76VÖ&Ç’wV–FR"Â$Œk¹¶ærNª¶âÎª÷%ÒÀ¢&fö÷FW"7ã¦çF‚Ö6†–ÆBƒ"’#¢²%ÆææW"&Wf—6–öâãr+rwV&F–â&öGV7F–öâ&VF–æW72Âæ÷Bf–VÆB6W'F–f–6F–öâ"Â$.ª6âãr+r6‡^ª–â.¸²6«òL:2wV&F–âÂ6Œkª6’6º–æræªÖâF»2I¸¶%Ğ§Ó° ¦6öç7B&öÆT6&EG&ç6ÆF–öç2Ò°¢wV&F–ã¢²$wV&F–â"Â%6†–VÆB"Â$¹’n¸r"Â$¶†œ:¦â%ÒÀ¢v'&–÷#¢²%v'&–÷""Â%7v÷&B"Â$6†«öâ&–æ‚"Â$¶«öÒ%ÒÀ¢&6†W#¢²$&6†W""Â$&÷r"Â$7VærFºr"Â$7Vær%ÒÀ¢7676–ã¢²$7676–â"Â$FvvW'2"Â%<:BFºr"Â$Fò|H6Ò%ÒÀ¢ÖvS¢²$ÖvR"Â%7Ffb"Â%Œ:<k"Â$~ª×’Œ:—%ÒÀ¢&÷73¢²%F—Fâv&FVâ"Â$&÷72†ÖÖW""Â%F—Fâv&FVâ"Â$,;¦&÷72%Ğ§Ó° ¦ÆWB7F—fU&÷Ò&wV&F–â#°¦ÆWB7F—fT76VÖ&Ç•7FWÒ°¦ÆWB7F—fUf—7VÅf–WrÒ&÷fW'f–Wr#°¦ÆWB7W'&VçDÆæwVvRÒ²'f’"Â&Vâ%Òæ–æ6ÇVFW2†Æö6Å7F÷&vRævWD—FVÒ‚&FÆ2ÖÆæwVvR"’’òÆö6Å7F÷&vRævWD—FVÒ‚&FÆ2ÖÆæwVvR"’¢'f’#° ¦6öç7B&öÆW2Ò°¢wV&F–ã¢²Æ&VÃ¢$uT$D”â"Â6öÆ÷#¢"6c#CFB"Â67C¢²FÖvS¢‚ÒÂ7V6–Ã¢²6†–VÆC¢#RÒÒÀ¢&6†W#¢²Æ&VÃ¢$$4„U""Â6öÆ÷#¢"3ff3’"Â67C¢²FÖvS¢‚ÒÂ7V6–Ã¢²FÖvS¢3BÒÒÀ¢7676–ã¢²Æ&VÃ¢$5454”â"Â6öÆ÷#¢"3sSvC’"Â67C¢²FÖvS¢BÒÂ7V6–Ã¢²FÖvS¢C"ÒÒÀ¢7W÷'C¢²Æ&VÃ¢%5Uõ%B"Â6öÆ÷#¢"33–63“2"Â67C¢²†VÃ¢‚ÒÂ7V6–Ã¢²†VÃ¢#"ÒĞ§Ó° ¦6öç7BVÆV7G&öæ–75&öf–ÆW2Ò°¢wV&F–ã¢²Æ&VÃ¢$uT$D”â"ÂæÖS¢$Vv—26†–VÆB"Â6öÆ÷#¢"6c#CFB"ÂFWf–6T–C¢&wV&F–â×6†–VÆBÓ"Â'G3¢²$U53"Õ32"Â$ÕScS"Â%F‡VÖ"G&–vvW""Â%u3#ƒ$"&–Ò"Â%f–'&F–öâÖ÷F÷"%ÒÂ–ç3¢µ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â%F‡VÖ"G&–vvW""Â$<;"æ|;6â<:’%ÒÂ²$u”ó‚"Â$ÄTB&–ÒFF"Â$NºòÆ¸wRÄTBf¸â%ÒÂ²$u”ó#r"Â%f–'&F–öâG&—fW""Â$G&—fW"Ö÷F÷"'Vær%ÒÂ²#UbòtäB"Â%6†&VB÷vW"òw&÷VæB"Â$æw^¹6âòtäB6‡Vær%ÕÒÂWfVçG3¢²$$Äô4µõ5D%B"Â$$Äô4µôTäB"Â%DTåB%ÒÒÀ¢v'&–÷#¢²Æ&VÃ¢%t%$”õ""ÂæÖS¢%VÇ6R7v÷&B"Â6öÆ÷#¢"3ff3’"ÂFWf–6T–C¢'v'&–÷"×7v÷&BÓ"Â'G3¢²$U53"Õ32"Â$ÕScS"Â$–æFW‚G&–vvW""Â%u3#ƒ$"7–æR"Â%f–'&F–öâÖ÷F÷"%ÒÂ–ç3¢µ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â$–æFW‚G&–vvW""Â$<;"æ|;6âG.¸ò%ÒÂ²$u”ó‚"Â$ÄTB7–æRFF"Â$NºòÆ¸wRÄTB>¹ær¶«öÒ%ÒÂ²$u”ó#r"Â%f–'&F–öâG&—fW""Â$G&—fW"Ö÷F÷"'Vær%ÒÂ²#UbòtäB"Â%6†&VB÷vW"òw&÷VæB"Â$æw^¹6âòtäB6‡Vær%ÕÒÂWfVçG3¢²%5E$”´R"Â$„Te•õ5E$”´R"Â%%%’%ÒÒÀ¢&6†W#¢²Æ&VÃ¢$$4„U""ÂæÖS¢$&2&÷r"Â6öÆ÷#¢"3ff3’"ÂFWf–6T–C¢&&6†W"Ö&÷rÓ"Â'G3¢²$U53"Õ32"Â$Æ–æV"†ÆÂ6Vç6÷""Â$G&rÖvæWB"Â%&VÆV6RG&–vvW""Â%7FGW2ÄTG2%ÒÂ–ç3¢µ²$u”ó3B"Â$†ÆÂ6Vç6÷"æÆör"Â$†ÆÂæÆör%ÒÂ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â%&VÆV6RG&–vvW""Â$<;"æª2L:'’%ÒÂ²$u”ó‚"Â$Æ–Ö"ÄTBFF"Â$NºòÆ¸wRÄTB<:æ‚7Vær%ÒÂ²#UbòtäB"Â%6†&VB÷vW"òw&÷VæB"Â$æw^¹6âòtäB6‡Vær%ÕÒÂWfVçG3¢²$E$uõ5D%B"Â$E$uõ$TE’"Â$d•$R%ÒÒÀ¢7676–ã¢²Æ&VÃ¢$5454”â"ÂæÖS¢%6†FRFvvW'2"Â6öÆ÷#¢"3sSvC’"ÂFWf–6T–C¢&7676–âÖFvvW'2Ó"Â'G3¢²$U53"Õ32"Â$ÕScS"Â$w&—G&–vvW""Â%G&'WGFöâ"Â%7FGW2ÄTB%ÒÂ–ç3¢µ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â$w&—G&–vvW""Â$<;"F’>ªvÒ%ÒÂ²$u”ó#b"Â%G&'WGFöâ"Â$ì;§BI«wB.ª·’%ÒÂ²$u”ó‚"Â%7FGW2ÄTBFF"Â$NºòÆ¸wRÄTBG.ªærFŒ:’%ÒÂ²#UbòtäB"Â%6†&VB÷vW"òw&÷VæB"Â$æw^¹6âòtäB6‡Vær%ÕÒÂWfVçG3¢²%T”4µõ5E$”´R"Â$„Te•õ5E$”´R"Â%Ä4UõE$%ÒÒÀ¢ÖvS¢²Æ&VÃ¢$ÔtR"ÂæÖS¢$ÇVÖVâ7Ffb"Â6öÆ÷#¢"33–63“2"ÂFWf–6T–C¢&ÖvR×7FfbÓ"Â'G3¢²$U53"Õ32"Â$ÕScS"Â$45B'WGFöâ"Â%5T4”Â'WGFöâ"Â$÷&"ÄTG2%ÒÂ–ç3¢µ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â$45B'WGFöâ"Â$ì;§B45B%ÒÂ²$u”ó#b"Â%5T4”Â'WGFöâ"Â$ì;§B5T4”Â%ÒÂ²$u”ó‚"Â$÷&"ÄTBFF"Â$NºòÆ¸wRÄTB^ª2>ªwR%ÒÂ²$u”ó#r"Â%f–'&F–öâG&—fW""Â$G&—fW"Ö÷F÷"'Vær%ÕÒÂWfVçG3¢²$45Eô„TÂ"Â$4„ääTÂ"Â%DTÕõ4„”TÄB%ÒÒÀ¢&÷73¢²Æ&VÃ¢$$õ52"ÂæÖS¢%F—Fâv&FVâ"Â6öÆ÷#¢"6Vcf#c‚"ÂFWf–6T–C¢&&÷72Ö†ÖÖW"Ó"Â'G3¢²$U53"Õ32"Â$ÕScS"Â%&–Ö'’G&–vvW""Â%6V6öæF'’G&–vvW""Â$†ÖÖW"²&Ö÷W"ÄTG2%ÒÂ–ç3¢µ²$u”ó#ó#"Â$ÕScS4Dò44Â"Â$ÕScS4Dò44Â%ÒÂ²$u”ó#R"Â%&–Ö'’G&–vvW""Â$<;"6Œ:Öæ‚%ÒÂ²$u”ó#b"Â%6V6öæF'’G&–vvW""Â$<;"ºR%ÒÂ²$u”ó‚"Â$†ÖÖW"ÄTBFF"Â$NºòÆ¸wRÄTBIªwR,;¦%ÒÂ²$u”óbór"Â$&Ö÷W"&V6V—fW"T%C""Â$.¹’æªÖâ:òvœ:T%C"%ÕÒÂWfVçG3¢²%5tTU"Â%4ÄÒ"Â$Ô$²"Â%„4Uõ4´”ÄÂ%ÒĞ§Ó° ¦6öç7BwV&F–å&öGV7F–öâÒ°¢Vã¢°¢Æ–W'3¢°¢²#RÖÒ6÷6ÖWF–2f6R"Â$ÆövòÂF–fgW6W"÷Væ–æw2æB6ögB&WÆ6V&ÆRg&öçB6¶–ââ"Â#RÖÒUd%ÒÀ¢²#ÖÒ7G'V7GW&Â&–ær"Â$Ö–â6†S²&÷VæFVBW&–ÖWFW"v—F‚æò&–v–BgVÆÂ×v–GF‚6÷&Râ"Â#ÖÒUd%ÒÀ¢²%&÷FV7FVB6&ÆR6†ææVÂ"Â$ÄTBæBG&–vvW"v—&–ærv—F‚V–6²6öææV7F÷'2æB7G&–â&VÆ–Vbâ"Â#RÖÒ&÷WFR%ÒÀ¢²%&V"6W'f–6RÆFR"Â%&VÖ÷f&ÆRU53"ô”ÕR6ö×'FÖVçC²—6öÆFVBg&öÒF†Rf÷&V&Òâ"Â#RÖÒUd%ÒÀ¢²$F§W7F&ÆRvV&&ÆRÆ–W""Â%GvòFFVBç–Æöâ7G&2ÇW2&V6†&ÆRF‡VÖ"G&–vvW"â"Â##RÖÒvV&&–ær%Ğ¢ÒÀ¢w&÷W3¢°¢²F—FÆS¢$%U’äõr+rd•BÔô4²ÕU"Â—FV×3¢µ²$F÷V&ÆR×vÆÂ6&F&ö&B"Â#"6†VWG2+rgVÆÂ×6—¦Rf—B&ööb%ÒÂ²%W"FR²Ö&¶W""Â#6WB+r÷WFÆ–æRæB—FW&F–öâ%ÒÂ²##RÖÒç–ÆöâvV&&–ær"Â#ãRÒ+r7G&÷6—F–öâ&ööb%ÒÂ²$F§W7F&ÆR'V6¶ÆW2"Â#"+rfW&–g’V–6²&VÆV6R%ÒÂ²$Udöff7WB"Â%6ÖÆÂ–V6R+rVFvRæBF†W6—fRFW7B%ÕÒÒÀ¢²F—FÆS¢$%U’eDU"d•B52"Â—FV×3¢µ²$U53"Õ32FWd¶—B"Â#+rU4"Öf—'7B6öçG&öÆÆW"%ÒÂ²$ÕScSÖöGVÆR"Â#+r6VçG&RÖÖ÷VçFVB”ÕR%ÒÂ²$ÖöÖVçF'’F‡VÖ"G&–vvW""Â#+rFVÆ–&W&FR–çWB%ÒÂ²%u3#ƒ$"7G&—"Â#Ò+r&÷FV7FVB&–ÒfVVF&6²%ÒÂ²%v—&R²6öææV7F÷'2"Â#6WB+r&VÖ÷f&ÆR6W'f–6R6÷&R%ÕÒĞ¢ÒÀ¢vFW3¢°¢²$s+rvÖWÆ’6öçG&7Bg&÷¦Vâ"Â$$Äô4µõ5D%BÂ$Äô4µôTäBæBDTåBæÖW2&R66WFVB'’F†RvÖRâ%ÒÀ¢²$s+r6&F&ö&Bf—B52"Â%F‡&VR–çFVæFVBW6W'2vV"—Bf÷"f—fRÖ–çWFW3²f—6–öâÂw&—7BæBV–6²&VÖ÷fÂÆÂ72â%ÒÀ¢²$s"+rU4"VÆV7G&öæ–7252"Â#G&–vvW"öÖ÷F–öâ7–6ÆW2v—F‚æòGWÆ–6FRWfVçBÂ&W6WBÂ6†÷'B÷"Vç6fR†VBâ%ÒÀ¢²$s2+r–çFVw&FVB6†VÆÂ52"Â#36ÒÖBG&÷æB6&ÆRVÆÂ6†V6·2&WfVÂæò†&BVFvRÂÆö÷6RÆ–W"÷"–æ6†VBv—&Râ%ÒÀ¢²$sB+rf–VÆB&V†V'6Â52"Â$f—fRÖÖ–çWFRÖF6‚v—F‚æò&öG’6öçF7BÂfÇ6R&Æö6²ÂF—66öÖf÷'B÷"&V6÷fW'’f–ÇW&Râ%Ğ¢Ğ¢ÒÀ¢f“¢°¢Æ–W'3¢°¢²$Ş«wBG&ærG,:ÒRÖÒ"Â$ÆövòÂ¶†RL:â<:ærl:Î¹·Ş«wBŞ¸Ò<;2F¸2F†’F«òâ"Â$UdRÖÒ%ÒÀ¢²%l;&ær¾«÷B>ªWRÖÒ"Â%NªòŒ:Ææ‚6Œ:Öæƒ²f¸â&òG,;&âÂ¶Œ;FærL;–ærÌ;V’>º–ær6ª’Fü:â6†¸R.¹–ærâ"Â$UdÖÒ%ÒÀ¢²%,:6æ‚L:'’<;2.ª6òn¸r"Â$L:'’ÄTBl:<;"L;–ærIªwRî¹’æ†æ‚<;–ær6¹ær¼:–òâ"Â%,:6æ‚RÖÒ%ÒÀ¢²%NªVÒ.ª6òG,:ÂŞ«wB6R"Â$¶†öærU53"ô”ÕRFŒ:ò.¹Ö’Â<:6‚Ç’¶¸ö’>«6ærF’â"Â$UdRÖÒ%ÒÀ¢²$Î¹·IVòI¸R6¸–æ‚"Â$†’V’ç–Æöâ<;2I¸vÒ<;–ær<;"æ|;6â<:’N¸Rn¹¶’N¹¶’â"Â%V’#RÖÒ%Ğ¢ÒÀ¢w&÷W3¢°¢²F—FÆS¢$ÕTät’+rŞª¥RDºÂI¹‚nº¤"Â—FV×3¢µ²$6'Föâ†’Î¹·"Â#"NªVÒ+rFºÒ¼:Ö6‚FŒk¹¶2Fª×B%ÒÂ²$,H6ærL:Öæ‚vªW’²,;§B"Â#.¹’+rn«Ò&œ:¦âl:6¸–æ‚>ºÖ%ÒÂ²%V’ç–Æöâ#RÖÒ"Â#ÃRÒ+rFºÒn¸²G,:ÒV’%ÒÂ²$¶Œ;6I¸R6¸–æ‚"Â#"+r¶¸6ÒG&FŒ:òæ†æ‚%ÒÂ²$Ö«öærUdFº¶"Â$Şª6æ‚æ¸ò+rFºÒ>ªæ‚l:¶Vò%ÕÒÒÀ¢²F—FÆS¢$ÕT4R´„’d•B52"Â—FV×3¢µ²$U53"Õ32FWd¶—B"Â#+r.¹’I¸R¶†¸6âkRFœ:¦âU4"%ÒÂ²$ÖöGVÆRÕScS"Â#+r”ÕRI«wBNª’L:&Ò%ÒÂ²$<;"æ|;6â<:’æªVâæª2"Â#+r–çWB6ºrI¹–ær%ÒÂ²$Nª6’u3#ƒ$""Â#Ò+rÄTBf¸â<;2.ª6òn¸r%ÒÂ²$L:'’²IªwRî¹’"Â#.¹’+rÌ;V’.ª6òG,:ÂFŒ:ò.¹Ö’%ÕÒĞ¢ÒÀ¢vFW3¢°¢²$s+r¶Œ;6vÖWÆ’6öçG&7B"Â$vÖRI:26ªWæªÖâL:¦â$Äô4µõ5D%BÂ$Äô4µôTäBl:DTåBâ%ÒÀ¢²$s+rŞª·R6'Föâd•B52"Â$&æ|k¹Ö’N»¶«öâIVòRŒ;§C²NªvÒæŒ:ÆâÂ>¹RF’l:FŒ:òæ†æ‚I¸RIªBâ%ÒÀ¢²$s"+rŞª6‚U4"52"Â#6‡R¾»2<;"ö6‡W¸6âI¹–ær¶Œ;FærÎ«wWfVçBÂ&W6WBÂ6ª×†ş«v2ì;6æræwW’†¸6Òâ%ÒÀ¢²$s2+rn¸òL:Ö6‚º752"Â%Fª236Ò‡^¹ærFª6Òl:¼:–òL:'’¶Œ;FærÎ¹’>ªæ‚>º–ærÂ&öærÎ¹·†ş«v2¾«—L:'’â%ÒÀ¢²$sB+rF¸VâNª×G.ªÖâ52"Â%G.ªÖâRŒ;§B¶Œ;FærF«÷Œ;¦2<jF¸2Â&Æö6²vª2Â¶Œ;26¸·R†ş«v2Î¹v’¶Œ;F’ºV2â%Ğ¢Ğ¢Ğ§Ó° ¦6öç7B–äÖÒ°¢²–ã¢$u”ó#R"ÂæÖS¢$45B'WGFöâ"Â6öÆ÷#¢"3ff3’"Â÷F–öæÃ¢fÇ6RÒÀ¢²–ã¢$u”ó#b"ÂæÖS¢%5T4”Â'WGFöâ"Â6öÆ÷#¢"3sSvC’"Â÷F–öæÃ¢fÇ6RÒÀ¢²–ã¢$u”ó‚"ÂæÖS¢$ÄTBFF"Â6öÆ÷#¢"6c#CFB"Â÷F–öæÃ¢&ÆVB"ÒÀ¢²–ã¢$u”ó#r"ÂæÖS¢$'W§¦W"6–væÂ"Â6öÆ÷#¢"6c#–cF""Â÷F–öæÃ¢&'W§¦W""ÒÀ¢²–ã¢%d”â"ÂæÖS¢#UbfVVF&6²÷vW""Â6öÆ÷#¢"6SSƒS‚"Â÷F–öæÃ¢&fVVF&6²"ÒÀ¢²–ã¢$täB"ÂæÖS¢%6†&VBw&÷VæB"Â6öÆ÷#¢"3sƒƒ‚"Â÷F–öæÃ¢fÇ6RĞ¥Ó° ¦6öç7B–äæÖW5f’Ò°¢$45B'WGFöâ#¢$ì;§B45B"Â%5T4”Â'WGFöâ#¢$ì;§B5T4”Â"Â$ÄTBFF#¢$NºòÆ¸wRÄTB"À¢$'W§¦W"6–væÂ#¢%L:Öâ†¸wR'W§¦W""Â#UbfVVF&6²÷vW"#¢$æw^¹6âª6â¹6’Ub"Â%6†&VBw&÷VæB#¢$täB6‡Vær §Ó° ¦6öç7B&öÒÒ°¢²$U53"FWd¶—BcÂ3–â"Â#"Â$&Væ6‚%ÒÂ²%u3#ƒ$"bÄTB&–ær"Â#"Â$&Væ6‚%ÒÀ¢²#"ÖÒÖöÖVçF'’'WGFöâ"Â#""Â$&Væ6‚%ÒÂ²%76—fR–W¦ò'W§¦W""Â#"Â$&Væ6‚%ÒÀ¢²#sD„5C#RÆWfVÂ6†–gFW""Â#"Â$&Væ6‚%ÒÂ²#33ê’&W6—7F÷""Â#"Â$&Væ6‚%ÒÀ¢²#+Tb66—F÷""Â#"Â$&Væ6‚%ÒÂ²$†Æb6—¦R'&VF&ö&B"Â#"Â$&Væ6‚%ÒÀ¢²$GWöçB§V×W"6WB"Â#"Â$&Væ6‚%ÒÂ²%U4"FF6&ÆR"Â#"Â$&Væ6‚%ÒÀ¢²#UbU4"÷vW"&æ²"Â#"Â$f–VÆB%ÒÂ²%&÷F÷G—RVæ6Æ÷7W&R"Â#"Â$f–VÆB%ÒÀ¢²%U4"÷vW"ÖWFW""Â#"Â%&V6öÖÖVæFVB%Ğ¥Ó° ¦6öç7BwV–FU7FW2Ò°¢$6†V6²WfW'’—FVÒv–ç7BF†R&–ÆÂöbÖFW&–Ç2â"Â$6öæf—&ÒF†RU53"—23–âFWd¶—Bc&ö&Bâ"À¢%W6RU4"÷vW"öæÇ’f÷"F†Rf—'7B'V–ÆBâ"Â$¶VWF†RU53"F—66öææV7FVBv†–ÆRv—&–ærâ"À¢%Æ6RF†RU53"7&÷72F†R'&VF&ö&B6VçFW"vâ"Â$–FVçF–g’d”âÂ5c2ÂtäBÂu”ó‚Âu”ó#RÂu”ó#bÂæBu”ó#râ"À¢$Ö&²F†R45BæB5T4”Â'WGFöç2â"Â%Æ6R&÷F‚'WGFöç27&÷72F†R'&VF&ö&B6VçFW"vâ"À¢$6öææV7BöæR45B6öçF7BFòu”ó#Râ"Â$6öææV7BF†R÷÷6—FR45B6öçF7BFòtäBâ"À¢$6öææV7BöæR5T4”Â6öçF7BFòu”ó#bâ"Â$6öææV7BF†R÷÷6—FR5T4”Â6öçF7BFòtäBâ"À¢$6†V6²F†BæV—F†W"'WGFöâ6öææV7G2d”âFòtäBâ"Â$6öæf—&ÒF†Rf—&×v&RW6W2”åUEõTÄÅUf÷"&÷F‚'WGFöç2â"À¢%Æ6RF†R76—fR'W§¦W"öâF†R'&VF&ö&Bâ"Â$6öææV7B'W§¦W"÷6—F—fRFòu”ó#râ"À¢$6öææV7B'W§¦W"æVvF—fRFòtäBâ"Â%Æ6RF†RsD„5C#RÆWfVÂ6†–gFW"7&÷72F†R6VçFW"vâ"À¢$6öææV7BÆWfVÂ6†–gFW"d42Fòd”âæBtäBFòtäBâ"Â%F–RF†R6VÆV7FVB6†ææVÂVæ&ÆR–âÆ÷râ"À¢$6öææV7Bu”ó‚FòF†R6VÆV7FVBÆWfVÂ6†–gFW"–çWBâ"Â$6öææV7B—G2ÖF6†–ær÷WGWBF‡&÷Vv‚33ê’FòÄTB&–ærD”ââ"À¢$6öææV7BÄTB&–ærd42Fòd”ââ"Â$6öææV7BÄTB&–ærtäBFòtäBâ"À¢%Æ6RF†R+Tb66—F÷"7&÷72&–ærd42æBtäBÂÖF6†–æröÆ&—G’â"Â$6ö×&RWfW'’v—&Rv—F‚F†R–âF&ÆR&Vf÷&R6öææV7F–ærU4"â"À¢$6†V6²f÷"Æö÷6R7G&æG2æB66–FVçFÂ6†÷'G2â"Â$6öææV7BF†RU53"v—F‚FF6&ÆRU4"6&ÆRâ"À¢$'V–ÆBæBWÆöBf—&×v&R÷7VÆÂÖ÷&"v—F‚ÆFf÷&Ô”òâ"Â$÷Vâ6W&–ÂÖöæ—F÷"BS#&VBæBv—Bf÷"DÄ5õ$õõ$TE’â"À¢%&W7245BÂF†Vâ5T4”Ã²fW&–g’¥4ôâÂÆ–v‡BÂ6÷VæBÂæB6ööÆF÷vââ"Â$F—66öææV7BU4"ÂÆ&VÂF†R&Wf—6–öâÂæB&V6÷&Bç’F–ffW&Væ6R&Vf÷&RVæ6Æ÷7W&Rv÷&²â ¥Ó° ¦6öç7BwV–FU7FW5f’Ò°¢,I¹’6†«÷RNº¶ærÜ;6ân¹¶’.ª6ærnª×BLkâ"Â%Œ:2æªÖâU53"Ì:&ö&BFWd¶—BcÆşª’36Œ:&ââ"À¢$6¸’L;–æræw^¹6âU4"6†ò.ª6âÎª÷IªwRFœ:¦ââ"Â$æ~ª÷BU53"¶¸ö’æw^¹6âG&öærÌ;¦2I’L:'’â"À¢,I«wBU53".ªö2V,:6æ‚vºö'&VF&ö&Bâ"Â%Œ:2I¸¶æ‚d”âÂ5c2ÂtäBÂu”ó‚Âu”ó#RÂu”ó#bl:u”ó#râ"À¢,I:æ‚NªWRì;§B45Bl:5T4”Ââ"Â,I«wB†’ì;§B.ªö2V,:6æ‚vºö'&VF&ö&Bâ"À¢$î¹’Ş¹—B6Œ:&â45Bl:òu”ó#Râ"Â$î¹’6Œ:&â45BI¹’F¸vâl:òtäBâ"À¢$î¹’Ş¹—B6Œ:&â5T4”Âl:òu”ó#bâ"Â$î¹’6Œ:&â5T4”ÂI¹’F¸vâl:òtäBâ"À¢$¶¸6ÒG&¶Œ;Færì;§Bì:òî¹’Nª÷Bd”ân¹¶’täBâ"Â%Œ:2æªÖâf—&×v&RL;–ær”åUEõTÄÅU6†ò>ª2†’ì;§Bâ"À¢,I«wB'W§¦W"FºRI¹–ærÌ:¦â'&VF&ö&Bâ"Â$î¹’>»2Lkjær'W§¦W"l:òu”ó#râ"À¢$î¹’>»2:&Ò'W§¦W"l:òtäBâ"Â,I«wB”26‡W¸6âŞº–2sD„5C#R.ªö2V,:6æ‚vºöâ"À¢$î¹’d42>ºv”26‡W¸6âŞº–2l:òd”âl:täBl:òtäBâ"Â$¼:–ò6Œ:&âVæ&ÆR>ºv¼:¦æ‚Ikº626¸Öâ‡^¹ærŞº–2FªWâ"À¢$î¹’u”ó‚l:òIªwRl:ò¼:¦æ‚I:26¸Öââ"Â$î¹’IªwR&Lkjærº–ærVI¸vâG.¹ò33ê’N¹¶’D”â>ºvl;&ærÄTBâ"À¢$î¹’d42l;&ærÄTBl:òd”ââ"Â$î¹’täBl;&ærÄTBl:òtäBâ"À¢,I«wBNºR+Tbvºöd42l:täB>ºvl;&ærÄTBÂI;¦ær>»2â"Â%6òNº¶ærL:'’n¹¶’.ª6ær6Œ:&âG,k¹¶2¶†’>ªöÒU4"â"À¢$¶¸6ÒG&>º6’L:'’Î¸öærl:æwW’<j6ª×Şª6‚â"Â$¾«÷Bî¹’U53".«ær<:U4"<;2G'W¸âNºòÆ¸wRâ"À¢$'V–ÆBl:îªf—&×v&R÷7VÆÂÖ÷&".«ærÆFf÷&Ô”òâ"Â$Ş¹ò6W&–ÂÖöæ—F÷"S#&VBl:Iº6’DÄ5õ$õõ$TE’â"À¢$æªVâ45B.¹6’5T4”Ã²¶¸6ÒG&¥4ôâÂ:æ‚<:ærÂ:&ÒF†æ‚l:6ööÆF÷vââ"Â%,;§BU4"ÂL:âæŒ:6â†œ:¦â.ª6âl:v†’Îª’6’¶Œ:2G,k¹¶2¶†’Ì:Òn¸òâ ¥Ó° ¦6öç7BwV–FVD6ÆÆ÷WG2Ò°¢wV&F–ã¢µ³ÒÂ³"Â2ÂBÂUÒÂ³ÒÂ³5ÒÂ³EÒÂ³UÒÂ³"ÂeÒÂ³Â"Â2ÂBÂRÂeÕÒÀ¢v'&–÷#¢µ³ÂeÒÂ³2ÂBÂUÒÂ³ÒÂ³%ÒÂ³5ÒÂ³BÂUÒÂ³eÒÂ³Â"Â2ÂBÂRÂeÕÒÀ¢&6†W#¢µ³Â%ÒÂ³2ÂBÂUÒÂ³%ÒÂ³2ÂEÒÂ³UÒÂ³ÂeÒÂ³2ÂEÒÂ³Â"Â2ÂBÂRÂeÕÒÀ¢7676–ã¢µ³Â%ÒÂ³2ÂBÂRÂeÒÂ³Â%ÒÂ³5ÒÂ³BÂUÒÂ³%ÒÂ³eÒÂ³Â"Â2ÂBÂRÂeÕÒÀ¢ÖvS¢µ³Â"ÂeÒÂ³Â2ÂBÂUÒÂ³"ÂeÒÂ³ÒÂ³EÒÂ³UÒÂ³2ÂEÒÂ³Â"Â2ÂBÂRÂeÕÒÀ¢&÷73¢µ³ÒÂ³"Â2ÂBÂUÒÂ³ÒÂ³BÂUÒÂ³eÒÂ³"ÂRÂeÒÂ³2ÂEÒÂ³Â"Â2ÂBÂRÂeÕĞ§Ó° ¦6öç7BwV–FVD6÷’Ò°¢Vã¢°¢F—FÆW3¢²$Ö¶RgVÆÂ×6—¦Rf—BÖö6²×W"Â%&÷fRF†RVÆV7G&öæ–72÷fW"U4""Â$'V–ÆBF†R6fR÷WFW"6†VÆÂ"Â$–ç7FÆÂæBÆ–vâF†RÖ÷F–öâ6Vç6÷""Â$–ç7FÆÂ6öçG&öÇ2æB&VÖ÷f&ÆRv—&–ær"Â$–ç7FÆÂ&÷FV7FVBÆ–v‡BfVVF&6²"Â$6Æ÷6RF†R6W'f–6V&ÆRvV&&ÆR7G'V7GW&R"Â$6Æ–'&FRæB6ö×ÆWFRF†R'W6RFW7B%ÒÀ¢&W7VÇG3¢²$÷vW&ÆW72Öö6²×WF†B6†÷w26—¦RÂ&V6‚Âw&—æB6ÆV&æ6R&Vf÷&Rç’W‡Vç6—fRv÷&²â"Â$V6‚–çWBV'2öæ6R–â6W&–ÂÖöæ—F÷"æBF†RÄTG2&W7öæBv—F†÷WB&W6WG2÷"†÷B'G2â"Â$Æ–v‡BÂ&÷VæFVB&öG’v—F‚æòW‡÷6VB&–v–Bö–çBæBâ÷Vâ6W'f–6R6f—G’â"Â%F†R6Vç6÷"6ææ÷B6†–gC²—G2†W2ÖF6‚F†RF—&V7F–öâ6†÷vâöâF†RG&v–ærâ"Â$WfW'’6öçG&öÂ—2&V6†&ÆRÂ7G&–â×&VÆ–WfVBæBF—66öææV7G2v—F†÷WB7WGF–ærv—&Râ"Â$Æ–v‡B—2f—6–&ÆRF‡&÷Vv‚F–fgW6W#²v—&W26ææ÷B&R–æ6†VBGW&–æræ÷&ÖÂW6Râ"Â%F†R&÷f—G2F†R–çFVæFVBW6W'2Â7F—2F§W7F&ÆRæB÷Vç2v–âf÷"&W—"â"Â$Æ&VÆÆVB&Wf—6–öâv—F‚&V6÷&FVBFW7Mõó‹h‘éì¶»§q«^wÃ†îmŒ»äˆô°(€€€½Ù•ÉÙ¥•Üè€¡­¥Ğ°…±±½ÕÑÌ¤€ôøQ¿¸‹†îd€‘í­¥Ğ¹¹…µ•ô¸…ŒÛ†î,ÑË´€‘í…±±½ÕÑÌ¹©½¥¸ ˆ€¬€ˆ¥ôƒE…¹œƒGÃ†îŒ³´Ï…¹œ¡¼Ñ¡…¼Ó…Œ»ä¹€°(€€€‘•Ñ…¥°è€¡¹…µ•Ì¤€ôø†êµ¸†ê¹ €‘í¹…µ•Ì¹©½¥¸ ˆì€ˆ¥ô¸ƒC†îE¤¡§†êıÔƒGé¹œÛ†î,ÑË´ƒG…¹ Ï†îDÑËÃ†îmŒ­¡¤†îDƒG†î-¹ ¹€°(€€€É•ÍÕ±Ğè€¡ÍÑ•À¤€ôøQË†ê…¹œÑ£…¤“†îÄ­§†êı¸Í…Ô‹Ã†îmŒ€‘íÍÑ•Áô¸†ê•Ô·Ôá…¹ Ñ£†î¡§†î¸¹£†î½¹œÛå¹œƒGŒƒGÃ†îŒã†î´³ôÑÉ½¹œÅÕäÑË±¹ ¹€°(€€€±½…Ñ¥½¸è€‰3†ê½ÀÓ†ê…¤ƒG‰äˆ°(€€€½µÁ±•Ñ•è€‰/†êıĞÅ×†êŒÍ…Ô‹Ã†îmŒˆ(€ô)ôì()±•Ğ‰±Õ•ÁÉ¥¹ÑI•¹‘•É%€ô€Àì()™Õ¹Ñ¥½¸‰±Õ•ÁÉ¥¹ÑMÙœ¡­¥¹°½ÁÑ¥½¹Ì€ôíô¤ì(€½¹ÍĞÙ¥•İ	½à€ô½ÁÑ¥½¹Ì¹Ù¥•İ	½àñğ€ˆÀ€À€ØÈÀ€ÌØÀˆì(€½¹ÍĞÁ…ÑÑ•É¹%€ô‰ÀµÉ¥´‘ì¬­‰±Õ•ÁÉ¥¹ÑI•¹‘•É%‘õ€ì(€½¹ÍĞ™É…µ”€ô€¡½¹Ñ•¹Ğ°±…‰•°¤€ôø€ñÍÙœÙ¥•İ	½àôˆ‘íÙ¥•İ	½áôˆÉ½±”ô‰¥µœˆ…É¥„µ±…‰•°ôˆ‘í±…‰•±ô¹Õµ‰•É•½¹•ÁĞ…ÍÍ•µ‰±ä‘É…İ¥¹œˆø(€€€€ñ‘•™ÌøñÁ…ÑÑ•É¸¥ôˆ‘íÁ…ÑÑ•É¹%‘ôˆİ¥‘Ñ ôˆÈÀˆ¡•¥¡ĞôˆÈÀˆÁ…ÑÑ•É¹U¹¥ÑÌô‰ÕÍ•ÉMÁ…•=¹UÍ”ˆøñÁ…Ñ ô‰4ÈÀ€Á ÁXÈÀˆ™¥±°ô‰¹½¹”ˆÍÑÉ½­”ôˆŒÄàÌÔĞÄˆÍÑÉ½­”µİ¥‘Ñ ôˆÄˆ¼øğ½Á…ÑÑ•É¸øğ½‘•™Ìø(€€€€ñÉ•Ğİ¥‘Ñ ôˆØÈÀˆ¡•¥¡ĞôˆÌØÀˆ™¥±°ô‰ÕÉ° Œ‘íÁ…ÑÑ•É¹%‘ô¤ˆ¼ø(€€€€ñœ±…ÍÌô‰‰±Õ•ÁÉ¥¹Ğµ½‰©•Ğˆø‘í½¹Ñ•¹Ñôğ½œø(€€€€ñÁ…Ñ ±…ÍÌô‰‘¥µ•¹Í¥½¸µ±¥¹”ˆô‰4ÜÀ€ÌÌÁ ÔÔÀ4ÜÀ€ÌÈÉXÌÌà4ÔÔÀ€ÌÈÉXÌÌàˆ¼ø(€€ğ½ÍÙœù€ì(€½¹ÍĞ‘½Ğ€ô€¡¸°à°ä°Ñà°Ñä¤€ôø€ñœ±…ÍÌô‰‰Àµ…±±½ÕĞˆ‘…Ñ„µ…±±½ÕĞôˆ‘í¹ôˆøñÁ…Ñ ô‰4‘íáô€‘íåõ0‘íÑáô€‘íÑåôˆ¼øñ¥É±”àôˆ‘íáôˆäôˆ‘íåôˆÈôˆÄÌˆ¼øñÑ•áĞàôˆ‘íáôˆäôˆ‘íä€¬€ÑôˆÑ•áĞµ…¹¡½Èô‰µ¥‘‘±”ˆø‘í¹ôğ½Ñ•áĞøğ½œù€ì(€¥˜€¡­¥¹€ôôô€‰Í¡¥•±ˆ¤É•ÑÕÉ¸™É…µ”¡€(€€€€ñÁ…Ñ ô‰4ÌÄÀ€ÌÕĞÈÀ€ÌÔ€ĞàÔ€àÌ€ĞÜØ€ÄÜÑĞØÜ€ÈØĞ€Ìäà€ÌÀØ€ÌÄÀ€ÌÈÁÈÈÈ€ÌÀØ€ÄÔÌ€ÈØĞ€ÄĞĞ€ÄÜÑÄÌÔ€àÌ€ÈÀÀ€ÌÔ€ÌÄÀ€ÌÕhˆ¼ø(€€€€ñÁ…Ñ ô‰4ÌÄÀ€ÜÁÌàà€ÜÀ€ĞÌÔ€ÄÀÌ€ĞÌÀ€ÄÜÁĞÈĞ€ÈÌÌ€ÌÜØ€ÈØÜ€ÌÄÀ€ÈàÅÈĞĞ€ÈØÜ€ÄäØ€ÈÌÌ€ÄäÀ€ÄÜÁÄàÔ€ÄÀÌ€ÈÌÈ€ÜÀ€ÌÄÀ€ÜÁhˆ¼ø(€€€€ñ¥É±”àôˆÌÄÀˆäôˆÄÜÄˆÈôˆÔÈˆ¼øñÁ…Ñ ô‰4ÈÌØ€ÄÄÙDÌÄÀ€ÜØ€ÌàĞ€ÄÄÙ4ÈÌØ€ÈÈáDÌÄÀ€ÈØà€ÌàĞ€ÈÈàˆ¼ø(€€€€‘í‘½Ğ Ä°ÄäÄ°ÜÈ°ÄÄà°ÌÈ¥ô‘í‘½Ğ È°ÌÄÀ°ÄÜÄ°ÔÈÀ°ÄÀĞ¥ô‘í‘½Ğ Ì°ÌÄÀ°ÄÌÈ°äĞ°ÄÌÔ¥ô‘í‘½Ğ Ğ°Ìàà°ÈÄÀ°ÔÌÀ°ÈÌà¥ô‘í‘½Ğ Ô°ĞÌÀ°ÄÜÀ°ÔÌÌ°ÄØÌ¥ô‘í‘½Ğ Ø°ÈĞÀ°ÈÈÔ°ÄÀĞ°ÈÜÌ¥õ€°€‰•¥ÌM¡¥•±ˆ¤ì(€¥˜€¡­¥¹€ôôô€‰Íİ½Éˆ¤É•ÑÕÉ¸™É…µ”¡€(€€€€ñÁ…Ñ ô‰4ÈàÈ€ÌÑ0ÌÌà€ÌÑ0ÌÔÌ€ÈÌå0ÌÈØ€ÈÜÑ ÈäÑ0ÈØÜ€ÈÌåhˆ¼øñÁ…Ñ ô‰4ÌÄÀ€ØÉXÈÌàˆ¼ø(€€€€ñÁ…Ñ ô‰4ÈÈÔ€ÈÔÁ ÌäÕ0ÌÜà€ÈÜå ÈĞÉhˆ¼øñÉ•ĞàôˆÈäÄˆäôˆÈÜÌˆİ¥‘Ñ ôˆÌàˆ¡•¥¡ĞôˆØĞˆÉàôˆÄÌˆ¼øñ¥É±”àôˆÌÄÀˆäôˆÌÌÜˆÈôˆÄàˆ¼ø(€€€€‘í‘½Ğ Ä°ÈàĞ°ÜÔ°ÄÄà°Ğà¥ô‘í‘½Ğ È°ÌÄÀ°ÄÌÔ°ÔÀÀ°ØÈ¥ô‘í‘½Ğ Ì°ÌĞÈ°ÈÔÀ°ÔÈÀ°ÄäÀ¥ô‘í‘½Ğ Ğ°ÌÄÈ°Èàä°ÄÀÈ°ÈĞÈ¥ô‘í‘½Ğ Ô°ÌÄÀ°ÌÄĞ°ĞäØ°ÌÀÈ¥ô‘í‘½Ğ Ø°ÌÄÀ°ÌĞÀ°ÄÄØ°ÌÌÌ¥õ€°€‰AÕ±Í”Mİ½Éˆ¤ì(€¥˜€¡­¥¹€ôôô€‰‰½Üˆ¤É•ÑÕÉ¸™É…µ”¡€(€€€€ñÁ…Ñ ô‰4ÄäĞ€ĞÕDàà€ÄàÀ€ÄäĞ€ÌÄÕ4ĞÈØ€ĞÕDÔÌÈ€ÄàÀ€ĞÈØ€ÌÄÔˆ¼øñÁ…Ñ ô‰4ÄäĞ€ĞÕ0ÌÄÀ€ÄàÁ0ÄäĞ€ÌÄÕ4ĞÈØ€ĞÕ0ÌÄÀ€ÄàÁ0ĞÈØ€ÌÄÔˆ¼ø(€€€€ñÉ•ĞàôˆÈäÄˆäôˆÄÈØˆİ¥‘Ñ ôˆÌàˆ¡•¥¡ĞôˆÄÀàˆÉàôˆÄÈˆ¼øñÁ…Ñ ô‰4ÌÄÀ€äÉXÈØàˆ¼øñ¥É±”àôˆÌÄÀˆäôˆÄàÀˆÈôˆÄÀˆ¼ø(€€€€‘í‘½Ğ Ä°ÄÜà°ÜÈ°ÜĞ°ĞĞ¥ô‘í‘½Ğ È°ÌÄÀ°äÈ°ÔÀÀ°ĞØ¥ô‘í‘½Ğ Ì°ÌÄÀ°ÄÔÄ°ÄÀÔ°ÄÌÔ¥ô‘í‘½Ğ Ğ°ÌÄÀ°ÄàÀ°ÔÈÀ°ÄÜØ¥ô‘í‘½Ğ Ô°ÌÄÀ°ÈÄĞ°ÄÀÀ°ÈÔÀ¥ô‘í‘½Ğ Ø°ĞÌÀ°äÈ°ÔÈØ°ÄÄÈ¥õ€°€‰ÉŒ	½Üˆ¤ì(€¥˜€¡­¥¹€ôôô€‰‘…•Èˆ¤É•ÑÕÉ¸™É…µ”¡€(€€€€ñÁ…Ñ ô‰4ÄÔà€ÔÙ0ÄäØ€ÔÙ0ÈÀä€ÈÄÙ0ÄÜÜ€ÈĞá0ÄĞÔ€ÈÄÙhˆ¼øñÁ…Ñ ô‰4ÄÄà€ÈÌå ÈÌÙ0ÈÈÄ€ÈØÍ ÄÌÍhˆ¼øñÉ•ĞàôˆÄÔàˆäôˆÈØÀˆİ¥‘Ñ ôˆÌàˆ¡•¥¡ĞôˆØĞˆÉàôˆÄÈˆ¼ø(€€€€ñÁ…Ñ ô‰4ĞÄĞ€ÔÙ0ĞÔÈ€ÔÙ0ĞØÔ€ÈÄÙ0ĞÌÌ€ÈĞá0ĞÀÄ€ÈÄÙhˆ¼øñÁ…Ñ ô‰4ÌÜĞ€ÈÌå ĞäÉ0ĞÜÜ€ÈØÍ Ìàåhˆ¼øñÉ•ĞàôˆĞÄĞˆäôˆÈØÀˆİ¥‘Ñ ôˆÌàˆ¡•¥¡ĞôˆØĞˆÉàôˆÄÈˆ¼ø(€€€€‘í‘½Ğ Ä°ÄÜÜ°äÈ°ÜĞ°ÔÈ¥ô‘í‘½Ğ È°ĞÌÌ°äÈ°ÔĞà°ĞØ¥ô‘í‘½Ğ Ì°ÈÀÈ°ÈÌä°äÄ°ÄäÔ¥ô‘í‘½Ğ Ğ°ÄÜÜ°ÈÜà°àÀ°Èàà¥ô‘í‘½Ğ Ô°ÄÜÜ°ÌÀØ°ÈÜà°ÌÈä¥ô‘í‘½Ğ Ø°ĞÌÌ°ÌÀØ°ÔĞÔ°ÌÀÈ¥õ€°€‰M¡…‘”…•ÉÌˆ¤ì(€¥˜€¡­¥¹€ôôô€‰ÍÑ…™˜ˆ¤É•ÑÕÉ¸™É…µ”¡€(€€€€ñ¥É±”àôˆÌÄÀˆäôˆØĞˆÈôˆĞÔˆ¼øñÁ…Ñ ô‰4ÈàÄ€ĞÉ0ÌÄÀ€ÄÙ0ÌÌä€ĞÉ4ÈàÈ€àÙ0ÌÄÀ€ÄÄÉ0ÌÌà€àØˆ¼ø(€€€€ñÁ…Ñ ô‰4ÈäĞ€ÄÀá ÌÈÙ0ÌÈÀ€ÌÄá ÌÀÁhˆ¼øñÉ•ĞàôˆÈàÜˆäôˆÄÌàˆİ¥‘Ñ ôˆĞØˆ¡•¥¡ĞôˆäÈˆÉàôˆÄàˆ¼ø(€€€€‘í‘½Ğ Ä°ÌÄÀ°ØĞ°ĞäĞ°ĞÈ¥ô‘í‘½Ğ È°ÌÄÀ°ÄÀà°ÄÄÈ°àØ¥ô‘í‘½Ğ Ì°ÌÌÀ°ÄÔĞ°ÔÀĞ°ÄÌÔ¥ô‘í‘½Ğ Ğ°ÌÀØ°ÈÀÔ°ÄÀĞ°ÄäÔ¥ô‘í‘½Ğ Ô°ÌÀÜ°ÈĞØ°ÔÀà°ÈÔÔ¥ô‘í‘½Ğ Ø°ÌÄÀ°ÌÄØ°ÄÀà°ÌÈĞ¥õ€°€‰1Õµ•¸MÑ…™˜ˆ¤ì(€É•ÑÕÉ¸™É…µ”¡€(€€€€ñÉ•ĞàôˆÄäàˆäôˆÌàˆİ¥‘Ñ ôˆÈÈĞˆ¡•¥¡ĞôˆÄÀĞˆÉàôˆÌĞˆ¼øñÁ…Ñ ô‰4ÈÌÀ€ØÉ ÌäÁ4ÈÌÀ€ÄÄİ ÌäÀˆ¼øñÁ…Ñ ô‰4ÈäÀ€ÄĞÉ ÌÌÁ0ÌÈĞ€ÌÈå ÈäÙhˆ¼ø(€€€€ñÉ•ĞàôˆÈàÈˆäôˆÄÜĞˆİ¥‘Ñ ôˆÔØˆ¡•¥¡ĞôˆÄÀØˆÉàôˆÄäˆ¼øñÁ…Ñ ô‰4ĞÔÀ€ÄàÕ°ÔÔ´Èà€ÔÔ€ÈáØÜÉ°´ÔÔ€ÌÔ´ÔÔ´ÌÕèˆ¼øñÁ…Ñ ô‰4ĞÜÀ€ÈÀÕ ÜÁØĞÉ ´ÜÁèˆ¼ø(€€€€‘í‘½Ğ Ä°ÈÈÀ°ÔÈ°àØ°ĞÈ¥ô‘í‘½Ğ È°ÌàÈ°äÄ°ÔÌà°ØÜ¥ô‘í‘½Ğ Ì°ÌÌÀ°ÄàÄ°ää°ÄĞà¥ô‘í‘½Ğ Ğ°ÌÄÀ°ÄĞà°ÔÀÔ°ÄÌÈ¥ô‘í‘½Ğ Ô°ÌÀà°ÈÔÜ°ÄÀÈ°ÈäÀ¥ô‘í‘½Ğ Ø°ÔÀÔ°ÈÈÀ°ÔÔĞ°ÌÀÀ¥õ€°€‰Q¥Ñ…¸]…É‘•¸!…µµ•È…¹…Éµ½ÕÈˆ¤ì)ô()™Õ¹Ñ¥½¸™½ÕÍ•‘Y¥•İ	½à¡É½±”°…±±½ÕÑÌ¤ì(€½¹ÍĞÁ½¥¹ÑÌ€ô…±±½ÕÑÌ¹µ…À¡¹Õµ‰•È€ôø‰±Õ•ÁÉ¥¹Ñ½ÕÍmÉ½±•um¹Õµ‰•Ét¤ì(€½¹ÍĞµ¥¹`€ô5…Ñ ¹µ¥¸ ¸¸¹Á½¥¹ÑÌ¹µ…À¡Á½¥¹Ğ€ôøÁ½¥¹ÑlÁt¤¤ì(€½¹ÍĞµ…á`€ô5…Ñ ¹µ…à ¸¸¹Á½¥¹ÑÌ¹µ…À¡Á½¥¹Ğ€ôøÁ½¥¹ÑlÁt¤¤ì(€½¹ÍĞµ¥¹d€ô5…Ñ ¹µ¥¸ ¸¸¹Á½¥¹ÑÌ¹µ…À¡Á½¥¹Ğ€ôøÁ½¥¹ÑlÅt¤¤ì(€½¹ÍĞµ…ád€ô5…Ñ ¹µ…à ¸¸¹Á½¥¹ÑÌ¹µ…À¡Á½¥¹Ğ€ôøÁ½¥¹ÑlÅt¤¤ì(€±•Ğİ¥‘Ñ €ô5…Ñ ¹µ…à ÌÀÀ°µ…á`€´µ¥¹`€¬€ÄÜÀ¤ì(€±•Ğ¡•¥¡Ğ€ô5…Ñ ¹µ…à ÄÜÔ°µ…ád€´µ¥¹d€¬€ÄÄÀ¤ì(€½¹ÍĞÑ…É•ÑI…Ñ¥¼€ô€ØÈÀ€¼€ÌØÀì(€¥˜€¡İ¥‘Ñ €¼¡•¥¡Ğ€ğÑ…É•ÑI…Ñ¥¼¤İ¥‘Ñ €ô¡•¥¡Ğ€¨Ñ…É•ÑI…Ñ¥¼ì(€•±Í”¡•¥¡Ğ€ôİ¥‘Ñ €¼Ñ…É•ÑI…Ñ¥¼ì(€İ¥‘Ñ €ô5…Ñ ¹µ¥¸ ØÈÀ°İ¥‘Ñ ¤ì¡•¥¡Ğ€ô5…Ñ ¹µ¥¸ ÌØÀ°¡•¥¡Ğ¤ì(€½¹ÍĞ•¹Ñ•É`€ô€¡µ¥¹`€¬µ…á`¤€¼€Èì½¹ÍĞ•¹Ñ•Éd€ô€¡µ¥¹d€¬µ…ád¤€¼€Èì(€½¹ÍĞà€ô5…Ñ ¹µ…à À°5…Ñ ¹µ¥¸ ØÈÀ€´İ¥‘Ñ °•¹Ñ•É`€´İ¥‘Ñ €¼€È¤¤ì(€½¹ÍĞä€ô5…Ñ ¹µ…à À°5…Ñ ¹µ¥¸ ÌØÀ€´¡•¥¡Ğ°•¹Ñ•Éd€´¡•¥¡Ğ€¼€È¤¤ì(€É•ÑÕÉ¸€‘íà¹Ñ½¥á• Ä¥ô€‘íä¹Ñ½¥á• Ä¥ô€‘íİ¥‘Ñ ¹Ñ½¥á• Ä¥ô€‘í¡•¥¡Ğ¹Ñ½¥á• Ä¥õ€ì)ô()™Õ¹Ñ¥½¸É•¹‘•ÉÕ¥‘•‘Y¥ÍÕ…° ¤ì(€½¹ÍĞ­¥Ğ€ô±½…±¥é•‘-¥Ğ ¤ì(€½¹ÍĞ½Áä€ôÕ¥‘•‘Y¥ÍÕ…±½ÁåmÕÉÉ•¹Ñ1…¹Õ…•tì(€½¹ÍĞ…±±½ÕÑÌ€ôÕ¥‘•‘…±±½ÕÑÍm…Ñ¥Ù•AÉ½Áum…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€½¹ÍĞ¹…µ•Ì€ô…±±½ÕÑÌ¹µ…À¡¹Õµ‰•È€ôø€Œ‘í¹Õµ‰•Éô€‘í­¥Ğ¹…±±½ÕÑÍm¹Õµ‰•È€´€Åuõ€¤ì(€½¹ÍĞ™É…µ”€ô€ ˆÕ¥‘•‘Y¥ÍÕ…±É…µ”ˆ¤ì(€€ ˆÕ¥‘•‘Y¥ÍÕ…±!•…‘¥¹œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹¡•…‘¥¹œì(€€ ˆÕ¥‘•‘Y¥ÍÕ…±9½Ñ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹¹½Ñ”ì(€€ ˆÕ¥‘•‘Y¥ÍÕ…±Q…‰Ìˆ¤¹¥¹¹•É!Q50€ô=‰©•Ğ¹•¹ÑÉ¥•Ì¡½Áä¹Ñ…‰Ì¤¹µ…À ¡mÙ¥•Ü°±…‰•±t¤€ôø€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µÙ¥ÍÕ…°µÙ¥•Üôˆ‘íÙ¥•İôˆ±…ÍÌôˆ‘í…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ôôôÙ¥•Ü€ü€‰¥Ìµ…Ñ¥Ù”ˆ€è€ˆ‰ôˆ…É¥„µÁÉ•ÍÍ•ôˆ‘í…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ôôôÙ¥•İôˆø‘í±…‰•±ôğ½‰ÕÑÑ½¸ù€¤¹©½¥¸ ˆˆ¤ì(€™É…µ”¹‘…Ñ…Í•Ğ¹Ù¥•Ü€ô…Ñ¥Ù•Y¥ÍÕ…±Y¥•Üì(€™É…µ”¹±…ÍÍ9…µ”€ôÕ¥‘•µÙ¥ÍÕ…°µ™É…µ”¥Ì´‘í…Ñ¥Ù•Y¥ÍÕ…±Y¥•İõ€ì((€¥˜€¡…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ôôô€‰‘•Ñ…¥°ˆ¤ì(€€€™É…µ”¹¥¹¹•É!Q50€ô€‘í‰±Õ•ÁÉ¥¹ÑMÙœ¡­¥Ğ¹­¥¹°ìÙ¥•İ	½àè™½ÕÍ•‘Y¥•İ	½à¡…Ñ¥Ù•AÉ½À°…±±½ÕÑÌ¤ô¥ôñ‘¥Ø±…ÍÌô‰Ù¥ÍÕ…°µ±½…Ñ¥½¸µ…ÉˆøñÍÑÉ½¹œø‘í½Áä¹±½…Ñ¥½¹ôğ½ÍÑÉ½¹œø‘í¹…µ•Ì¹µ…À¡¹…µ”€ôø€ñÍÁ…¸ø‘í¹…µ•ôğ½ÍÁ…¸ù€¤¹©½¥¸ ˆˆ¥ôğ½‘¥Øù€ì(€€€€ ˆÕ¥‘•‘Y¥ÍÕ…±…ÁÑ¥½¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹‘•Ñ…¥°¡¹…µ•Ì¤ì(€ô•±Í”¥˜€¡…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ôôô€‰É•ÍÕ±Ğˆ¤ì(€€€™É…µ”¹¥¹¹•É!Q50€ô€‘í‰±Õ•ÁÉ¥¹ÑMÙœ¡­¥Ğ¹­¥¹¥ôñ‘¥Ø±…ÍÌô‰Ù¥ÍÕ…°µÉ•ÍÕ±ĞµÍÑ…µÀˆøñˆûŠrLğ½ˆøñÍÁ…¸ø‘í½Áä¹½µÁ±•Ñ•‘ô€‘íMÑÉ¥¹œ¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ôğ½ÍÁ…¸øğ½‘¥Øù€ì(€€€½¹ÍĞ…ÍÍ•µ‰±•€ô¹•ÜM•Ğ¡Õ¥‘•‘…±±½ÕÑÍm…Ñ¥Ù•AÉ½Át¹Í±¥” À°…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤¹™±…Ğ ¤¤ì(€€€€ ˆ¹‰Àµ…±±½ÕĞˆ°™É…µ”¤¹™½É… ¡¹½‘”€ôø¹½‘”¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ…ÍÍ•µ‰±•ˆ°…ÍÍ•µ‰±•¹¡…Ì¡9Õµ‰•È¡¹½‘”¹‘…Ñ…Í•Ğ¹…±±½ÕĞ¤¤¤¤ì(€€€€ ˆÕ¥‘•‘Y¥ÍÕ…±…ÁÑ¥½¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹É•ÍÕ±Ğ¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤ì(€ô•±Í”ì(€€€™É…µ”¹¥¹¹•É!Q50€ô€‘í‰±Õ•ÁÉ¥¹ÑMÙœ¡­¥Ğ¹­¥¹¥ôñ‘¥Ø±…ÍÌô‰Ù¥ÍÕ…°µ±½…Ñ¥½¸µ…É½µÁ…ĞˆøñÍÑÉ½¹œø‘í½Áä¹±½…Ñ¥½¹ôğ½ÍÑÉ½¹œøñÍÁ…¸ø‘í…±±½ÕÑÌ¹µ…À¡¹Õµ‰•È€ôø€Œ‘í¹Õµ‰•Éõ€¤¹©½¥¸ ˆƒ
+Ü€ˆ¥ôğ½ÍÁ…¸øğ½‘¥Øù€ì(€€€€ ˆÕ¥‘•‘Y¥ÍÕ…±…ÁÑ¥½¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹½Ù•ÉÙ¥•Ü¡­¥Ğ°…±±½ÕÑÌ¤ì(€ô(€€ ˆ¹‰Àµ…±±½ÕĞˆ°™É…µ”¤¹™½É… ¡¹½‘”€ôø¹½‘”¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ¡¥¡±¥¡Ñ•ˆ°…±±½ÕÑÌ¹¥¹±Õ‘•Ì¡9Õµ‰•È¡¹½‘”¹‘…Ñ…Í•Ğ¹…±±½ÕĞ¤¤¤¤ì)ô()™Õ¹Ñ¥½¸±½…±¥é•‘-¥Ğ ¤ì(€É•ÑÕÉ¸ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ(€€€€üì€¸¸¹ÁÉ½Á-¥ÑÍm…Ñ¥Ù•AÉ½Át°€¸¸¹ÁÉ½Á-¥ÑY¥m…Ñ¥Ù•AÉ½Átô(€€€€èÁÉ½Á-¥ÑÍm…Ñ¥Ù•AÉ½Átì)ô()™Õ¹Ñ¥½¸±½…±¥é•	½µ•±°¡Ù…±Õ”¤ì(€É•ÑÕÉ¸ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€¡‰½µY¥Q•ÉµÍmÙ…±Õ•tñğÙ…±Õ”¤€èÙ…±Õ”ì)ô()™Õ¹Ñ¥½¸…ÁÁ±åMÑ…Ñ¥QÉ…¹Í±…Ñ¥½¹Ì ¤ì(€½¹ÍĞ¥¹‘•à€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€Ä€è€Àì(€‘½Õµ•¹Ğ¹‘½Õµ•¹Ñ±•µ•¹Ğ¹±…¹œ€ôÕÉÉ•¹Ñ1…¹Õ…”ì(€™½È€¡½¹ÍĞmÍ•±•Ñ½È°Ù…±Õ•Ít½˜=‰©•Ğ¹•¹ÑÉ¥•Ì¡ÍÑ…Ñ¥QÉ…¹Í±…Ñ¥½¹Ì¤¤ì(€€€½¹ÍĞ•±•µ•¹Ğ€ô€¡Í•±•Ñ½È¤ì(€€€¥˜€¡•±•µ•¹Ğ¤•±•µ•¹Ğ¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ…±Õ•Ím¥¹‘•átì(€ô(€™½È€¡½¹ÍĞmÉ½±”°Ù…±Õ•Ít½˜=‰©•Ğ¹•¹ÑÉ¥•Ì¡É½±•…É‘QÉ…¹Í±…Ñ¥½¹Ì¤¤ì(€€€½¹ÍĞ…É€ô€¡€¹É½±”µ…É‘m‘…Ñ„µÁÉ½Àôˆ‘íÉ½±•ô‰u€¤ì(€€€¥˜€ ……É¤½¹Ñ¥¹Õ”ì(€€€…É¹ÅÕ•ÉåM•±•Ñ½È ‰ÍÑÉ½¹œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ…±Õ•Ím¥¹‘•à€ü€È€è€Átì(€€€…É¹ÅÕ•ÉåM•±•Ñ½È ‰Íµ…±°ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ…±Õ•Ím¥¹‘•à€ü€Ì€è€Åtì(€ô(€€ ˆ¹±…¹Õ…”µÍİ¥Ñ ‰ÕÑÑ½¸ˆ¤¹™½É… ¡‰ÕÑÑ½¸€ôø‰ÕÑÑ½¸¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…¹Õ…”€ôôôÕÉÉ•¹Ñ1…¹Õ…”¤¤ì(€½¹ÍĞÉ½±•=ÁÑ¥½¹Ì€ôì(€€€Õ…É‘¥…¸èl‰Õ…É‘¥…¸Í¡¥•±ˆ°€‰-¡§©¸#†îdÛ†î‰t°İ…ÉÉ¥½Èèl‰]…ÉÉ¥½ÈÍİ½Éˆ°€‰-§†êı´¡§†êı¸‰¥¹ ‰t°…É¡•Èèl‰É¡•È‰½Üˆ°€‰Õ¹œÕ¹œÑ£†îœ‰t°(€€€…ÍÍ…ÍÍ¥¸èl‰ÍÍ…ÍÍ¥¸‘…•ÉÌˆ°€‰…¼Ÿ´O…ĞÑ£†îœ‰t°µ…”èl‰5…”ÍÑ…™˜ˆ°€‰†êµäA£…ÀÏÀ‰t°‰½ÍÌèl‰Q¥Ñ…¸]…É‘•¸ˆ°€‰Q¥Ñ…¸]…É‘•¸‰t(€ôì(€™½È€¡½¹ÍĞ½ÁÑ¥½¸½˜€ ˆÉ½±•M•±•Ğ½ÁÑ¥½¸ˆ¤¤½ÁÑ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÉ½±•=ÁÑ¥½¹Ím½ÁÑ¥½¸¹Ù…±Õ•um¥¹‘•átì(€½¹ÍĞÑÉ…¹ÍÁ½ÉÑ=ÁÑ¥½¹Ì€ôì(€€€ÕÍˆèl‰UMÍ•É¥…°ƒ
+Ü‰•¹ ÁÉ½½˜ˆ°€‰UMÍ•É¥…°ƒ
+ÜÑ£†î´ÑË©¸‹¸‰t°(€€€İ•‰Í½­•Ğèl‰]¥¤]•‰M½­•Ğƒ
+Ü¹•áĞÁÉ½½˜ˆ°€‰]¥¤]•‰M½­•Ğƒ
+ÜÑ£†î´Ñ§†êıÀÑ¡•¼‰t°(€€€•ÍÁ¹½Üèl‰M@µ9=\ƒ
+Ü™¥•±…¹‘¥‘…Ñ”ˆ°€‰M@µ9=\ƒ
+Üƒ†î¥¹œÙ§©¸Ñ£†îÅŒƒG†î-„‰t(€ôì(€™½È€¡½¹ÍĞ½ÁÑ¥½¸½˜€ ˆÑÉ…¹ÍÁ½ÉÑM•±•Ğ½ÁÑ¥½¸ˆ¤¤½ÁÑ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÑÉ…¹ÍÁ½ÉÑ=ÁÑ¥½¹Ím½ÁÑ¥½¸¹Ù…±Õ•um¥¹‘•átì(€±½…±MÑ½É…”¹Í•Ñ%Ñ•´ ‰…Ñ±…Ìµ±…¹Õ…”ˆ°ÕÉÉ•¹Ñ1…¹Õ…”¤ì)ô()™Õ¹Ñ¥½¸Õ¥‘•‘MÑ½É…•-•ä ¤ìÉ•ÑÕÉ¸…Ñ±…ÌµÕ¥‘•´‘í…Ñ¥Ù•AÉ½Áõ€ìô)™Õ¹Ñ¥½¸Á…ÉÑÍI•…‘åMÑ½É…•-•ä ¤ìÉ•ÑÕÉ¸…Ñ±…ÌµÁ…ÉÑÌµÉ•…‘ä´‘í…Ñ¥Ù•AÉ½Áõ€ìô()™Õ¹Ñ¥½¸•Ñ½µÁ±•Ñ•‘Õ¥‘•‘MÑ•ÁÌ ¤ì(€ÑÉäì(€€€½¹ÍĞÍ…Ù•€ô)M=8¹Á…ÉÍ”¡±½…±MÑ½É…”¹•Ñ%Ñ•´¡Õ¥‘•‘MÑ½É…•-•ä ¤¤ñğ€‰mtˆ¤ì(€€€É•ÑÕÉ¸ÉÉ…ä¹¥ÍÉÉ…ä¡Í…Ù•¤€üÍ…Ù•¹™¥±Ñ•È¡Ù…±Õ”€ôø9Õµ‰•È¹¥Í%¹Ñ••È¡Ù…±Õ”¤€˜˜Ù…±Õ”€øô€À€˜˜Ù…±Õ”€ğ€à¤€èmtì(€ô…Ñ ìÉ•ÑÕÉ¸mtìô)ô()™Õ¹Ñ¥½¸É•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ì(€½¹ÍĞ­¥Ğ€ô±½…±¥é•‘-¥Ğ ¤ì(€½¹ÍĞ½Áä€ôÕ¥‘•‘½ÁåmÕÉÉ•¹Ñ1…¹Õ…•tì(€½¹ÍĞ½µÁ±•Ñ•€ô•Ñ½µÁ±•Ñ•‘Õ¥‘•‘MÑ•ÁÌ ¤ì(€½¹ÍĞ…±±½ÕÑÌ€ôÕ¥‘•‘…±±½ÕÑÍm…Ñ¥Ù•AÉ½Áum…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€½¹ÍĞÉ•…‘ä€ô±½…±MÑ½É…”¹•Ñ%Ñ•´¡Á…ÉÑÍI•…‘åMÑ½É…•-•ä ¤¤€ôôô€‰ÑÉÕ”ˆì((€€ ˆÁ…ÉÑÍI•…‘å¡•¬ˆ¤¹¡•­•€ôÉ•…‘äì(€€ ˆÕ¥‘•‘MÑ•Á9…Øˆ¤¹¥¹¹•É!Q50€ô­¥Ğ¹…ÍÍ•µ‰±ä¹µ…À ¡|°¥¹‘•à¤€ôøì(€€€½¹ÍĞ±…ÍÍ•Ì€ôm¥¹‘•à€ôôô…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ü€‰¥ÌµÕÉÉ•¹Ğˆ€è€ˆˆ°½µÁ±•Ñ•¹¥¹±Õ‘•Ì¡¥¹‘•à¤€ü€‰¥Ìµ½µÁ±•Ñ”ˆ€è€ˆ‰t¹™¥±Ñ•È¡	½½±•…¸¤¹©½¥¸ ˆ€ˆ¤ì(€€€½¹ÍĞ±…‰•°€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€üÃ†îmŒ€‘í¥¹‘•à€¬€Åõ€€èMÑ•À€‘í¥¹‘•à€¬€Åõ€ì(€€€É•ÑÕÉ¸€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µÕ¥‘•µÍÑ•Àôˆ‘í¥¹‘•áôˆ±…ÍÌôˆ‘í±…ÍÍ•Íôˆ…É¥„µ±…‰•°ôˆ‘í±…‰•±ôˆøñÍÁ…¸ø‘íMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ôğ½ÍÁ…¸øñÍµ…±°ø‘í½Áä¹Ñ¥Ñ±•Ím¥¹‘•áuôğ½Íµ…±°øğ½‰ÕÑÑ½¸ù€ì(€ô¤¹©½¥¸ ˆˆ¤ì(€€ ˆÕ¥‘•‘MÑ•Á%¹‘•àˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü¿†îi€‘íMÑÉ¥¹œ¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ô€¼€Àá€€èMQ@€‘íMÑÉ¥¹œ¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ô€¼€Àá€ì(€€ ˆÕ¥‘•‘MÑ•Á1½…Ñ¥½¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‰[†î(QK4†ê‰8[†êğˆ€è€‰I]%9‰ô€‘í…±±½ÕÑÌ¹µ…À¡Ù…±Õ”€ôøMÑÉ¥¹œ¡Ù…±Õ”¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¤¤¹©½¥¸ ˆ€¬€ˆ¥õ€ì(€€ ˆÕ¥‘•‘MÑ•ÁQ¥Ñ±”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹Ñ¥Ñ±•Ím…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€€ ˆÕ¥‘•‘MÑ•ÁA…ÉÑÌˆ¤¹¥¹¹•É!Q50€ô½Áä¹Á…ÉÑÍm…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Át¹µ…À¡¥Ñ•´€ôø€ñ±¤ø‘í¥Ñ•µôğ½±¤ù€¤¹©½¥¸ ˆˆ¤ì(€€ ˆÕ¥‘•‘MÑ•ÁÑ¥½¸ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹…ÍÍ•µ‰±åm…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€€ ˆÕ¥‘•‘MÑ•ÁI•ÍÕ±Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹É•ÍÕ±ÑÍm…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€€ ˆÕ¥‘•‘MÑ•ÁA…ÍÌˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½Áä¹Á…ÍÍ•Ím…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Átì(€€ ˆÕ¥‘•‘AÉ½É•ÍÌˆ¤¹ÍÑå±”¹İ¥‘Ñ €ô€‘í½µÁ±•Ñ•¹±•¹Ñ €¼€à€¨€ÄÀÁô•€ì(€€ ˆÕ¥‘•‘AÉ½É•ÍÍQ•áĞˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‘í½µÁ±•Ñ•¹±•¹Ñ¡ô€¼€à¡¿¸Ñ£¹¡€€è€‘í½µÁ±•Ñ•¹±•¹Ñ¡ô€¼€à½µÁ±•Ñ•€ì(€€ ˆÕ¥‘•‘AÉ•Øˆ¤¹‘¥Í…‰±•€ô…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ôôô€Àì(€€ ˆÕ¥‘•‘9•áĞˆ¤¹‘¥Í…‰±•€ô…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ôôô€Üì(€€ ˆÕ¥‘•‘½µÁ±•Ñ”ˆ¤¹‘¥Í…‰±•€ô€…É•…‘äì(€€ ˆÕ¥‘•‘½µÁ±•Ñ”ˆ¤¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ½µÁ±•Ñ”ˆ°½µÁ±•Ñ•¹¥¹±Õ‘•Ì¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À¤¤ì(€€ ˆÕ¥‘•‘½µÁ±•Ñ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô½µÁ±•Ñ•¹¥¹±Õ‘•Ì¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À¤(€€€€ü€¡ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‰†î<ƒG…¹ “†ê•Ô¡¿¸Ñ£¹ ˆ€è€‰U¹‘¼½µÁ±•Ñ¥½¸ˆ¤(€€€€è€¡ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‹C…¹ “†ê•Ô¡¿¸Ñ£¹ ˆ€è€‰5…É¬ÍÑ•À½µÁ±•Ñ”ˆ¤ì(€É•¹‘•ÉÕ¥‘•‘Y¥ÍÕ…° ¤ì(€€ ˆ¹‰Àµ…±±½ÕĞˆ¤¹™½É… ¡¹½‘”€ôø¹½‘”¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ¡¥¡±¥¡Ñ•ˆ°…±±½ÕÑÌ¹¥¹±Õ‘•Ì¡9Õµ‰•È¡¹½‘”¹‘…Ñ…Í•Ğ¹…±±½ÕĞ¤¤¤¤ì(€€ ˆÁÉ½Á…±±½ÕÑÌ€ø‘¥Øˆ¤¹™½É…  ¡¹½‘”°¥¹‘•à¤€ôø¹½‘”¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ¡¥¡±¥¡Ñ•ˆ°…±±½ÕÑÌ¹¥¹±Õ‘•Ì¡¥¹‘•à€¬€Ä¤¤¤ì(€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…ÌµÕ¥‘•µÍÑ•Àµ¡…¹”ˆ°ì‘•Ñ…¥°èìÁÉ½Àè…Ñ¥Ù•AÉ½À°ÍÑ•Àè…Ñ¥Ù•ÍÍ•µ‰±åMÑ•Àôô¤¤ì)ô()™Õ¹Ñ¥½¸É•¹‘•ÉAÉ½Á-¥Ğ ¤ì(€½¹ÍĞ­¥Ğ€ô±½…±¥é•‘-¥Ğ ¤ì(€‘½Õµ•¹Ğ¹‘½Õµ•¹Ñ±•µ•¹Ğ¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä ˆ´µ­¥Ğµ…•¹Ğˆ°…Ñ¥Ù•AÉ½À€ôôô€‰‰½ÍÌˆ€ü€ˆ•˜ÙˆØàˆ€è…Ñ¥Ù•AÉ½À€ôôô€‰µ…”ˆ€ü€ˆŒÌåŒäÌˆ€è…Ñ¥Ù•AÉ½À€ôôô€‰Õ…É‘¥…¸ˆ€ü€ˆ˜ÁˆĞÑˆ€è€ˆŒÄÙ„ÙŒäˆ¤ì(€€ ˆÁÉ½Á	±Õ•ÁÉ¥¹Ğˆ¤¹¥¹¹•É!Q50€ô‰±Õ•ÁÉ¥¹ÑMÙœ¡­¥Ğ¹­¥¹¤ì(€€ ˆÁÉ½ÁM¥é”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹Í¥é”ì(€€ ˆÁÉ½ÁI½±•1…‰•°ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹É½±•1…‰•°ì(€€ ˆÁÉ½Á9…µ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹¹…µ”ì(€€ ˆÁÉ½ÁAÕÉÁ½Í”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹ÁÕÉÁ½Í”ì(€€ ˆÁÉ½ÁM¡•±°ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹Í¡•±°ì(€€ ˆÁÉ½ÁM•¹Í½Èˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹Í•¹Í½Èì(€€ ˆÁÉ½Á½É”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹½É”ì(€€ ˆÁÉ½ÁÙ•¹ÑÌˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹•Ù•¹ÑÌì(€€ ˆÁÉ½ÁM…™•Ñäˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô­¥Ğ¹Í…™•Ñäì(€€ ˆÁÉ½Á	Õ‘•Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü­¥Ğ¹‰Õ‘•Ğ¹É•Á±…” ‰MP¸ˆ°€‰†îÀ-'†êù8ˆ¤€è­¥Ğ¹‰Õ‘•Ğì(€€ ˆÁÉ½ÁMÑ…ÑÕÌˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€¡…Ñ¥Ù•AÉ½À€ôôô€‰‰½ÍÌˆ€ü€‰†î`Q!'†êùP/†êø	=MLˆ€è€‰†î`Q!'†êùP/†êø!I<ˆ¤€è€¡…Ñ¥Ù•AÉ½À€ôôô€‰‰½ÍÌˆ€ü€‰	=MLM%8A,ˆ€è€‰!I<M%8A,ˆ¤ì(€€ ˆÁÉ½Á…±±½ÕÑÌˆ¤¹¥¹¹•É!Q50€ô­¥Ğ¹…±±½ÕÑÌ¹µ…À ¡¥Ñ•´°¥¹‘•à¤€ôø€ñ‘¥Øøñˆø‘í¥¹‘•à€¬€Åôğ½ˆøñÍÁ…¸ø‘í¥Ñ•µôğ½ÍÁ…¸øğ½‘¥Øù€¤¹©½¥¸ ˆˆ¤ì(€½¹ÍĞÉ½İÌ€ôl¸¸¹½µµ½¹AÉ½Á	½´°€¸¸¹­¥Ğ¹‰½µtì(€€ ˆÁÉ½Á	½µ	½‘äˆ¤¹¥¹¹•É!Q50€ôÉ½İÌ¹µ…À ¡mÁ…ÉĞ°ÅÑä°Í½ÕÉ”°ÍÑ…•t¤€ôø€ñÑÈøñÑø‘í±½…±¥é•	½µ•±°¡Á…ÉĞ¥ôğ½ÑøñÑø‘í±½…±¥é•	½µ•±°¡ÅÑä¥ôğ½ÑøñÑø‘í±½…±¥é•	½µ•±°¡Í½ÕÉ”¥ôğ½ÑøñÑøñÍÁ…¸±…ÍÌô‰ÍÑ…”µÑ…œ€‘íÍÑ…”€ôôô€‰	•¹ ˆ€ü€ˆˆ€è€‰±…Ñ•È‰ôˆø‘í±½…±¥é•	½µ•±°¡ÍÑ…”¥ôğ½ÍÁ…¸øğ½Ñøğ½ÑÈù€¤¹©½¥¸ ˆˆ¤ì(€€ ˆÁÉ½ÁÍÍ•µ‰±äˆ¤¹¥¹¹•É!Q50€ô­¥Ğ¹…ÍÍ•µ‰±ä¹µ…À¡ÍÑ•À€ôø€ñ±¤øñÍÁ…¸øğ½ÍÁ…¸øñÀø‘íÍÑ•Áôğ½Àøğ½±¤ù€¤¹©½¥¸ ˆˆ¤ì(€€ ˆ¹É½±”µ…Éˆ¤¹™½É… ¡…É€ôø…É¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°…É¹‘…Ñ…Í•Ğ¹ÁÉ½À€ôôô…Ñ¥Ù•AÉ½À¤¤ì(€€ ˆÕ…É‘¥…¹AÉ½‘ÕÑ¥½¹A…¬ˆ¤¹¡¥‘‘•¸€ô…Ñ¥Ù•AÉ½À€„ôô€‰Õ…É‘¥…¸ˆì(€É•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ì(€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…ÌµÁÉ½Àµ¡…¹”ˆ°ì‘•Ñ…¥°èìÁÉ½Àè…Ñ¥Ù•AÉ½Àôô¤¤ì)ô()™Õ¹Ñ¥½¸‘½İ¹±½…‘I½±•	Õ¥±‘A…¬ ¤ì(€½¹ÍĞ­¥Ğ€ô±½…±¥é•‘-¥Ğ ¤ì(€½¹ÍĞÉ½İÌ€ôl¸¸¹½µµ½¹AÉ½Á	½´°€¸¸¹­¥Ğ¹‰½µtì(€½¹ÍĞÙ¤€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆì(€½¹ÍĞµ…É­‘½İ¸€ôl(€€€€Œ€‘í­¥Ğ¹¹…µ•ôƒŠP€‘íÙ¤€ü€‰†îd£Ã†îm¹œ“†ê­¸³†ê½ÀÑ±…Ìˆ€è€‰Ñ±…ÌÉ½±”‰Õ¥±Á…¬‰õ€°€ˆˆ°€‘íÙ¤€ü€‰I½±”ˆ€è€‰I½±”‰ôè€‘í­¥Ğ¹É½±•1…‰•±õ€°€‘íÙ¤€ü€‰/µ Ñ£Ã†îmŒƒôÓÃ†î}¹œˆ€è€‰½¹•ÁĞÍ¥é”‰ôè€‘í­¥Ğ¹Í¥é•õ€°€‘íÙ¤€ü€‰9Ÿ‰¸Ï… “†îÄ­§†êı¸ˆ€è€‰A±…¹¹¥¹œ‰Õ‘•Ğ‰ôè€‘í­¥Ğ¹‰Õ‘•Ñõ€°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰7†î•ŒƒGµ ˆ€è€‰AÕÉÁ½Í”‰õ€°€ˆˆ°­¥Ğ¹ÁÕÉÁ½Í”°€ˆˆ°€ŒŒ€‘íÙ¤€ü€‰†ê•ÔÑËéŒˆ€è€‰½¹ÍÑÉÕÑ¥½¸½¹ÑÉ…Ğ‰õ€°€ˆˆ°€´€‘íÙ¤€ü€‰[†î<ˆ€è€‰M¡•±°‰ôè€‘í­¥Ğ¹Í¡•±±õ€°€´€‘íÙ¤€ü€‰†ê´‰§†êı¸ˆ€è€‰M•¹Í½È‰ôè€‘í­¥Ğ¹Í•¹Í½Éõ€°€´€‘íÙ¤€ü€‰[†î,ÑË´³Õ¤ˆ€è€‰½É”‰ôè€‘í­¥Ğ¹½É•õ€°€´€‘íÙ¤€ü€‰O†îÄ­§†î¸ˆ€è€‰Ù•¹ÑÌ‰ôè€‘í­¥Ğ¹•Ù•¹ÑÍõ€°€´€‘íÙ¤€ü€‰¸Ñ¿¸ˆ€è€‰M…™•Ñä‰ôè€‘í­¥Ğ¹Í…™•Ñåõ€°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰…ŒÛ†î,ÑË´ƒG…¹ Ï†îDˆ€è€‰9Õµ‰•É•µ½‘Õ±•Ì‰õ€°€ˆˆ°€¸¸¹­¥Ğ¹…±±½ÕÑÌ¹µ…À ¡¥Ñ•´°¥¹‘•à¤€ôø€‘í¥¹‘•à€¬€Åô¸€‘í¥Ñ•µõ€¤°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰†ê¹œÛ†êµĞÓÀˆ€è€‰	¥±°½˜µ…Ñ•É¥…±Ì‰õ€°€ˆˆ°Ù¤€ü€‰ğ1¥¹ ­§†î¸ğM0ğ9×†îM¸µÕ„ğ¥…¤ƒE¿†ê…¸ğˆ€è€‰ğA…ÉĞğEÑäğM½ÕÉ”ğMÑ…”ğˆ°€‰ğ€´´´ğ€´´´èğ€´´´ğ€´´´ğˆ°€¸¸¹É½İÌ¹µ…À¡É½Ü€ôøğ€‘íÉ½Ü¹µ…À¡±½…±¥é•	½µ•±°¤¹©½¥¸ ˆğ€ˆ¥ôñ€¤°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰3†ê½ÀË…ÀÓ†î­¹œ‹Ã†îmŒˆ€è€‰ÍÍ•µ‰±äÁ…Ñ ‰õ€°€ˆˆ°€¸¸¹­¥Ğ¹…ÍÍ•µ‰±ä¹µ…À ¡ÍÑ•À°¥¹‘•à¤€ôø€‘í¥¹‘•à€¬€Åô¸€‘íÍÑ•Áõ€¤°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰§†îm¤£†ê…¸‹†êÅ¹œ£†î¥¹œˆ€è€‰Ù¥‘•¹”‰½Õ¹‘…Éä‰õ€°€ˆˆ°Ù¤€ü€‹C‰ä³€‹†îdÑ¡§†êıĞ¯†êü¸A£†ê¤¡¿¸Ó†ê•Ğ­§†î´ÑÉ„…¸Ñ¿¸Û†êµĞ³ô°¹×†îM¸°ƒG†îdÑ¡¿†ê¤·…¤°ÏÍ¹œ°¹£†êµ¸¹£†ê´ƒG†îe¹œÓ…ŒÛ€Óµ £†îÀU¹¥ÑäÑËÃ†îmŒ­¡¤“å¹œÑ£†îÅŒƒG†î-„¸ˆ€è€‰Q¡¥Ì¥Ì„‘•Í¥¸Á…¬¸½µÁ±•Ñ”Á¡åÍ¥…°Í…™•Ñä°Á½İ•È°½µ™½ÉĞ°É…‘¥¼°™…±Í”µÑÉ¥•È°…¹U¹¥Ñä¥¹Ñ•É…Ñ¥½¸Ñ•ÍÑÌ‰•™½É”™¥•±ÕÍ”¸ˆ°€ˆˆ(€t¹©½¥¸ ‰q¸ˆ¤ì(€½¹ÍĞ‰±½ˆ€ô¹•Ü	±½ˆ¡mµ…É­‘½İ¹t°ìÑåÁ”è€‰Ñ•áĞ½µ…É­‘½İ¸ˆô¤ì(€½¹ÍĞ±¥¹¬€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰„ˆ¤ì(€±¥¹¬¹¡É•˜€ôUI0¹É•…Ñ•=‰©•ÑUI0¡‰±½ˆ¤ì(€±¥¹¬¹‘½İ¹±½…€ô…Ñ±…Ì´‘í…Ñ¥Ù•AÉ½Áôµ‰Õ¥±µÁ…¬¹µ‘€ì(€±¥¹¬¹±¥¬ ¤ì(€Í•ÑQ¥µ•½ÕĞ  ¤€ôøUI0¹É•Ù½­•=‰©•ÑUI0¡±¥¹¬¹¡É•˜¤°€ÔÀÀ¤ì(€Ñ½…ÍĞ¡Ù¤€üƒCŒÓ†ê…¼£Ã†îm¹œ“†ê­¸€‘í­¥Ğ¹¹…µ•õ€€è€‘í­¥Ğ¹¹…µ•ô‰Õ¥±Á…¬•¹•É…Ñ•‘€¤ì)ô()™Õ¹Ñ¥½¸‰Õ¥±‘I¥¹½ÑÌ ¤ì(€½¹ÍĞÉ½½Ğ€ô€ ˆÉ¥¹½ÑÌˆ¤ì(€¥˜€ …É½½Ğ¤É•ÑÕÉ¸ì(€É½½Ğ¹¥¹¹•É!Q50€ôÉÉ…ä¹™É½´¡ì±•¹Ñ è€ÄØô°€¡|°¥¹‘•à¤€ôøì(€€€½¹ÍĞ…¹±”€ô€¡¥¹‘•à€¼€ÄØ¤€¨5…Ñ ¹A$€¨€È€´5…Ñ ¹A$€¼€Èì(€€€½¹ÍĞà€ô€ÔÀÀ€¬5…Ñ ¹½Ì¡…¹±”¤€¨€ÔÀì(€€€½¹ÍĞä€ô€ÈÜØ€¬5…Ñ ¹Í¥¸¡…¹±”¤€¨€ÔÀì(€€€É•ÑÕÉ¸€ñ¥É±”±…ÍÌô‰É¥¹œµ‘½Ğˆàôˆ‘íà¹Ñ½¥á• Ä¥ôˆäôˆ‘íä¹Ñ½¥á• Ä¥ôˆÈôˆĞˆ¼ù€ì(€ô¤¹©½¥¸ ˆˆ¤ì)ô()™Õ¹Ñ¥½¸ÕÉÉ•¹Ñ¥…É…´ ¤ì(€½¹ÍĞÁÉ½™¥±”€ô•±•ÑÉ½¹¥ÍAÉ½™¥±•Ím…Ñ¥Ù•AÉ½Átì(€½¹ÍĞÁ…ÉÑÌ€ôl(€€€ìÑåÁ”è€‰İ½­İ¤µ•ÍÀÌÈµ‘•Ù­¥ĞµØÄˆ°¥è€‰•ÍÀˆ°Ñ½Àè€Ìà¸Ğ°±•™Ğè€à¸È°…ÑÑÉÌèíôô°(€€€ìÑåÁ”è€‰İ½­İ¤µÁÕÍ¡‰ÕÑÑ½¸ˆ°¥è€‰ÁÉ¥µ…Éå	ÕÑÑ½¸ˆ°Ñ½Àè€Èà¸Ø°±•™Ğè€ÈÔà¸Ä°…ÑÑÉÌèì½±½ÈèÁÉ½™¥±”¹½±½È°±…‰•°èÁÉ½™¥±”¹•Ù•¹ÑÍlÁt°­•äè€‰ˆôô°(€€€ìÑåÁ”è€‰İ½­İ¤µÁÕÍ¡‰ÕÑÑ½¸ˆ°¥è€‰Í•½¹‘…Éå	ÕÑÑ½¸ˆ°Ñ½Àè€ÄÀØ¸à°±•™Ğè€ÈÔà¸Ä°…ÑÑÉÌèì½±½Èè€ˆŒÜÀÔİäˆ°±…‰•°èÁÉ½™¥±”¹•Ù•¹ÑÍlÅt°­•äè€‰Lˆôô(€tì(€½¹ÍĞ½¹¹•Ñ¥½¹Ì€ôl(€€€l‰•ÍÀèÈÔˆ°€‰ÁÉ¥µ…Éå	ÕÑÑ½¸èÄ¹°ˆ°ÁÉ½™¥±”¹½±½È°mut°l‰ÁÉ¥µ…Éå	ÕÑÑ½¸èÈ¹°ˆ°€‰•ÍÀé9¸Äˆ°€ˆŒÕØØÜÈˆ°mut°(€€€l‰•ÍÀèÈØˆ°€‰Í•½¹‘…Éå	ÕÑÑ½¸èÄ¹°ˆ°€ˆŒÜÀÔİäˆ°mut°l‰Í•½¹‘…Éå	ÕÑÑ½¸èÈ¹°ˆ°€‰•ÍÀé9¸Äˆ°€ˆŒÕØØÜÈˆ°mut(€tì(€¥˜€¡ÍÑ…Ñ”¹±•¤ì(€€€Á…ÉÑÌ¹ÁÕÍ ¡ìÑåÁ”è€‰İ½­İ¤µ±•µÉ¥¹œˆ°¥è€‰É¥¹œˆ°Ñ½Àè€ÄäÀ¸Ä°±•™Ğè€ÈÌĞ¸Ğ°…ÑÑÉÌèìÁ¥á•±Ìè€ˆÄØˆôô¤ì(€€€½¹¹•Ñ¥½¹Ì¹ÁÕÍ ¡l‰•ÍÀèÄàˆ°€‰É¥¹œé%8ˆ°€ˆ˜ÉŒäÑŒˆ°mut°l‰•ÍÀéY%8ˆ°€‰É¥¹œéYˆ°€ˆ”ÀÔàÔàˆ°mut°l‰•ÍÀé9¸Äˆ°€‰É¥¹œé9ˆ°€ˆŒÕØØÜÈˆ°mut¤ì(€ô(€¥˜€¡ÍÑ…Ñ”¹‰Õéé•È¤ì(€€€Á…ÉÑÌ¹ÁÕÍ ¡ìÑåÁ”è€‰İ½­İ¤µ‰Õéé•Èˆ°¥è€‰‰Õéé•Èˆ°Ñ½Àè€ÈÈÄ¸Ğ°±•™Ğè€ÌĞ¸Ü°…ÑÑÉÌèìÙ½±Õµ”è€ˆÀ¸Èˆôô¤ì(€€€½¹¹•Ñ¥½¹Ì¹ÁÕÍ ¡l‰•ÍÀèÈÜˆ°€‰‰Õéé•ÈèÈˆ°€ˆ˜Èå˜Ñˆˆ°mut°l‰•ÍÀé9¸Äˆ°€‰‰Õéé•ÈèÄˆ°€ˆŒÕØØÜÈˆ°mut¤ì(€ô(€É•ÑÕÉ¸ìÙ•ÉÍ¥½¸è€Ä°…ÕÑ¡½Èè€‰Ñ±…ÌAÉ½À1…ˆˆ°•‘¥Ñ½Èè€‰İ½­İ¤ˆ°Á…ÉÑÌ°½¹¹•Ñ¥½¹Ì°‘•Á•¹‘•¹¥•Ìèíô°…Ñ±…ÍAÉ½™¥±”èìÁÉ½Àè…Ñ¥Ù•AÉ½À°‘•Ù¥•%èÁÉ½™¥±”¹‘•Ù¥•%°•á…ÑA…ÉÑÌèÁÉ½™¥±”¹Á…ÉÑÌ°Á¥¹½¹ÑÉ…ĞèÁÉ½™¥±”¹Á¥¹Ì°•Ù•¹ÑÌèÁÉ½™¥±”¹•Ù•¹ÑÌ°¹½Ñ”è€‰	ÕÑÑ½¹ÌÁÉ½áäµ½Ñ¥½¸½ÍÁ•¥…°Í•¹Í½ÉÌ¥¸‰É½İÍ•È¸Y…±¥‘…Ñ”Ñ¡É•Í¡½±‘Ì½¸É•…°¡…É‘İ…É”¸ˆôôì)ô()™Õ¹Ñ¥½¸•Í…Á•aµ°¡Ù…±Õ”¤ì(€É•ÑÕÉ¸MÑÉ¥¹œ¡Ù…±Õ”¤¹É•Á±…” ½l˜ğøˆt½œ°¡…É…Ñ•È€ôø€¡ì€ˆ˜ˆè€ˆ™…µÀìˆ°€ˆğˆè€ˆ™±Ğìˆ°€ˆøˆè€ˆ™Ğìˆ°€œˆœè€ˆ™ÅÕ½Ğìˆ°€ˆœˆè€ˆ™…Á½Ììˆô¥m¡…É…Ñ•Ét¤ì)ô()™Õ¹Ñ¥½¸•±•ÑÉ½¹¥Í¥…É…µMÙœ¡ÁÉ½™¥±”¤ì(€½¹ÍĞÉ½İÌ€ôÁÉ½™¥±”¹Á¥¹Ì¹µ…À ¡Á¥¸°¥¹‘•à¤€ôøì(€€€½¹ÍĞä€ô€Ôà€¬¥¹‘•à€¨€ØÜì(€€€½¹ÍĞ¹…µ”€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€üÁ¥¹lÉt€èÁ¥¹lÅtì(€€€É•ÑÕÉ¸€ñÁ…Ñ ô‰4ÈÌÔ€‘íä€¬€ÈÉôÌÄÔ€‘íä€¬€ÈÉô€ÌÀÀ€‘íä€¬€ÈÉô€ÌÜÔ€‘íä€¬€ÈÉôˆ±…ÍÌô‰É½±”µİ¥É”ˆ¼øñ¥É±”àôˆÈÌÔˆäôˆ‘íä€¬€ÈÉôˆÈôˆĞˆ¼øñÉ•ĞàôˆÌÜÔˆäôˆ‘íåôˆİ¥‘Ñ ôˆÈĞÀˆ¡•¥¡ĞôˆĞÔˆÉàôˆàˆ¼øñÑ•áĞàôˆÌäÈˆäôˆ‘íä€¬€Äáôˆø‘í•Í…Á•aµ°¡Á¥¹lÁt¥ôğ½Ñ•áĞøñÑ•áĞàôˆÌäÈˆäôˆ‘íä€¬€ÌÑôˆ±…ÍÌô‰É½±”µÍÕ‰Ñ•áĞˆø‘í•Í…Á•aµ°¡¹…µ”¥ôğ½Ñ•áĞù€ì(€ô¤¹©½¥¸ ˆˆ¤ì(€É•ÑÕÉ¸€ñÍÙœÙ¥•İ	½àôˆÀ€À€ØØÀ€ĞÄÀˆÉ½±”ô‰¥µœˆ…É¥„µ±…‰•°ôˆ‘í•Í…Á•aµ°¡ÁÉ½™¥±”¹¹…µ”¥ôM@ÌÈÁ¥¸‘¥…É…´ˆøñ‘•™ÌøñÁ…ÑÑ•É¸¥ô‰É½±•É¥ˆİ¥‘Ñ ôˆÈÀˆ¡•¥¡ĞôˆÈÀˆÁ…ÑÑ•É¹U¹¥ÑÌô‰ÕÍ•ÉMÁ…•=¹UÍ”ˆøñÁ…Ñ ô‰4ÈÀ€Á ÁXÈÀˆ™¥±°ô‰¹½¹”ˆÍÑÉ½­”ôˆŒÄÜÌÀÍ„ˆ¼øğ½Á…ÑÑ•É¸øğ½‘•™ÌøñÉ•Ğİ¥‘Ñ ôˆØØÀˆ¡•¥¡ĞôˆĞÄÀˆ™¥±°ô‰ÕÉ° É½±•É¥¤ˆ½Á…¥Ñäôˆ¸Üˆ¼øñœ±…ÍÌô‰É½±”µ‰½…ÉˆøñÉ•ĞàôˆÔÔˆäôˆØÌˆİ¥‘Ñ ôˆÄàÀˆ¡•¥¡ĞôˆÈÜÔˆÉàôˆÄàˆ¼øñÉ•ĞàôˆäÀˆäôˆààˆİ¥‘Ñ ôˆÄÄÀˆ¡•¥¡ĞôˆÔÀˆÉàôˆÜˆ¼øñÑ•áĞàôˆÄĞÔˆäôˆÄÄÈˆÑ•áĞµ…¹¡½Èô‰µ¥‘‘±”ˆùM@ÌÈµLÌğ½Ñ•áĞøñÑ•áĞàôˆÄĞÔˆäôˆÄÈàˆÑ•áĞµ…¹¡½Èô‰µ¥‘‘±”ˆ±…ÍÌô‰É½±”µÍÕ‰Ñ•áĞˆùUM	9 =Iğ½Ñ•áĞøñÉ•ĞàôˆàÔˆäôˆÄØØˆİ¥‘Ñ ôˆÄÈÀˆ¡•¥¡ĞôˆÄÈÀˆÉàôˆàˆ¼øñÑ•áĞàôˆÄĞÔˆäôˆÈÈÄˆÑ•áĞµ…¹¡½Èô‰µ¥‘‘±”ˆø‘í•Í…Á•aµ°¡ÁÉ½™¥±”¹±…‰•°¥ôğ½Ñ•áĞøñÑ•áĞàôˆÄĞÔˆäôˆÈĞÄˆÑ•áĞµ…¹¡½Èô‰µ¥‘‘±”ˆ±…ÍÌô‰É½±”µÍÕ‰Ñ•áĞˆø‘í•Í…Á•aµ°¡ÁÉ½™¥±”¹¹…µ”¥ôğ½Ñ•áĞøğ½œøñœ±…ÍÌô‰É½±”µµ½‘Õ±•Ìˆø‘íÉ½İÍôğ½œøñÑ•áĞàôˆÌÜÔˆäôˆÌàäˆ±…ÍÌô‰É½±”µ™½½Ñ¹½Ñ”ˆø‘íÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‹CÃ†îu¹œ·Ô€ôÓµ¸¡§†îÔƒ
+Ü±×Ñ¸“å¹œ9¡Õ¹œˆ€è€‰½±½ÕÈ±¥¹”€ôÍ¥¹…°ƒ
+Ü…±İ…åÌÍ¡…É”9‰ôğ½Ñ•áĞøğ½ÍÙœù€ì)ô()™Õ¹Ñ¥½¸Ñ•ÍÑ±•ÑÉ½¹¥ÍÙ•¹Ğ¡…Ñ¥½¸¤ì(€½¹ÍĞÁÉ½™¥±”€ô•±•ÑÉ½¹¥ÍAÉ½™¥±•Ím…Ñ¥Ù•AÉ½Átì(€½¹ÍĞ¥Ñ•´€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰±¤ˆ¤ì(€½¹ÍĞÍÑ…µÀ€ô¹•Ü…Ñ” ¤¹Ñ½1½…±•Q¥µ•MÑÉ¥¹œ¡mt°ìµ¥¹ÕÑ”è€ˆÈµ‘¥¥Ğˆ°Í•½¹è€ˆÈµ‘¥¥Ğˆô¤ì(€¥Ñ•´¹¥¹¹•É!Q50€ô€ñÍÁ…¸ø‘íÍÑ…µÁôğ½ÍÁ…¸øñˆùAMLƒ
+Ü€‘í•Í…Á•aµ°¡…Ñ¥½¸¥ôğ½ˆù€ì(€€ ˆ•±•ÑÉ½¹¥ÍQ•ÍÑ1½œˆ¤¹ÁÉ•Á•¹¡¥Ñ•´¤ì(€İ¡¥±”€  ˆ•±•ÑÉ½¹¥ÍQ•ÍÑ1½œˆ¤¹¡¥±‘É•¸¹±•¹Ñ €ø€Ô¤€ ˆ•±•ÑÉ½¹¥ÍQ•ÍÑ1½œˆ¤¹±…ÍÑ±•µ•¹Ñ¡¥±¹É•µ½Ù” ¤ì(€½¹ÍĞ‰ÕÑÑ½¸€ô€¡m‘…Ñ„µ•±•ÑÉ½¹¥Ìµ•Ù•¹Ğôˆ‘í…Ñ¥½¹ô‰u€¤ì(€‰ÕÑÑ½¸ü¹±…ÍÍ1¥ÍĞ¹…‘ ‰¥Ìµ™¥É¥¹œˆ¤ìÍ•ÑQ¥µ•½ÕĞ  ¤€ôø‰ÕÑÑ½¸ü¹±…ÍÍ1¥ÍĞ¹É•µ½Ù” ‰¥Ìµ™¥É¥¹œˆ¤°€ÌÔÀ¤ì(€Ñ½…ÍĞ¡ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€üƒCŒ·ĞÁ£†î=¹œ€‘í…Ñ¥½¹ôÓ†î¬€‘íÁÉ½™¥±”¹¹…µ•õ€€è€‘í…Ñ¥½¹ôÍ¥µÕ±…Ñ•™É½´€‘íÁÉ½™¥±”¹¹…µ•õ€¤ì)ô()™Õ¹Ñ¥½¸É•¹‘•É½¹™¥œ ¤ì(€½¹ÍĞÁÉ½™¥±”€ô•±•ÑÉ½¹¥ÍAÉ½™¥±•Ím…Ñ¥Ù•AÉ½Átì(€‘½Õµ•¹Ğ¹‘½Õµ•¹Ñ±•µ•¹Ğ¹ÍÑå±”¹Í•ÑAÉ½Á•ÉÑä ˆ´µÉ½±”ˆ°ÁÉ½™¥±”¹½±½È¤ì(€€ ˆÉ½±•M•±•Ğˆ¤¹Ù…±Õ”€ô…Ñ¥Ù•AÉ½Àì(€€ ˆÉ½±•	…‘”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÁÉ½™¥±”¹±…‰•°ì(€€ ˆ‘•Ù¥•%ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÁÉ½™¥±”¹‘•Ù¥•%ì(€€ ˆÑÉ…¹ÍÁ½ÉÑ	…‘”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôìÕÍˆè€‰UMMI%0ˆ°İ•‰Í½­•Ğè€‰]%$€¼]	M=-Pˆ°•ÍÁ¹½Üè€‰M@µ9=\ˆõmÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉÑtì(€½¹ÍĞ‘¥…É…´€ôÕÉÉ•¹Ñ¥…É…´ ¤ì(€€ ˆÁ…ÉÑ½Õ¹Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‘í‘¥…É…´¹Á…ÉÑÌ¹±•¹Ñ¡ô1%9 -'†î8ƒ
+Ü€‘í‘¥…É…´¹½¹¹•Ñ¥½¹Ì¹±•¹Ñ¡ô	e€€è€‘í‘¥…É…´¹Á…ÉÑÌ¹±•¹Ñ¡ôAIQLƒ
+Ü€‘í‘¥…É…´¹½¹¹•Ñ¥½¹Ì¹±•¹Ñ¡ô]%IM€ì(€€ ˆÉ½±•¥ÉÕ¥ÑÉ…Á¡¥Œˆ¤¹¥¹¹•É!Q50€ô•±•ÑÉ½¹¥Í¥…É…µMÙœ¡ÁÉ½™¥±”¤ì(€€ ˆÁ¥¹1¥ÍĞˆ¤¹¥¹¹•É!Q50€ôÁÉ½™¥±”¹Á¥¹Ì¹µ…À¡¥Ñ•´€ôø€ñ‘¥Ø±…ÍÌô‰Á¥¸µÉ½Üˆøñ½‘”ø‘í¥Ñ•µlÁuôğ½½‘”øñÍÁ…¸ø‘íÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü¥Ñ•µlÉt€è¥Ñ•µlÅuôğ½ÍÁ…¸øñ¤ÍÑå±”ô‰½±½Èè‘íÁÉ½™¥±”¹½±½Éôˆøğ½¤øğ½‘¥Øù€¤¹©½¥¸ ˆˆ¤ì(€€ ˆ•±•ÑÉ½¹¥ÍAÉ½™¥±•MÕµµ…Éäˆ¤¹¥¹¹•É!Q50€ô€ñÍÑÉ½¹œø‘íÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‰1¥¹ ­§†î¸É§©¹œ†î„É½±”ˆ€è€‰I½±”µÍÁ•¥™¥ŒÁ…ÉÑÌ‰ôğ½ÍÑÉ½¹œøñÀø‘íÁÉ½™¥±”¹Á…ÉÑÌ¹©½¥¸ ˆƒ
+Ü€ˆ¥ôğ½Àù€ì(€€ ˆ•±•ÑÉ½¹¥ÍÙ•¹Ñ	ÕÑÑ½¹Ìˆ¤¹¥¹¹•É!Q50€ôÁÉ½™¥±”¹•Ù•¹ÑÌ¹µ…À¡•Ù•¹Ğ€ôø€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µ•±•ÑÉ½¹¥Ìµ•Ù•¹Ğôˆ‘í•Ù•¹Ñôˆø‘í•Ù•¹Ñôğ½‰ÕÑÑ½¸ù€¤¹©½¥¸ ˆˆ¤ì(€½¹ÍĞ‰•¹ €ôÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ€ôôô€‰ÕÍˆˆì(€½¹ÍĞÙ¤€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆì(€€ ˆÙ…±¥‘…Ñ¥½¹	½àˆ¤¹¥¹¹•É!Q50€ô‰•¹ (€€€€ü€ñÍÁ…¸±…ÍÌô‰Ù…±¥‘…Ñ¥½¸µ¥½¸ˆûŠrLğ½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œø‘íÙ¤€ü€‹A§†î´­£†î}¤ƒG†êÔ…¸Ñ¿¸ÑË©¸‹¸ˆ€è€‰	•¹ Í…™”ÍÑ…ÉÑ¥¹œÁ½¥¹Ğ‰ôğ½ÍÑÉ½¹œøñÀø‘íÙ¤€ü€‰9×†îM¸UM±¿†ê…¤‹†î<‰§†êı¸Ï†îDÁ¥¸Û€ÏÍ¹œÑÉ½¹œ³†ê¸£†î¥¹œµ¥¹ ƒG†êÔ¸ˆ€è€‰UMÁ½İ•È­••ÁÌ‰…ÑÑ•Éä…¹É…‘¥¼Ù…É¥…‰±•Ì½ÕĞ½˜Ñ¡”™¥ÉÍĞÁÉ½½˜¸‰ôğ½Àøğ½‘¥Øù€(€€€€è€ñÍÁ…¸±…ÍÌô‰Ù…±¥‘…Ñ¥½¸µ¥½¸ˆÍÑå±”ô‰‰…­É½Õ¹éÙ…È ´µ…µ‰•È¤ˆø„ğ½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œø‘íÙ¤€ü€‹†î¡¹œÙ§©¸Ñ£†î´Ñ£†îÅŒƒG†î-„ˆ€è€‰¥•±…¹‘¥‘…Ñ”‰ôğ½ÍÑÉ½¹œøñÀø‘íÙ¤€ü€‰å¹œ·ĞÁ£†î=¹œÑËÃ†îmŒìÍ…ÔƒGÌ·†îm¤ã…Œµ¥¹ ¯†êıĞ»†îE¤³†ê…¤°Ó†ê´ÏÍ¹œÛ€¹¡§†îÔÑË©¸Á£†ê¸†î¥¹œÑ£†êµĞ¸ˆ€è€‰UÍ”Ñ¡”Í¥µÕ±…Ñ½È¹½ÜìÙ…±¥‘…Ñ”É•½¹¹•Ğ°É…¹”°…¹¥¹Ñ•É™•É•¹”½¸É•…°¡…É‘İ…É”±…Ñ•È¸‰ôğ½Àøğ½‘¥Øù€ì(€€ ˆ•±•ÑÉ½¹¥Í1¥µ¥ÑQ¥Ñ±”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ¤€ü€‰QË±¹ ‘Õç†îĞ£†î¥¹œµ¥¹ ƒGÃ†îŒˆ€è€‰	É½İÍ•ÈÁÉ½½˜‰½Õ¹‘…Éäˆì(€€ ˆ•±•ÑÉ½¹¥Í1¥µ¥ÑQ•áĞˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ¤€ü€‰1×†îM¹œ£‰¸A%<°†ê•ÔÑËéŒÁ…å±½…°ÑË†ê…¹œÑ£…¤»éĞÛ€Á£†ê¸£†îM¤1¿‰´½ÉÕ¹œƒ†î|·†î¥Œ±½¥Œ¸ˆ€è€‰A%<™±½Ü°Á…å±½…Í¡…Á”°‰ÕÑÑ½¸ÍÑ…Ñ•Ì°…¹1½Í½Õ¹½Ù¥‰É…Ñ¥½¸™••‘‰…¬±½¥Œ¸ˆì(€€ ˆ•±•ÑÉ½¹¥Í9•áÑQ¥Ñ±”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ¤€ü€‰†ê½Ğ‰×†îeŒÑ£†î´¹¿¤ƒG†îu¤ˆ€è€‰I•ÅÕ¥É•É•…°µİ½É±ÁÉ½½˜ˆì(€€ ˆ•±•ÑÉ½¹¥Í9•áÑQ•áĞˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÙ¤€ü€‰9ŸÃ†î…¹œ%5T½!…±°°¹¡§†îÔ°¹¡§†îĞ°“É¹œ1°ƒG†îd‹†î¸“‰ä°Ó†ê´ÏÍ¹œÛ€†ê´§…Œ­¡¤·†êİŒ½†ê´¸]½­İ¤ƒ†î|ƒG‰ä“å¹œ»éĞ³´ÁÉ½áä¡¼†ê´‰§†êı¸£Á„ƒGÃ†îŒ·ĞÁ£†î=¹œ£µ¹ ã…Œ¸ˆ€è€‰%5T½!…±°Ñ¡É•Í¡½±‘Ì°¹½¥Í”°¡•…Ğ°1ÕÉÉ•¹Ğ°…‰±”‘ÕÉ…‰¥±¥Ñä°É…‘¥¼É…¹”°…¹¡Õµ…¸™¥Ğ¸]½­İ¤ÕÍ•Ì‰ÕÑÑ½¹Ì…ÌÁÉ½á¥•Ì™½ÈÍ•¹Í½ÉÌ¥Ğ…¹¹½ĞÉ•ÁÉ½‘Õ”•á…Ñ±ä¡•É”¸ˆì(€€ ˆ¹¡•É¼µÑ½­•¸ˆ¤¹™½É… ¡Ñ½­•¸€ôøÑ½­•¸¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥ÌµÍ•±•Ñ•ˆ°Ñ½­•¸¹‘…Ñ…Í•Ğ¹É½±”€ôôôÍÑ…Ñ”¹É½±”¤¤ì)ô()™Õ¹Ñ¥½¸‘½İ¹±½…‘)Í½¸¡¹…µ”°Ù…±Õ”¤ì(€½¹ÍĞ‰±½ˆ€ô¹•Ü	±½ˆ¡m)M=8¹ÍÑÉ¥¹¥™ä¡Ù…±Õ”°¹Õ±°°€È¤€¬€‰q¸‰t°ìÑåÁ”è€‰…ÁÁ±¥…Ñ¥½¸½©Í½¸ˆô¤ì(€½¹ÍĞ±¥¹¬€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰„ˆ¤ì(€±¥¹¬¹¡É•˜€ôUI0¹É•…Ñ•=‰©•ÑUI0¡‰±½ˆ¤ì±¥¹¬¹‘½İ¹±½…€ô¹…µ”ì±¥¹¬¹±¥¬ ¤ì(€Í•ÑQ¥µ•½ÕĞ  ¤€ôøUI0¹É•Ù½­•=‰©•ÑUI0¡±¥¹¬¹¡É•˜¤°€ÔÀÀ¤ì(€Ñ½…ÍĞ¡€‘í¹…µ•ô•¹•É…Ñ•‘€¤ì)ô()™Õ¹Ñ¥½¸Ñ½…ÍĞ¡µ•ÍÍ…”¤ì(€½¹ÍĞ•°€ô€ ˆÑ½…ÍĞˆ¤ì•°¹Ñ•áÑ½¹Ñ•¹Ğ€ôµ•ÍÍ…”ì•°¹±…ÍÍ1¥ÍĞ¹…‘ ‰¥ÌµÙ¥Í¥‰±”ˆ¤ì(€±•…ÉQ¥µ•½ÕĞ¡Ñ½…ÍĞ¹Ñ¥µ•È¤ìÑ½…ÍĞ¹Ñ¥µ•È€ôÍ•ÑQ¥µ•½ÕĞ  ¤€ôø•°¹±…ÍÍ1¥ÍĞ¹É•µ½Ù” ‰¥ÌµÙ¥Í¥‰±”ˆ¤°€ÄàÀÀ¤ì)ô()™Õ¹Ñ¥½¸Í¡½İY¥•Ü¡¥¤ì(€€ ˆ¹Ù¥•Üˆ¤¹™½É… ¡Ù¥•Ü€ôøÙ¥•Ü¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°Ù¥•Ü¹¥€ôôô¥¤¤ì(€€ ˆ¹Ñ…ˆˆ¤¹™½É… ¡Ñ…ˆ€ôøÑ…ˆ¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ…Ñ¥Ù”ˆ°Ñ…ˆ¹‘…Ñ…Í•Ğ¹Ù¥•Ü€ôôô¥¤¤ì(€İ¥¹‘½Ü¹ÍÉ½±±Q¼¡ìÑ½Àè€À°‰•¡…Ù¥½Èè€‰Íµ½½Ñ ˆô¤ì)ô()™Õ¹Ñ¥½¸•Ù•¹ÑA…å±½…¡…Ñ¥½¸¤ì(€É•ÑÕÉ¸ìØè€Ä°‘•Ù¥•%è€‘íÍÑ…Ñ”¹É½±•ôµ½Éˆ´ÀÅ€°É½±”èÉ½±•ÍmÍÑ…Ñ”¹É½±•t¹±…‰•°°Í•Äè€¬­ÍÑ…Ñ”¹Í•ÅÕ•¹”°ÑåÁ”è€‰A1eI}%9Q9Pˆ°…Ñ¥½¸°…Ñ5Ìè5…Ñ ¹É½Õ¹¡Á•É™½Éµ…¹”¹¹½Ü ¤¤ôì)ô()™Õ¹Ñ¥½¸…‘‘1½œ¡ÍÑ…ÑÕÌ°Á…å±½…°‘•Ñ…¥°¤ì(€½¹ÍĞ¥Ñ•´€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰±¤ˆ¤ì(€½¹ÍĞÍÑ…µÀ€ô¹•Ü…Ñ” ¤¹Ñ½1½…±•Q¥µ•MÑÉ¥¹œ¡mt°ìµ¥¹ÕÑ”è€ˆÈµ‘¥¥Ğˆ°Í•½¹è€ˆÈµ‘¥¥Ğˆô¤ì(€¥Ñ•´¹¥¹¹•É!Q50€ô€ñÍÁ…¸ø‘íÍÑ…µÁôğ½ÍÁ…¸øñˆ±…ÍÌôˆ‘íÍÑ…ÑÕÍôˆø‘íÁ…å±½…¹…Ñ¥½¹ôƒ
+Ü€‘í‘•Ñ…¥±ôğ½ˆù€ì(€€ ˆ•Ù•¹Ñ1½œˆ¤¹ÁÉ•Á•¹¡¥Ñ•´¤ì(€İ¡¥±”€  ˆ•Ù•¹Ñ1½œˆ¤¹¡¥±‘É•¸¹±•¹Ñ €ø€ÄÈ¤€ ˆ•Ù•¹Ñ1½œˆ¤¹±…ÍÑ±•µ•¹Ñ¡¥±¹É•µ½Ù” ¤ì)ô()™Õ¹Ñ¥½¸ÕÁ‘…Ñ•5•ÑÉ¥Ì ¤ì(€€ ˆÍ•¹Ñ5•ÑÉ¥Œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹Í•¹Ğì(€€ ˆ‘•±¥Ù•É•‘5•ÑÉ¥Œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹‘•±¥Ù•É•ì(€€ ˆ±½ÍÑ5•ÑÉ¥Œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹±½ÍĞì(€€ ˆ…Ù5•ÑÉ¥Œˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹‘•±¥Ù•É•€ü€‘í5…Ñ ¹É½Õ¹¡ÍÑ…Ñ”¹±…Ñ•¹åQ½Ñ…°€¼ÍÑ…Ñ”¹‘•±¥Ù•É•¥ôµÍ€€è€‹ŠPˆì(€€ ˆ‰½ÍÍ!ÁQ•áĞˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÍÑ…Ñ”¹‰½ÍÍ!Áô€¼€ÔÈÁ€ì(€€ ˆ‰½ÍÍ!Á	…Èˆ¤¹ÍÑå±”¹İ¥‘Ñ €ô€‘ì¡ÍÑ…Ñ”¹‰½ÍÍ!À€¼€ÔÈÀ¤€¨€ÄÀÁô•€ì(€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…Ìµ™¥•±µÍÑ…Ñ”ˆ°ì‘•Ñ…¥°èì‰½ÍÍ!ÀèÍÑ…Ñ”¹‰½ÍÍ!À°É½±”èÍÑ…Ñ”¹É½±”ôô¤¤ì)ô()™Õ¹Ñ¥½¸…¹¥µ…Ñ•A…­•Ğ¡¥Í1½ÍĞ°‘ÕÉ…Ñ¥½¸¤ì(€½¹ÍĞ…É•¹„€ô€ ˆ…É•¹„ˆ¤ì½¹ÍĞÁ…­•Ğ€ô€ ˆÁ…­•Ğˆ¤ì(€½¹ÍĞ¡•É¼€ô€¡€¹¡•É¼µÑ½­•¹m‘…Ñ„µÉ½±”ôˆ‘íÍÑ…Ñ”¹É½±•ô‰u€¤ì½¹ÍĞ‰½ÍÌ€ô€ ˆ¹‰½ÍÌµÑ½­•¸ˆ¤ì(€½¹ÍĞ…É•„€ô…É•¹„¹•Ñ	½Õ¹‘¥¹±¥•¹ÑI•Ğ ¤ì½¹ÍĞÍÑ…ÉĞ€ô¡•É¼¹•Ñ	½Õ¹‘¥¹±¥•¹ÑI•Ğ ¤ì½¹ÍĞ•¹€ô‰½ÍÌ¹•Ñ	½Õ¹‘¥¹±¥•¹ÑI•Ğ ¤ì(€½¹ÍĞàÄ€ôÍÑ…ÉĞ¹±•™Ğ€¬ÍÑ…ÉĞ¹İ¥‘Ñ €¼€È€´…É•„¹±•™Ğ€´€Øì½¹ÍĞäÄ€ôÍÑ…ÉĞ¹Ñ½À€¬ÍÑ…ÉĞ¹¡•¥¡Ğ€¼€È€´…É•„¹Ñ½À€´€Øì(€½¹ÍĞàÈ€ô•¹¹±•™Ğ€¬•¹¹İ¥‘Ñ €¼€È€´…É•„¹±•™Ğ€´€Øì½¹ÍĞäÈ€ô•¹¹Ñ½À€¬•¹¹¡•¥¡Ğ€¼€È€´…É•„¹Ñ½À€´€Øì(€Á…­•Ğ¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰¥Ìµ±½ÍĞˆ°¥Í1½ÍĞ¤ìÁ…­•Ğ¹ÍÑå±”¹½Á…¥Ñä€ô€ˆÄˆìÁ…­•Ğ¹ÍÑå±”¹±•™Ğ€ô€‘íàÅõÁá€ìÁ…­•Ğ¹ÍÑå±”¹Ñ½À€ô€‘íäÅõÁá€ì(€½¹ÍĞÑ…É•Ñ`€ô¥Í1½ÍĞ€üàÄ€¬€¡àÈ€´àÄ¤€¨€¸ÔÔ€èàÈì½¹ÍĞÑ…É•Ñd€ô¥Í1½ÍĞ€üäÄ€¬€¡äÈ€´äÄ¤€¨€¸ÔÔ€èäÈì(€½¹ÍĞ…¹¥µ…Ñ¥½¸€ôÁ…­•Ğ¹…¹¥µ…Ñ”¡mìÑÉ…¹Í™½É´è€‰Í…±” ¸à¤ˆô°ì±•™Ğè€‘íÑ…É•ÑaõÁá€°Ñ½Àè€‘íÑ…É•ÑeõÁá€°ÑÉ…¹Í™½É´è¥Í1½ÍĞ€ü€‰Í…±” ¸ÈÔ¤ˆ€è€‰Í…±” Ä¸Ì¤ˆõt°ì‘ÕÉ…Ñ¥½¸è5…Ñ ¹µ…à ÄàÀ°‘ÕÉ…Ñ¥½¸¤°•…Í¥¹œè€‰Õ‰¥Œµ‰•é¥•È ¸È°¸Ü°¸È°Ä¤ˆô¤ì(€…¹¥µ…Ñ¥½¸¹½¹™¥¹¥Í €ô€ ¤€ôøìÁ…­•Ğ¹ÍÑå±”¹½Á…¥Ñä€ô€ˆÀˆìÁ…­•Ğ¹ÍÑå±”¹±•™Ğ€ô€‘íÑ…É•ÑaõÁá€ìÁ…­•Ğ¹ÍÑå±”¹Ñ½À€ô€‘íÑ…É•ÑeõÁá€ìôì)ô()™Õ¹Ñ¥½¸…ÁÁ±åÑ¥½¸¡…Ñ¥½¸¤ì(€½¹ÍĞÁÉ½™¥±”€ôÉ½±•ÍmÍÑ…Ñ”¹É½±•tì½¹ÍĞ•™™•Ğ€ô…Ñ¥½¸€ôôô€‰MPˆ€üÁÉ½™¥±”¹…ÍĞ€èÁÉ½™¥±”¹ÍÁ•¥…°ì(€¥˜€¡•™™•Ğ¹‘…µ…”¤ì(€€€ÍÑ…Ñ”¹‰½ÍÍ!À€ô5…Ñ ¹µ…à À°ÍÑ…Ñ”¹‰½ÍÍ!À€´•™™•Ğ¹‘…µ…”¤ì(€€€É•ÑÕÉ¸…•ÁÑ•ƒ
+Ü€‘í•™™•Ğ¹‘…µ…•ô‘…µ…•€ì(€ô(€¥˜€¡•™™•Ğ¹¡•…°¤É•ÑÕÉ¸…•ÁÑ•ƒ
+ÜÑ•…´€¬‘í•™™•Ğ¹¡•…±ô!A€ì(€É•ÑÕÉ¸…•ÁÑ•ƒ
+ÜÑ•…´Í¡¥•±€¬‘í•™™•Ğ¹Í¡¥•±‘õ€ì)ô()™Õ¹Ñ¥½¸ÑÉ¥•ÉÑ¥½¸¡…Ñ¥½¸¤ì(€¥˜€ …É½±•ÍmÍÑ…Ñ”¹É½±•tñğ€…l‰MPˆ°€‰MA%0‰t¹¥¹±Õ‘•Ì¡…Ñ¥½¸¤¤Ñ¡É½Ü¹•ÜÉÉ½È ‰U¹ÍÕÁÁ½ÉÑ•…Ñ¥½¸ˆ¤ì(€¥˜€¡ÍÑ…Ñ”¹½½±‘½İ¹m…Ñ¥½¹t¤ìÑ½…ÍĞ¡€‘í…Ñ¥½¹ô¥Ì½½±¥¹œ‘½İ¹€¤ìÉ•ÑÕÉ¸ìÍÑ…ÑÕÌè€‰½½±‘½İ¸ˆôìô(€ÍÑ…Ñ”¹½½±‘½İ¹m…Ñ¥½¹t€ôÑÉÕ”ì(€½¹ÍĞ‰ÕÑÑ½¸€ô€¡€¹…Ñ¥½¸µ‰ÕÑÑ½¹m‘…Ñ„µ…Ñ¥½¸ôˆ‘í…Ñ¥½¹ô‰u€¤ì‰ÕÑÑ½¸¹‘¥Í…‰±•€ôÑÉÕ”ì(€Í•ÑQ¥µ•½ÕĞ  ¤€ôøìÍÑ…Ñ”¹½½±‘½İ¹m…Ñ¥½¹t€ô™…±Í”ì‰ÕÑÑ½¸¹‘¥Í…‰±•€ô™…±Í”ìô°…Ñ¥½¸€ôôô€‰MPˆ€ü€ÜÀÀ€è€ĞÀÀÀ¤ì((€½¹ÍĞÁ…å±½…€ô•Ù•¹ÑA…å±½…¡…Ñ¥½¸¤ì½¹ÍĞ©¥ÑÑ•È€ô5…Ñ ¹É½Õ¹ ¡5…Ñ ¹É…¹‘½´ ¤€´€¸Ô¤€¨ÍÑ…Ñ”¹±…Ñ•¹ä€¨€¸ÈÔ¤ì(€½¹ÍĞÑÉ…Ù•°€ô5…Ñ ¹µ…à À°ÍÑ…Ñ”¹±…Ñ•¹ä€¬©¥ÑÑ•È¤ì½¹ÍĞ±½ÍĞ€ô5…Ñ ¹É…¹‘½´ ¤€¨€ÄÀÀ€ğÍÑ…Ñ”¹±½ÍÌì(€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…Ìµ™¥•±µ…Ñ¥½¸ˆ°ì‘•Ñ…¥°èìÉ½±”èÍÑ…Ñ”¹É½±”°…Ñ¥½¸°±½ÍĞ°‘ÕÉ…Ñ¥½¸è5…Ñ ¹µ…à ÄàÀ°ÑÉ…Ù•°¤ôô¤¤ì(€ÍÑ…Ñ”¹Í•¹Ğ¬¬ìÕÁ‘…Ñ•5•ÑÉ¥Ì ¤ì…‘‘1½œ ˆˆ°Á…å±½…°€‰Í•¹Ğˆ¤ì…¹¥µ…Ñ•A…­•Ğ¡±½ÍĞ°ÑÉ…Ù•°¤ì(€Í•ÑQ¥µ•½ÕĞ  ¤€ôøì(€€€¥˜€¡±½ÍĞ¤ìÍÑ…Ñ”¹±½ÍĞ¬¬ì…‘‘1½œ ‰±½ÍĞˆ°Á…å±½…°€‰±½ÍĞˆ¤ìô(€€€•±Í”ìÍÑ…Ñ”¹‘•±¥Ù•É•¬¬ìÍÑ…Ñ”¹±…Ñ•¹åQ½Ñ…°€¬ôÑÉ…Ù•°ì…‘‘1½œ ‰½½ˆ°Á…å±½…°€‘í…ÁÁ±åÑ¥½¸¡…Ñ¥½¸¥ôƒ
+Ü€‘íÑÉ…Ù•±ôµÍ€¤ìô(€€€ÕÁ‘…Ñ•5•ÑÉ¥Ì ¤ì(€ô°5…Ñ ¹µ…à ÄàÀ°ÑÉ…Ù•°¤¤ì(€É•ÑÕÉ¸ìÍÑ…ÑÕÌè±½ÍĞ€ü€‰Í¡•‘Õ±•‘}±½ÍÌˆ€è€‰Í¡•‘Õ±•‘}‘•±¥Ù•Éäˆ°Á…å±½…°±…Ñ•¹å5ÌèÑÉ…Ù•°ôì)ô()™Õ¹Ñ¥½¸É•Í•ÑM¥µÕ±…Ñ¥½¸ ¤ì(€=‰©•Ğ¹…ÍÍ¥¸¡ÍÑ…Ñ”°ì‰½ÍÍ!Àè€ÔÈÀ°Í•¹Ğè€À°‘•±¥Ù•É•è€À°±½ÍĞè€À°±…Ñ•¹åQ½Ñ…°è€À°Í•ÅÕ•¹”è€Àô¤ì(€€ ˆ•Ù•¹Ñ1½œˆ¤¹¥¹¹•É!Q50€ô€ˆˆìÕÁ‘…Ñ•5•ÑÉ¥Ì ¤ìİ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…Ìµ™¥•±µÉ•Í•Ğˆ¤¤ìÑ½…ÍĞ¡ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‹CŒƒG†êİĞ³†ê…¤·ĞÁ£†î=¹œˆ€è€‰M¥µÕ±…Ñ¥½¸É•Í•Ğˆ¤ì)ô()™Õ¹Ñ¥½¸É•¹‘•É	Õ¥±‘A…¬ ¤ì(€€ ˆ‰½µ	½‘äˆ¤¹¥¹¹•É!Q50€ô‰½´¹µ…À ¡mÁ…ÉĞ°ÅÑä°ÍÑ…•t¤€ôø€ñÑÈøñÑø‘í±½…±¥é•	½µ•±°¡Á…ÉĞ¥ôğ½ÑøñÑø‘í±½…±¥é•	½µ•±°¡ÅÑä¥ôğ½ÑøñÑøñÍÁ…¸±…ÍÌô‰ÍÑ…”µÑ…œ€‘íÍÑ…”€ôôô€‰	•¹ ˆ€ü€ˆˆ€è€‰±…Ñ•È‰ôˆø‘í±½…±¥é•	½µ•±°¡ÍÑ…”¥ôğ½ÍÁ…¸øğ½Ñøğ½ÑÈù€¤¹©½¥¸ ˆˆ¤ì(€±•ĞÍ…Ù•€ômtì(€ÑÉäìÍ…Ù•€ô)M=8¹Á…ÉÍ”¡±½…±MÑ½É…”¹•Ñ%Ñ•´ ‰…Ñ±…ÌµÕ¥‘”µ¡•­Ìˆ¤ñğ€‰mtˆ¤ìô…Ñ ìÍ…Ù•€ômtìô(€½¹ÍĞÍÑ•ÁÌ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€üÕ¥‘•MÑ•ÁÍY¤€èÕ¥‘•MÑ•ÁÌì(€€ ˆÕ¥‘•1¥ÍĞˆ¤¹¥¹¹•É!Q50€ôÍÑ•ÁÌ¹µ…À ¡ÍÑ•À°¥¹‘•à¤€ôø€ñ±¤øñ±…‰•°øñ¥¹ÁÕĞÑåÁ”ô‰¡•­‰½àˆ‘…Ñ„µÍÑ•Àôˆ‘í¥¹‘•áôˆ€‘íÍ…Ù•¹¥¹±Õ‘•Ì¡¥¹‘•à¤€ü€‰¡•­•ˆ€è€ˆ‰ô¼øñÍÁ…¸ø‘íÍÑ•Áôğ½ÍÁ…¸øğ½±…‰•°øğ½±¤ù€¤¹©½¥¸ ˆˆ¤ì(€ÕÁ‘…Ñ•Õ¥‘•AÉ½É•ÍÌ ¤ì)ô()™Õ¹Ñ¥½¸Õ…É‘¥…¹AÕÉ¡…Í•-•ä ¤ìÉ•ÑÕÉ¸€‰…Ñ±…ÌµÕ…É‘¥…¸µÁÕÉ¡…Í•Ìˆìô)™Õ¹Ñ¥½¸Õ…É‘¥…¹…Ñ•-•ä ¤ìÉ•ÑÕÉ¸€‰…Ñ±…ÌµÕ…É‘¥…¸µ…Ñ•Ìˆìô)™Õ¹Ñ¥½¸Õ…É‘¥…¹¥Ñ-•ä ¤ìÉ•ÑÕÉ¸€‰…Ñ±…ÌµÕ…É‘¥…¸µ™¥Ğˆìô)™Õ¹Ñ¥½¸É•…‘MÑ½É•‘%¹‘•á•Ì¡­•ä°µ…à¤ì(€ÑÉäì(€€€½¹ÍĞÙ…±Õ•Ì€ô)M=8¹Á…ÉÍ”¡±½…±MÑ½É…”¹•Ñ%Ñ•´¡­•ä¤ñğ€‰mtˆ¤ì(€€€É•ÑÕÉ¸ÉÉ…ä¹¥ÍÉÉ…ä¡Ù…±Õ•Ì¤€üÙ…±Õ•Ì¹™¥±Ñ•È¡Ù…±Õ”€ôø9Õµ‰•È¹¥Í%¹Ñ••È¡Ù…±Õ”¤€˜˜Ù…±Õ”€øô€À€˜˜Ù…±Õ”€ğµ…à¤€èmtì(€ô…Ñ ìÉ•ÑÕÉ¸mtìô)ô()™Õ¹Ñ¥½¸É•¹‘•ÉÕ…É‘¥…¹AÉ½‘ÕÑ¥½¸ ¤ì(€½¹ÍĞ½¹Ñ•¹Ğ€ôÕ…É‘¥…¹AÉ½‘ÕÑ¥½¹mÕÉÉ•¹Ñ1…¹Õ…•tì(€½¹ÍĞÁÕÉ¡…Í•Ì€ôÉ•…‘MÑ½É•‘%¹‘•á•Ì¡Õ…É‘¥…¹AÕÉ¡…Í•-•ä ¤°€ÄÀ¤ì(€½¹ÍĞ…Ñ•Ì€ôÉ•…‘MÑ½É•‘%¹‘•á•Ì¡Õ…É‘¥…¹…Ñ•-•ä ¤°€Ô¤ì(€€ ˆÕ…É‘¥…¹1…å•ÉMÑ…¬ˆ¤¹¥¹¹•É!Q50€ô½¹Ñ•¹Ğ¹±…å•ÉÌ¹µ…À ¡mÑ¥Ñ±”°‘•Ñ…¥°°µ…Ñ•É¥…±t°¥¹‘•à¤€ôø€ñ±¤øñˆø‘íMÑÉ¥¹œ¡¥¹‘•à€¬€Ä¤¹Á…‘MÑ…ÉĞ È°€ˆÀˆ¥ôğ½ˆøñ‘¥ØøñÍÑÉ½¹œø‘íÑ¥Ñ±•ôğ½ÍÑÉ½¹œøñÀø‘í‘•Ñ…¥±ôğ½Àøğ½‘¥ØøñÍÁ…¸ø‘íµ…Ñ•É¥…±ôğ½ÍÁ…¸øğ½±¤ù€¤¹©½¥¸ ˆˆ¤ì(€±•Ğ¥Ñ•µ%¹‘•à€ô€Àì(€€ ˆÕ…É‘¥…¹AÕÉ¡…Í•1¥ÍĞˆ¤¹¥¹¹•É!Q50€ô½¹Ñ•¹Ğ¹É½ÕÁÌ¹µ…À¡É½ÕÀ€ôø€ñÍ•Ñ¥½¸±…ÍÌô‰ÁÕÉ¡…Í”µÉ½ÕÀˆøñ Ìø‘íÉ½ÕÀ¹Ñ¥Ñ±•ôğ½ Ìø‘íÉ½ÕÀ¹¥Ñ•µÌ¹µ…À ¡mÑ¥Ñ±”°‘•Ñ…¥±t¤€ôøì½¹ÍĞ¥¹‘•à€ô¥Ñ•µ%¹‘•à¬¬ìÉ•ÑÕÉ¸€ñ±…‰•°øñ¥¹ÁÕĞÑåÁ”ô‰¡•­‰½àˆ‘…Ñ„µÁÕÉ¡…Í”µ¥¹‘•àôˆ‘í¥¹‘•áôˆ€‘íÁÕÉ¡…Í•Ì¹¥¹±Õ‘•Ì¡¥¹‘•à¤€ü€‰¡•­•ˆ€è€ˆ‰ô¼øñÍÁ…¸øñÍÑÉ½¹œø‘íÑ¥Ñ±•ôğ½ÍÑÉ½¹œøñÍµ…±°ø‘í‘•Ñ…¥±ôğ½Íµ…±°øğ½ÍÁ…¸øğ½±…‰•°ù€ìô¤¹©½¥¸ ˆˆ¥ôğ½Í•Ñ¥½¸ù€¤¹©½¥¸ ˆˆ¤ì(€€ ˆÕ…É‘¥…¹…Ñ•1¥ÍĞˆ¤¹¥¹¹•É!Q50€ô½¹Ñ•¹Ğ¹…Ñ•Ì¹µ…À ¡mÑ¥Ñ±”°‘•Ñ…¥±t°¥¹‘•à¤€ôø€ñ±¤øñ±…‰•°øñ¥¹ÁÕĞÑåÁ”ô‰¡•­‰½àˆ‘…Ñ„µÕ…É‘¥…¸µ…Ñ”ôˆ‘í¥¹‘•áôˆ€‘í…Ñ•Ì¹¥¹±Õ‘•Ì¡¥¹‘•à¤€ü€‰¡•­•ˆ€è€ˆ‰ô¼øñÍÁ…¸øñÍÑÉ½¹œø‘íÑ¥Ñ±•ôğ½ÍÑÉ½¹œøñÍµ…±°ø‘í‘•Ñ…¥±ôğ½Íµ…±°øğ½ÍÁ…¸øğ½±…‰•°øğ½±¤ù€¤¹©½¥¸ ˆˆ¤ì(€ÑÉäì(€€€½¹ÍĞ™¥Ğ€ô)M=8¹Á…ÉÍ”¡±½…±MÑ½É…”¹•Ñ%Ñ•´¡Õ…É‘¥…¹¥Ñ-•ä ¤¤ñğ€‰íôˆ¤ì(€€€¥˜€¡9Õµ‰•È¹¥Í¥¹¥Ñ”¡™¥Ğ¹¡•¥¡Ğ¤¤€ ˆÁ±…å•É!•¥¡Ğˆ¤¹Ù…±Õ”€ôMÑÉ¥¹œ¡™¥Ğ¹¡•¥¡Ğ¤ì(€€€¥˜€¡9Õµ‰•È¹¥Í¥¹¥Ñ”¡™¥Ğ¹™½É•…É´¤¤€ ˆ™½É•…Éµ1•¹Ñ ˆ¤¹Ù…±Õ”€ôMÑÉ¥¹œ¡™¥Ğ¹™½É•…É´¤ì(€ô…Ñ íô(€ÕÁ‘…Ñ•Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹AÉ½É•ÍÌ¡™…±Í”¤ì(€ÕÁ‘…Ñ•Õ…É‘¥…¹¥Ğ ¤ì)ô()™Õ¹Ñ¥½¸ÕÁ‘…Ñ•Õ…É‘¥…¹¥Ğ ¤ì(€½¹ÍĞ¡•¥¡Ğ€ô9Õµ‰•È  ˆÁ±…å•É!•¥¡Ğˆ¤¹Ù…±Õ”¤ì(€½¹ÍĞ™½É•…É´€ô9Õµ‰•È  ˆ™½É•…Éµ1•¹Ñ ˆ¤¹Ù…±Õ”¤ì(€½¹ÍĞ‘¥…µ•Ñ•È€ô5…Ñ ¹É½Õ¹¡5…Ñ ¹µ…à ĞÔ°5…Ñ ¹µ¥¸ ÔÔ°¡•¥¡Ğ€¨€¸Ì¤¤¤ì(€½¹ÍĞÍÑÉ…ÁMÁ…¥¹œ€ô5…Ñ ¹É½Õ¹¡™½É•…É´€¨€¸ÔÔ¤ì(€€ ˆÁ±…å•É!•¥¡ÑY…±Õ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô¡•¥¡Ğì(€€ ˆ™½É•…Éµ1•¹Ñ¡Y…±Õ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô™½É•…É´ì(€€ ˆÍ¡¥•±‘¥…µ•Ñ•ÉI•ÍÕ±Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘í‘¥…µ•Ñ•Éôµ€ì(€€ ˆÍÑÉ…ÁMÁ…¥¹I•ÍÕ±Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÍÑÉ…ÁMÁ…¥¹ôµ€ì(€±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡Õ…É‘¥…¹¥Ñ-•ä ¤°)M=8¹ÍÑÉ¥¹¥™ä¡ì¡•¥¡Ğ°™½É•…É´ô¤¤ì(€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…ÌµÕ…É‘¥…¸µ™¥Ğµ¡…¹”ˆ°ì‘•Ñ…¥°èì¡•¥¡Ñ´è¡•¥¡Ğ°™½É•…Éµ´è™½É•…É´°‘¥…µ•Ñ•É´è‘¥…µ•Ñ•È°ÍÑÉ…ÁMÁ…¥¹´èÍÑÉ…ÁMÁ…¥¹œôô¤¤ì)ô()™Õ¹Ñ¥½¸ÕÁ‘…Ñ•Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹AÉ½É•ÍÌ¡Í…Ù”€ôÑÉÕ”¤ì(€½¹ÍĞÁÕÉ¡…Í•Ì€ô€ ˆÕ…É‘¥…¹AÕÉ¡…Í•1¥ÍĞ¥¹ÁÕĞé¡•­•ˆ¤¹µ…À¡¥¹ÁÕĞ€ôø9Õµ‰•È¡¥¹ÁÕĞ¹‘…Ñ…Í•Ğ¹ÁÕÉ¡…Í•%¹‘•à¤¤ì(€½¹ÍĞ…Ñ•Ì€ô€ ˆÕ…É‘¥…¹…Ñ•1¥ÍĞ¥¹ÁÕĞé¡•­•ˆ¤¹µ…À¡¥¹ÁÕĞ€ôø9Õµ‰•È¡¥¹ÁÕĞ¹‘…Ñ…Í•Ğ¹Õ…É‘¥…¹…Ñ”¤¤ì(€¥˜€¡Í…Ù”¤ì±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡Õ…É‘¥…¹AÕÉ¡…Í•-•ä ¤°)M=8¹ÍÑÉ¥¹¥™ä¡ÁÕÉ¡…Í•Ì¤¤ì±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡Õ…É‘¥…¹…Ñ•-•ä ¤°)M=8¹ÍÑÉ¥¹¥™ä¡…Ñ•Ì¤¤ìô(€€ ˆÁÕÉ¡…Í•…Ñ•½Õ¹Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‘íÁÕÉ¡…Í•Ì¹±•¹Ñ¡ô€¼€ÄÀO†êÑ8O9€€è€‘íÁÕÉ¡…Í•Ì¹±•¹Ñ¡ô€¼€ÄÀIe€ì(€€ ˆÕ…É‘¥…¹…Ñ•½Õ¹Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘í…Ñ•Ì¹±•¹Ñ¡ô€¼€ÔAMM€ì(€€ ˆÕ…É‘¥…¹…Ñ•AÉ½É•ÍÌˆ¤¹ÍÑå±”¹İ¥‘Ñ €ô€‘í…Ñ•Ì¹±•¹Ñ €¼€Ô€¨€ÄÀÁô•€ì)ô()™Õ¹Ñ¥½¸‘½İ¹±½…‘Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹A…¬ ¤ì(€½¹ÍĞÙ¤€ôÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆì(€½¹ÍĞ½¹Ñ•¹Ğ€ôÕ…É‘¥…¹AÉ½‘ÕÑ¥½¹mÕÉÉ•¹Ñ1…¹Õ…•tì(€½¹ÍĞ¡•¥¡Ğ€ô9Õµ‰•È  ˆÁ±…å•É!•¥¡Ğˆ¤¹Ù…±Õ”¤ì½¹ÍĞ™½É•…É´€ô9Õµ‰•È  ˆ™½É•…Éµ1•¹Ñ ˆ¤¹Ù…±Õ”¤ì(€½¹ÍĞ‘¥…µ•Ñ•È€ô5…Ñ ¹É½Õ¹¡5…Ñ ¹µ…à ĞÔ°5…Ñ ¹µ¥¸ ÔÔ°¡•¥¡Ğ€¨€¸Ì¤¤¤ì½¹ÍĞÍÑÉ…ÁÌ€ô5…Ñ ¹É½Õ¹¡™½É•…É´€¨€¸ÔÔ¤ì(€½¹ÍĞµ…É­‘½İ¸€ôl(€€€€ŒÕ…É‘¥…¸•¥ÌM¡¥•±ƒŠP€‘íÙ¤€ü€‰†îd¡×†ê¥¸‹†î,£†êüÓ…Œˆ€è€‰AÉ½‘ÕÑ¥½¸É•…‘¥¹•ÍÌÁ…¬‰õ€°€ˆˆ°(€€€€ø€‘íÙ¤€ü€‰£Á„Á£†ê¤Ñ£Ñ¹œÏ†îD†ê½Ğ×†îE¤¸A£†ê¤Ñ£†î´·†ê­Ô…ÉÑ½¸Û†îm¤‰„¹ŸÃ†îu¤ÑËÃ†îmŒ­¡¤¡Õç†î¸Í…¹œY¸ˆ€è€‰9½Ğ„™¥¹…°ÕÑÑ¥¹œÍÁ•¥™¥…Ñ¥½¸¸¥ĞµÑ•ÍĞ„…É‘‰½…Éµ½¬µÕÀİ¥Ñ Ñ¡É•”ÕÍ•ÉÌ‰•™½É”ÑÉ…¹Í™•ÉÉ¥¹œÑ¼Y¸‰õ€°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰/µ Ñ£Ã†îmŒ·†ê­ÔÑ£†î´ˆ€è€‰5½¬µÕÀ‘¥µ•¹Í¥½¹Ì‰õ€°€ˆˆ°€´€‘íÙ¤€ü€‰¡§†îÔ…¼¹ŸÃ†îu¤£…¤ˆ€è€‰A±…å•È¡•¥¡Ğ‰ôè€‘í¡•¥¡Ñôµ€°€´€‘íÙ¤€ü€‰¡§†îÔ“¤†êÍ¹œÑ…äˆ€è€‰½É•…É´±•¹Ñ ‰ôè€‘í™½É•…Éµôµ€°€´€‘íÙ¤€ü€‹CÃ†îu¹œ¯µ¹ ­£†î}¤ƒE§†î´ˆ€è€‰MÑ…ÉÑ¥¹œ‘¥…µ•Ñ•È‰ôè€‘í‘¥…µ•Ñ•Éôµ€°€´€‘íÙ¤€ü€‰-¡¿†ê¹œÓ‰´ÅÕ…¤ˆ€è€‰MÑÉ…À•¹ÑÉ•Ì‰ôè€‘íÍÑÉ…ÁÍôµ€°€´€‘íÙ¤€ü€‰-¡½…¹œƒE§†î¸Ó†î´ˆ€è€‰±•ÑÉ½¹¥Ì…Ù¥Ñä‰ôè€ÄÄÀƒ\€àÔƒ\€Èàµµ€°€´€‘íÙ¤€ü€‰-£†îE¤³Ã†î¹œ·†î•ŒÑ§©Ôˆ€è€‰Q…É•Ğµ…ÍÌ‰ôè€ğ€Ä¸È­€°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰†ê•ÔÑËéŒ³†îmÀˆ€è€‰1…å•ÈÍÑ…¬‰õ€°€ˆˆ°€¸¸¹½¹Ñ•¹Ğ¹±…å•ÉÌ¹µ…À ¡É½Ü°¥¹‘•à¤€ôø€‘í¥¹‘•à€¬€Åô¸€¨¨‘íÉ½İlÁuôƒŠP€‘íÉ½İlÉuô¨¨è€‘íÉ½İlÅuõ€¤°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰†îU¹œµÕ„ƒG†îLˆ€è€‰AÕÉ¡…Í”…Ñ•Ì‰õ€°€ˆˆ°€¸¸¹½¹Ñ•¹Ğ¹É½ÕÁÌ¹™±…Ñ5…À¡É½ÕÀ€ôøm€ŒŒŒ€‘íÉ½ÕÀ¹Ñ¥Ñ±•õ€°€¸¸¹É½ÕÀ¹¥Ñ•µÌ¹µ…À¡¥Ñ•´€ôø€´lt€¨¨‘í¥Ñ•µlÁuô¨¨ƒŠP€‘í¥Ñ•µlÅuõ€¤°€ˆ‰t¤°(€€€€ŒŒ€‘íÙ¤€ü€‰†îU¹œ¡¼Á£¥À£†êüÓ…Œˆ€è€‰I•±•…Í”…Ñ•Ì‰õ€°€ˆˆ°€¸¸¹½¹Ñ•¹Ğ¹…Ñ•Ì¹µ…À ¡…Ñ”°¥¹‘•à¤€ôø€‘í¥¹‘•à€¬€Åô¸lt€¨¨‘í…Ñ•lÁuô¨¨ƒŠP€‘í…Ñ•lÅuõ€¤°€ˆˆ°(€€€€ŒŒ€‘íÙ¤€ü€‰§†îm¤£†ê…¸ˆ€è€‰	½Õ¹‘…Éä‰õ€°€ˆˆ°Ù¤€ü€‰A£†ê¤ã…Œµ¥¹ ƒG†îdÛ†î­„°†ê…¹ ·†î´°¹¡§†îĞ°¹×†îM¸°¹ŸÃ†î…¹œ%5T°ƒG†îd‹†î¸“‰äÛ€­£Ñ¹œÑ§†êıÀãéŒ„Ñ£†îÑË©¸Ñ¡§†êıĞ‹†î,Ñ£†êµĞÑËÃ†îmŒ­¡¤“å¹œÓ†ê…¤Ï†îÄ­§†î¸¸ˆ€è€‰Y•É¥™ä™¥Ğ°Í½™Ğ•‘•Ì°¡•…Ğ°Á½İ•È°%5TÑ¡É•Í¡½±‘Ì°…‰±”‘ÕÉ…‰¥±¥Ñä°…¹¹¼µ½¹Ñ…ĞÁ±…ä½¸É•…°¡…É‘İ…É”‰•™½É”•Ù•¹ĞÕÍ”¸ˆ°€ˆˆ(€t¹©½¥¸ ‰q¸ˆ¤ì(€½¹ÍĞ‰±½ˆ€ô¹•Ü	±½ˆ¡mµ…É­‘½İ¹t°ìÑåÁ”è€‰Ñ•áĞ½µ…É­‘½İ¸ˆô¤ì½¹ÍĞ±¥¹¬€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰„ˆ¤ì(€±¥¹¬¹¡É•˜€ôUI0¹É•…Ñ•=‰©•ÑUI0¡‰±½ˆ¤ì±¥¹¬¹‘½İ¹±½…€ô…Ñ±…ÌµÕ…É‘¥…¸µÁÉ½‘ÕÑ¥½¸´‘í‘¥…µ•Ñ•Éõ´¹µ‘€ì±¥¹¬¹±¥¬ ¤ì(€Í•ÑQ¥µ•½ÕĞ  ¤€ôøUI0¹É•Ù½­•=‰©•ÑUI0¡±¥¹¬¹¡É•˜¤°€ÔÀÀ¤ì(€Ñ½…ÍĞ¡Ù¤€ü€‹CŒÓ†ê…¼‹†îd£†êüÓ…ŒÕ…É‘¥…¸ˆ€è€‰Õ…É‘¥…¸ÁÉ½‘ÕÑ¥½¸Á…¬•¹•É…Ñ•ˆ¤ì)ô()™Õ¹Ñ¥½¸ÕÁ‘…Ñ•Õ¥‘•AÉ½É•ÍÌ ¤ì(€½¹ÍĞ¡•­•€ô€ ˆÕ¥‘•1¥ÍĞ¥¹ÁÕĞé¡•­•ˆ¤¹µ…À¡¥¹ÁÕĞ€ôø9Õµ‰•È¡¥¹ÁÕĞ¹‘…Ñ…Í•Ğ¹ÍÑ•À¤¤ì(€±½…±MÑ½É…”¹Í•Ñ%Ñ•´ ‰…Ñ±…ÌµÕ¥‘”µ¡•­Ìˆ°)M=8¹ÍÑÉ¥¹¥™ä¡¡•­•¤¤ì(€€ ˆÕ¥‘•½Õ¹Ğˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘í¡•­•¹±•¹Ñ¡ô€¼€ÌÉ€ì(€€ ˆÕ¥‘•AÉ½É•ÍÌˆ¤¹ÍÑå±”¹İ¥‘Ñ €ô€‘í¡•­•¹±•¹Ñ €¼€ÌÈ€¨€ÄÀÁô•€ì)ô()™Õ¹Ñ¥½¸É•¥ÍÑ•É]•‰5À ¤ì(€½¹ÍĞ½¹Ñ•áĞ€ô‘½Õµ•¹Ğ¹µ½‘•±½¹Ñ•áĞì(€¥˜€ …½¹Ñ•áĞü¹É•¥ÍÑ•ÉQ½½°¤É•ÑÕÉ¸ì(€½¹ÍĞÑ½½±Ì€ôl(€€€ì(€€€€€¹…µ”è€‰½¹™¥ÕÉ•}…Ñ±…Í}ÁÉ½Àˆ°Ñ¥Ñ±”è€‰½¹™¥ÕÉ”Ñ±…ÌÁÉ½Àˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸è€‰M•ĞÑ¡”…Ñ¥Ù”ÁÉ½À•±•ÑÉ½¹¥ÌÁÉ½™¥±”°ÑÉ…¹ÍÁ½ÉĞ°1™••‘‰…¬°…¹Í•½¹‘…Éä™••‘‰…¬¥¸Ñ¡”Ù¥Í¥‰±”M@ÌÈ±…ˆ¸ˆ°(€€€€€¥¹ÁÕÑM¡•µ„èìÑåÁ”è€‰½‰©•Ğˆ°ÁÉ½Á•ÉÑ¥•ÌèìÉ½±”èì•¹Õ´è=‰©•Ğ¹­•åÌ¡•±•ÑÉ½¹¥ÍAÉ½™¥±•Ì¤ô°ÑÉ…¹ÍÁ½ÉĞèì•¹Õ´èl‰ÕÍˆˆ°€‰İ•‰Í½­•Ğˆ°€‰•ÍÁ¹½Ü‰tô°±•èìÑåÁ”è€‰‰½½±•…¸ˆô°‰Õéé•ÈèìÑåÁ”è€‰‰½½±•…¸ˆôô°…‘‘¥Ñ¥½¹…±AÉ½Á•ÉÑ¥•Ìè™…±Í”ô°(€€€€€…¹¹½Ñ…Ñ¥½¹ÌèìÉ•…‘=¹±å!¥¹Ğè™…±Í”°Õ¹ÑÉÕÍÑ•‘½¹Ñ•¹Ñ!¥¹Ğè™…±Í”ô°(€€€€€•á•ÕÑ”¡¥¹ÁÕĞ¤ì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹É½±”€„ôôÕ¹‘•™¥¹•€˜˜€…•±•ÑÉ½¹¥ÍAÉ½™¥±•Ím¥¹ÁÕĞ¹É½±•t¤Ñ¡É½Ü¹•ÜÉÉ½È ‰%¹Ù…±¥É½±”ˆ¤ì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹ÑÉ…¹ÍÁ½ÉĞ€„ôôÕ¹‘•™¥¹•€˜˜€…l‰ÕÍˆˆ°€‰İ•‰Í½­•Ğˆ°€‰•ÍÁ¹½Ü‰t¹¥¹±Õ‘•Ì¡¥¹ÁÕĞ¹ÑÉ…¹ÍÁ½ÉĞ¤¤Ñ¡É½Ü¹•ÜÉÉ½È ‰%¹Ù…±¥ÑÉ…¹ÍÁ½ÉĞˆ¤ì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹É½±”€„ôôÕ¹‘•™¥¹•¤…Ñ¥Ù•AÉ½À€ô¥¹ÁÕĞ¹É½±”ì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹ÑÉ…¹ÍÁ½ÉĞ€„ôôÕ¹‘•™¥¹•¤ÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ€ô¥¹ÁÕĞ¹ÑÉ…¹ÍÁ½ÉĞì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹±•€„ôôÕ¹‘•™¥¹•¤ÍÑ…Ñ”¹±•€ô	½½±•…¸¡¥¹ÁÕĞ¹±•¤ì(€€€€€€€¥˜€¡¥¹ÁÕĞ¹‰Õéé•È€„ôôÕ¹‘•™¥¹•¤ÍÑ…Ñ”¹‰Õéé•È€ô	½½±•…¸¡¥¹ÁÕĞ¹‰Õéé•È¤ì(€€€€€€€€ ˆÉ½±•M•±•Ğˆ¤¹Ù…±Õ”€ô…Ñ¥Ù•AÉ½Àì€ ˆÑÉ…¹ÍÁ½ÉÑM•±•Ğˆ¤¹Ù…±Õ”€ôÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞì€ ˆ±•‘Q½±”ˆ¤¹¡•­•€ôÍÑ…Ñ”¹±•ì€ ˆ‰Õéé•ÉQ½±”ˆ¤¹¡•­•€ôÍÑ…Ñ”¹‰Õéé•Èì(€€€€€€€É•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ìÍ¡½İY¥•Ü ‰ÁÉ½Ñ½ÑåÁ”ˆ¤ì(€€€€€€€É•ÑÕÉ¸ìÉ½±”è…Ñ¥Ù•AÉ½À°ÑÉ…¹ÍÁ½ÉĞèÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ°±•èÍÑ…Ñ”¹±•°‰Õéé•ÈèÍÑ…Ñ”¹‰Õéé•Èôì(€€€€€ô(€€€ô°(€€€ì(€€€€€¹…µ”è€‰Í•±•Ñ}…Ñ±…Í}‰Õ¥±‘}Á…¬ˆ°Ñ¥Ñ±”è€‰M•±•ĞÑ±…Ì‰Õ¥±Á…¬ˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸è€‰=Á•¸½¹”É½±”µÍÁ•¥™¥ŒÁÉ½ÀÁ±…¸İ¥Ñ ¥ÑÌ‘É…İ¥¹œ°‰¥±°½˜µ…Ñ•É¥…±Ì°Í•¹Í½ÈÁ±…•µ•¹Ğ°…¹…ÍÍ•µ‰±äÁ…Ñ ¸ˆ°(€€€€€¥¹ÁÕÑM¡•µ„èìÑåÁ”è€‰½‰©•Ğˆ°ÁÉ½Á•ÉÑ¥•ÌèìÁÉ½Àèì•¹Õ´è=‰©•Ğ¹­•åÌ¡ÁÉ½Á-¥ÑÌ¤ôô°É•ÅÕ¥É•èl‰ÁÉ½À‰t°…‘‘¥Ñ¥½¹…±AÉ½Á•ÉÑ¥•Ìè™…±Í”ô°(€€€€€…¹¹½Ñ…Ñ¥½¹ÌèìÉ•…‘=¹±å!¥¹Ğè™…±Í”°Õ¹ÑÉÕÍÑ•‘½¹Ñ•¹Ñ!¥¹Ğè™…±Í”ô°(€€€€€•á•ÕÑ”¡¥¹ÁÕĞ¤ì(€€€€€€€¥˜€ …ÁÉ½Á-¥ÑÍm¥¹ÁÕĞ¹ÁÉ½Át¤Ñ¡É½Ü¹•ÜÉÉ½È ‰U¹­¹½İ¸ÁÉ½À‰Õ¥±ˆ¤ì(€€€€€€€…Ñ¥Ù•AÉ½À€ô¥¹ÁÕĞ¹ÁÉ½Àì(€€€€€€€É•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ì(€€€€€€€Í¡½İY¥•Ü ‰•Ù•¹Ğµ­¥Ğˆ¤ì(€€€€€€€É•ÑÕÉ¸ìÁÉ½Àè…Ñ¥Ù•AÉ½À°¹…µ”èÁÉ½Á-¥ÑÍm…Ñ¥Ù•AÉ½Át¹¹…µ”°ÍÑ…ÑÕÌè€‰‘•Í¥¹}Á…¬ˆôì(€€€€€ô(€€€ô°(€€€ì(€€€€€¹…µ”è€‰ÑÉ¥•É}…Ñ±…Í}ÁÉ½Á}…Ñ¥½¸ˆ°Ñ¥Ñ±”è€‰QÉ¥•ÈÁÉ½À…Ñ¥½¸ˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸è€‰M•¹MP½ÈMA%0Ñ¡É½Õ Ñ¡”Ù¥Í¥‰±”Ñ±…Ì™¥•±Í¥µÕ±…Ñ½Èİ¥Ñ Ñ¡”ÕÉÉ•¹Ğ±…Ñ•¹ä…¹Á…­•Ğ±½ÍÌ¸ˆ°(€€€€€¥¹ÁÕÑM¡•µ„èìÑåÁ”è€‰½‰©•Ğˆ°ÁÉ½Á•ÉÑ¥•Ìèì…Ñ¥½¸èì•¹Õ´èl‰MPˆ°€‰MA%0‰tôô°É•ÅÕ¥É•èl‰…Ñ¥½¸‰t°…‘‘¥Ñ¥½¹…±AÉ½Á•ÉÑ¥•Ìè™…±Í”ô°(€€€€€…¹¹½Ñ…Ñ¥½¹ÌèìÉ•…‘=¹±å!¥¹Ğè™…±Í”°Õ¹ÑÉÕÍÑ•‘½¹Ñ•¹Ñ!¥¹Ğè™…±Í”ô°(€€€€€•á•ÕÑ”¡¥¹ÁÕĞ¤ìÍ¡½İY¥•Ü ‰™¥•±ˆ¤ìÉ•ÑÕÉ¸ÑÉ¥•ÉÑ¥½¸¡¥¹ÁÕĞ¹…Ñ¥½¸¤ìô(€€€ô°(€€€ì(€€€€€¹…µ”è€‰É•…‘}…Ñ±…Í}±…‰}ÍÑ…Ñ”ˆ°Ñ¥Ñ±”è€‰I•…Ñ±…Ì±…ˆÍÑ…Ñ”ˆ°(€€€€€‘•ÍÉ¥ÁÑ¥½¸è€‰I•…Ñ¡”…Ñ¥Ù”ÁÉ½À½¹™¥ÕÉ…Ñ¥½¸…¹™¥•±Í¥µÕ±…Ñ¥½¸µ•ÑÉ¥Ì¸ˆ°(€€€€€¥¹ÁÕÑM¡•µ„èìÑåÁ”è€‰½‰©•Ğˆ°ÁÉ½Á•ÉÑ¥•Ìèíô°…‘‘¥Ñ¥½¹…±AÉ½Á•ÉÑ¥•Ìè™…±Í”ô°(€€€€€…¹¹½Ñ…Ñ¥½¹ÌèìÉ•…‘=¹±å!¥¹ĞèÑÉÕ”°Õ¹ÑÉÕÍÑ•‘½¹Ñ•¹Ñ!¥¹Ğè™…±Í”ô°(€€€€€•á•ÕÑ” ¤ìÉ•ÑÕÉ¸ì…Ñ¥Ù•	Õ¥±‘A…¬è…Ñ¥Ù•AÉ½À°É½±”èÍÑ…Ñ”¹É½±”°ÑÉ…¹ÍÁ½ÉĞèÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ°±•èÍÑ…Ñ”¹±•°‰Õéé•ÈèÍÑ…Ñ”¹‰Õéé•È°Í¥µÕ±…Ñ¥½¸èì‰½ÍÍ!ÀèÍÑ…Ñ”¹‰½ÍÍ!À°Í•¹ĞèÍÑ…Ñ”¹Í•¹Ğ°‘•±¥Ù•É•èÍÑ…Ñ”¹‘•±¥Ù•É•°±½ÍĞèÍÑ…Ñ”¹±½ÍĞôôìô(€€€ô(€tì(€Ñ½½±Ì¹™½É… ¡Ñ½½°€ôøìÑÉäìAÉ½µ¥Í”¹É•Í½±Ù”¡½¹Ñ•áĞ¹É•¥ÍÑ•ÉQ½½°¡Ñ½½°¤¤¹…Ñ   ¤€ôøíô¤ìô…Ñ íôô¤ì)ô()™Õ¹Ñ¥½¸¥¹¥Ğ ¤ì(€‰Õ¥±‘I¥¹½ÑÌ ¤ì…ÁÁ±åMÑ…Ñ¥QÉ…¹Í±…Ñ¥½¹Ì ¤ìÉ•¹‘•ÉÕ…É‘¥…¹AÉ½‘ÕÑ¥½¸ ¤ìÉ•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ìÉ•¹‘•É	Õ¥±‘A…¬ ¤ìÕÁ‘…Ñ•5•ÑÉ¥Ì ¤ì(€€ ˆ¹Ñ…ˆˆ¤¹™½É… ¡Ñ…ˆ€ôøÑ…ˆ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ¡½İY¥•Ü¡Ñ…ˆ¹‘…Ñ…Í•Ğ¹Ù¥•Ü¤¤¤ì(€€ ˆ¹±…¹Õ…”µÍİ¥Ñ ‰ÕÑÑ½¸ˆ¤¹™½É… ¡‰ÕÑÑ½¸€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€ÕÉÉ•¹Ñ1…¹Õ…”€ô‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…¹Õ…”ì(€€€…ÁÁ±åMÑ…Ñ¥QÉ…¹Í±…Ñ¥½¹Ì ¤ìÉ•¹‘•ÉÕ…É‘¥…¹AÉ½‘ÕÑ¥½¸ ¤ìÉ•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ìÉ•¹‘•É	Õ¥±‘A…¬ ¤ì(€€€İ¥¹‘½Ü¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•ÜÕÍÑ½µÙ•¹Ğ ‰…Ñ±…Ìµ±…¹Õ…”µ¡…¹”ˆ°ì‘•Ñ…¥°èì±…¹Õ…”èÕÉÉ•¹Ñ1…¹Õ…”ôô¤¤ì(€ô¤¤ì(€€ ˆ¹É½±”µ…Éˆ¤¹™½É… ¡…É€ôø…É¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì…Ñ¥Ù•AÉ½À€ô…É¹‘…Ñ…Í•Ğ¹ÁÉ½Àì…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ô€Àì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•ÜˆìÉ•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ìô¤¤ì(€€ ˆ‘½İ¹±½…‘	Õ¥±‘A…¬ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°‘½İ¹±½…‘I½±•	Õ¥±‘A…¬¤ì(€€ ˆÁ±…å•É!•¥¡Ğˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°ÕÁ‘…Ñ•Õ…É‘¥…¹¥Ğ¤ì(€€ ˆ™½É•…Éµ1•¹Ñ ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°ÕÁ‘…Ñ•Õ…É‘¥…¹¥Ğ¤ì(€€ ˆÕ…É‘¥…¹AÕÉ¡…Í•1¥ÍĞˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøÕÁ‘…Ñ•Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹AÉ½É•ÍÌ ¤¤ì(€€ ˆÕ…É‘¥…¹…Ñ•1¥ÍĞˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøÕÁ‘…Ñ•Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹AÉ½É•ÍÌ ¤¤ì(€€ ˆ±•…ÉÕ…É‘¥…¹…Ñ•Ìˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì€ ˆÕ…É‘¥…¹…Ñ•1¥ÍĞ¥¹ÁÕĞˆ¤¹™½É… ¡¥¹ÁÕĞ€ôø¥¹ÁÕĞ¹¡•­•€ô™…±Í”¤ìÕÁ‘…Ñ•Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹AÉ½É•ÍÌ ¤ìô¤ì(€€ ˆ‘½İ¹±½…‘Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹A…¬ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°‘½İ¹±½…‘Õ…É‘¥…¹AÉ½‘ÕÑ¥½¹A…¬¤ì(€€ ˆÕ¥‘•‘Y¥ÍÕ…±Q…‰Ìˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°•Ù•¹Ğ€ôøì(€€€½¹ÍĞ‰ÕÑÑ½¸€ô•Ù•¹Ğ¹Ñ…É•Ğ¹±½Í•ÍĞ ‰m‘…Ñ„µÙ¥ÍÕ…°µÙ¥•İtˆ¤ì(€€€¥˜€ …‰ÕÑÑ½¸¤É•ÑÕÉ¸ì(€€€…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹Ù¥ÍÕ…±Y¥•ÜìÉ•¹‘•ÉÕ¥‘•‘Y¥ÍÕ…° ¤ì(€ô¤ì(€€ ˆÕ¥‘•‘MÑ•Á9…Øˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°•Ù•¹Ğ€ôøì(€€€½¹ÍĞ‰ÕÑÑ½¸€ô•Ù•¹Ğ¹Ñ…É•Ğ¹±½Í•ÍĞ ‰m‘…Ñ„µÕ¥‘•µÍÑ•Átˆ¤ì(€€€¥˜€ …‰ÕÑÑ½¸¤É•ÑÕÉ¸ì(€€€…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ô9Õµ‰•È¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹Õ¥‘•‘MÑ•À¤ì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•ÜˆìÉ•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ì(€ô¤ì(€€ ˆÕ¥‘•‘AÉ•Øˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ô5…Ñ ¹µ…à À°…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€´€Ä¤ì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•ÜˆìÉ•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ìô¤ì(€€ ˆÕ¥‘•‘9•áĞˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ô5…Ñ ¹µ¥¸ Ü°…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬€Ä¤ì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•ÜˆìÉ•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ìô¤ì(€€ ˆÁ…ÉÑÍI•…‘å¡•¬ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ğ€ôøì(€€€±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡Á…ÉÑÍI•…‘åMÑ½É…•-•ä ¤°MÑÉ¥¹œ¡•Ù•¹Ğ¹Ñ…É•Ğ¹¡•­•¤¤ìÉ•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ì(€ô¤ì(€€ ˆÕ¥‘•‘½µÁ±•Ñ”ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€¥˜€ „ ˆÁ…ÉÑÍI•…‘å¡•¬ˆ¤¹¡•­•¤ì(€€€€€Ñ½…ÍĞ¡ÕÉÉ•¹Ñ1…¹Õ…”€ôôô€‰Ù¤ˆ€ü€‰#äã…Œ¹£†êµ¸ƒGŒƒG†îœ±¥¹ ­§†î¸ÑËÃ†îmŒˆ€è€‰½¹™¥É´…±°Á…ÉÑÌ…É”É•…‘ä™¥ÉÍĞˆ¤ìÉ•ÑÕÉ¸ì(€€€ô(€€€½¹ÍĞ½µÁ±•Ñ•€ô•Ñ½µÁ±•Ñ•‘Õ¥‘•‘MÑ•ÁÌ ¤ì(€€€½¹ÍĞ•á¥ÍÑ¥¹œ€ô½µÁ±•Ñ•¹¥¹‘•á=˜¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À¤ì(€€€¥˜€¡•á¥ÍÑ¥¹œ€øô€À¤½µÁ±•Ñ•¹ÍÁ±¥”¡•á¥ÍÑ¥¹œ°€Ä¤ì•±Í”½µÁ±•Ñ•¹ÁÕÍ ¡…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À¤ì(€€€±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡Õ¥‘•‘MÑ½É…•-•ä ¤°)M=8¹ÍÑÉ¥¹¥™ä¡½µÁ±•Ñ•¤¤ì(€€€¥˜€¡•á¥ÍÑ¥¹œ€ğ€À€˜˜…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ğ€Ü¤ì…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€¬ô€Äì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•Üˆìô(€€€É•¹‘•ÉÕ¥‘•‘ÍÍ•µ‰±ä ¤ì(€ô¤ì(€€ ˆÉ½±•M•±•Ğˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ğ€ôøì…Ñ¥Ù•AÉ½À€ô•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”ì…Ñ¥Ù•ÍÍ•µ‰±åMÑ•À€ô€Àì…Ñ¥Ù•Y¥ÍÕ…±Y¥•Ü€ô€‰½Ù•ÉÙ¥•ÜˆìÉ•¹‘•ÉAÉ½Á-¥Ğ ¤ìÉ•¹‘•É½¹™¥œ ¤ìô¤ì(€€ ˆÑÉ…¹ÍÁ½ÉÑM•±•Ğˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ğ€ôøìÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ€ô•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”ìÉ•¹‘•É½¹™¥œ ¤ìô¤ì(€€ ˆ±•‘Q½±”ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ğ€ôøìÍÑ…Ñ”¹±•€ô•Ù•¹Ğ¹Ñ…É•Ğ¹¡•­•ìÉ•¹‘•É½¹™¥œ ¤ìô¤ì(€€ ˆ‰Õéé•ÉQ½±”ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ğ€ôøìÍÑ…Ñ”¹‰Õéé•È€ô•Ù•¹Ğ¹Ñ…É•Ğ¹¡•­•ìÉ•¹‘•É½¹™¥œ ¤ìô¤ì(€€ ˆ‘½İ¹±½…‘¥…É…´ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø‘½İ¹±½…‘)Í½¸ ‰‘¥…É…´¹©Í½¸ˆ°ÕÉÉ•¹Ñ¥…É…´ ¤¤¤ì(€€ ˆ‘½İ¹±½…‘½¹™¥œˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì½¹ÍĞÁÉ½™¥±”€ô•±•ÑÉ½¹¥ÍAÉ½™¥±•Ím…Ñ¥Ù•AÉ½Átì‘½İ¹±½…‘)Í½¸ ‰…Ñ±…ÌµÁÉ½Àµ½¹™¥œ¹©Í½¸ˆ°ìÙ•ÉÍ¥½¸è€Ä°‘•Ù¥•%èÁÉ½™¥±”¹‘•Ù¥•%°É½±”èÁÉ½™¥±”¹±…‰•°°ÁÉ½Àè…Ñ¥Ù•AÉ½À°ÑÉ…¹ÍÁ½ÉĞèÍÑ…Ñ”¹ÑÉ…¹ÍÁ½ÉĞ°™•…ÑÕÉ•Ìèì±•‘••‘‰…¬èÍÑ…Ñ”¹±•°Í•½¹‘…Éå••‘‰…¬èÍÑ…Ñ”¹‰Õéé•Èô°Á…ÉÑÌèÁÉ½™¥±”¹Á…ÉÑÌ°Á¥¹ÌèÁÉ½™¥±”¹Á¥¹Ì°•Ù•¹ÑÌèÁÉ½™¥±”¹•Ù•¹ÑÌô¤ìô¤ì(€€ ˆ•±•ÑÉ½¹¥ÍÙ•¹Ñ	ÕÑÑ½¹Ìˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°•Ù•¹Ğ€ôøì½¹ÍĞ‰ÕÑÑ½¸€ô•Ù•¹Ğ¹Ñ…É•Ğ¹±½Í•ÍĞ ‰m‘…Ñ„µ•±•ÑÉ½¹¥Ìµ•Ù•¹Ñtˆ¤ì¥˜€¡‰ÕÑÑ½¸¤Ñ•ÍÑ±•ÑÉ½¹¥ÍÙ•¹Ğ¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹•±•ÑÉ½¹¥ÍÙ•¹Ğ¤ìô¤ì(€€ ˆ¹¡•É¼µÑ½­•¸ˆ¤¹™½É… ¡Ñ½­•¸€ôøÑ½­•¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøìÍÑ…Ñ”¹É½±”€ôÑ½­•¸¹‘…Ñ…Í•Ğ¹É½±”ìÉ•¹‘•É½¹™¥œ ¤ìô¤¤ì(€İ¥¹‘½Ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰…Ñ±…ÌµÍ•±•Ğµ™¥•±µÉ½±”ˆ°•Ù•¹Ğ€ôøì¥˜€¡É½±•Ím•Ù•¹Ğ¹‘•Ñ…¥°ü¹É½±•t¤ìÍÑ…Ñ”¹É½±”€ô•Ù•¹Ğ¹‘•Ñ…¥°¹É½±”ìÉ•¹‘•É½¹™¥œ ¤ìôô¤ì(€€ ˆ¹…Ñ¥½¸µ‰ÕÑÑ½¸ˆ¤¹™½É… ¡‰ÕÑÑ½¸€ôø‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÑÉ¥•ÉÑ¥½¸¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹…Ñ¥½¸¤¤¤ì(€€ ˆÉ•Í•ÑM¥´ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°É•Í•ÑM¥µÕ±…Ñ¥½¸¤ì(€€ ˆ±…Ñ•¹åI…¹”ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°•Ù•¹Ğ€ôøìÍÑ…Ñ”¹±…Ñ•¹ä€ô9Õµ‰•È¡•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”¤ì€ ˆ±…Ñ•¹åY…±Õ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÍÑ…Ñ”¹±…Ñ•¹åôµÍ€ìô¤ì(€€ ˆ±½ÍÍI…¹”ˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°•Ù•¹Ğ€ôøìÍÑ…Ñ”¹±½ÍÌ€ô9Õµ‰•È¡•Ù•¹Ğ¹Ñ…É•Ğ¹Ù…±Õ”¤ì€ ˆ±½ÍÍY…±Õ”ˆ¤¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÍÑ…Ñ”¹±½ÍÍô•€ìô¤ì(€€ ˆÕ¥‘•1¥ÍĞˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°ÕÁ‘…Ñ•Õ¥‘•AÉ½É•ÍÌ¤ì(€€ ˆ±•…É¡•­±¥ÍĞˆ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì€ ˆÕ¥‘•1¥ÍĞ¥¹ÁÕĞˆ¤¹™½É… ¡¥¹ÁÕĞ€ôø¥¹ÁÕĞ¹¡•­•€ô™…±Í”¤ìÕÁ‘…Ñ•Õ¥‘•AÉ½É•ÍÌ ¤ìô¤ì(€É•¥ÍÑ•É]•‰5À ¤ì)ô()¥¹¥Ğ ¤ì(

@@ -30,113 +30,171 @@ function startThreeLab(THREE, OrbitControls) {
     wearable: ["Wearable mounting", "Kết cấu đeo", "Adjustable straps or armour mounting shared across player sizes.", "Quai hoặc kết cấu áo giáp điều chỉnh theo nhiều cỡ người.", "Fit-test the smallest and largest intended player before field use.", "Thử với người nhỏ nhất và lớn nhất dự kiến trước khi dùng thực địa."]
   };
 
-  function material(color, metalness = .1, opacity = 1) {
-    return new THREE.MeshStandardMaterial({ color, metalness, roughness: .62, transparent: opacity < 1, opacity, side: THREE.DoubleSide });
+  function material(color, metalnessOrOptions = .1, opacity = 1) {
+    const options = typeof metalnessOrOptions === "object" ? metalnessOrOptions : { metalness: metalnessOrOptions, opacity };
+    const alpha = options.opacity ?? 1;
+    return new THREE.MeshPhysicalMaterial({
+      color,
+      metalness: options.metalness ?? .08,
+      roughness: options.roughness ?? .56,
+      clearcoat: options.clearcoat ?? .08,
+      clearcoatRoughness: .34,
+      transparent: alpha < 1,
+      opacity: alpha,
+      transmission: options.transmission ?? 0,
+      thickness: options.thickness ?? 0,
+      emissive: options.emissive ? color : 0x000000,
+      emissiveIntensity: options.emissive ? (options.emissiveIntensity ?? 1.4) : 0,
+      side: THREE.DoubleSide
+    });
   }
   function addPart(group, geometry, color, key, position, rotation = [0, 0, 0], scale = [1, 1, 1], options = {}) {
-    const mesh = new THREE.Mesh(geometry, material(color, options.metalness || .05, options.opacity ?? 1));
+    const mesh = new THREE.Mesh(geometry, material(color, options));
     mesh.position.set(...position); mesh.rotation.set(...rotation); mesh.scale.set(...scale);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.userData = { partKey: key, electronic: Boolean(options.electronic), explode: options.explode || [0, 0, 0] };
     group.add(mesh); return mesh;
   }
   function linePart(group, points, color, key, options = {}) {
-    const curve = new THREE.CatmullRomCurve3(points.map(point => new THREE.Vector3(...point)));
-    return addPart(group, new THREE.TubeGeometry(curve, 28, options.radius || .08, 8, false), color, key, [0, 0, 0], [0, 0, 0], [1, 1, 1], options);
+    const curve = new THREE.CatmullRomCurve3(points.map(point => new THREE.Vector3(...point)), false, "catmullrom", .42);
+    return addPart(group, new THREE.TubeGeometry(curve, options.segments || 48, options.radius || .08, options.radialSegments || 10, false), color, key, [0, 0, 0], [0, 0, 0], [1, 1, 1], options);
+  }
+  function plateGeometry(points, depth = .16, bevel = .045) {
+    const shape = new THREE.Shape();
+    points.forEach(([x, y], index) => index ? shape.lineTo(x, y) : shape.moveTo(x, y));
+    shape.closePath();
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: bevel, bevelThickness: bevel });
+    geometry.translate(0, 0, -depth / 2);
+    geometry.computeVertexNormals();
+    return geometry;
+  }
+  function addRivet(group, position, key = "shell", color = 0x8ea4aa, options = {}) {
+    return addPart(group, new THREE.CylinderGeometry(.055, .055, .045, 16), color, key, position, [Math.PI / 2, 0, 0], [1, 1, 1], { metalness: .72, roughness: .27, ...options });
   }
   function finishModel(group) {
     group.traverse(object => {
       if (!object.isMesh) return;
       object.userData.basePosition = object.position.clone();
       object.userData.baseEmissive = object.material.emissive?.getHex() || 0;
+      object.userData.baseEmissiveIntensity = object.material.emissiveIntensity || 0;
     });
     return group;
   }
 
   function buildGuardian(accent) {
     const group = new THREE.Group();
-    addPart(group, new THREE.CylinderGeometry(2.25, 2.25, .34, 48), 0x1a3137, "shell", [0, 0, 0], [Math.PI / 2, 0, 0], [1, 1.12, 1], { explode: [0, 0, -.8] });
-    addPart(group, new THREE.TorusGeometry(2.25, .13, 12, 64), accent, "light", [0, 0, .23], [0, 0, 0], [1, 1.12, 1], { electronic: true, explode: [0, 0, 1.1] });
-    addPart(group, new THREE.BoxGeometry(.8, .32, .48), 0x283b42, "sensor", [0, .1, -.42], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [-1.4, .5, -.6] });
-    addPart(group, new THREE.BoxGeometry(1.05, .75, .32), 0x175b55, "core", [0, -.75, -.5], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.3, -.4, -.7] });
-    addPart(group, new THREE.CylinderGeometry(.18, .18, .35, 20), accent, "control", [.92, -.22, -.45], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, explode: [1.4, .4, -.5] });
-    addPart(group, new THREE.TorusGeometry(.85, .12, 10, 36, Math.PI * 1.3), 0x52666c, "wearable", [-.65, 0, -.56], [Math.PI / 2, 0, .2], [1, 1, 1], { explode: [-1.2, -.4, -.8] });
+    addPart(group, new THREE.CylinderGeometry(2.18, 2.18, .30, 64), 0x13282f, "shell", [0, 0, 0], [Math.PI / 2, 0, 0], [1, 1.08, 1], { roughness: .78, explode: [0, 0, -.72] });
+    addPart(group, new THREE.CylinderGeometry(1.86, 1.86, .16, 64), 0x203e46, "shell", [0, 0, .20], [Math.PI / 2, 0, 0], [1, 1.08, 1], { metalness: .2, roughness: .42, explode: [0, 0, .38] });
+    addPart(group, new THREE.TorusGeometry(2.16, .13, 14, 72), 0x788e93, "shell", [0, 0, .17], [0, 0, 0], [1, 1.08, 1], { metalness: .62, roughness: .3, explode: [0, 0, .6] });
+    addPart(group, new THREE.TorusGeometry(1.72, .055, 10, 72), accent, "light", [0, 0, .32], [0, 0, 0], [1, 1.08, 1], { electronic: true, emissive: true, explode: [0, 0, 1.05] });
+    addPart(group, new THREE.SphereGeometry(.56, 32, 18), 0x34555d, "shell", [0, 0, .28], [0, 0, 0], [1, 1, .32], { metalness: .48, roughness: .32, explode: [0, 0, .72] });
+    for (let i = 0; i < 8; i++) {
+      const angle = i * Math.PI / 4;
+      addRivet(group, [Math.cos(angle) * 1.96, Math.sin(angle) * 2.10, .34]);
+    }
+    addPart(group, new THREE.BoxGeometry(.68, .3, .38), 0x24393f, "sensor", [0, .2, -.37], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [-1.3, .55, -.75] });
+    addPart(group, new THREE.BoxGeometry(.92, .7, .28), 0x146258, "core", [0, -.65, -.4], [0, 0, 0], [1, 1, 1], { electronic: true, roughness: .4, explode: [1.35, -.45, -.75] });
+    addPart(group, new THREE.CylinderGeometry(.15, .15, .3, 20), accent, "control", [.74, -.2, -.38], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [1.25, .35, -.65] });
+    linePart(group, [[-.68, .92, -.46], [-.98, .15, -.54], [-.7, -.82, -.46]], 0x53666a, "wearable", { radius: .105, explode: [-1.05, 0, -.75] });
+    linePart(group, [[.7, .76, -.46], [.98, .05, -.54], [.72, -.72, -.46]], 0x53666a, "wearable", { radius: .105, explode: [1.05, 0, -.75] });
     return finishModel(group);
   }
   function buildSword(accent) {
     const group = new THREE.Group();
-    addPart(group, new THREE.BoxGeometry(.72, 4.4, .18), 0x264047, "shell", [0, .65, 0], [0, 0, 0], [1, 1, 1], { explode: [0, 1.2, 0] });
-    addPart(group, new THREE.BoxGeometry(.16, 3.9, .23), accent, "light", [0, .75, .14], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [.8, .7, .8] });
-    addPart(group, new THREE.BoxGeometry(2.1, .25, .34), 0x52666c, "sensor", [0, -1.65, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [-1.1, -.5, 0] });
-    addPart(group, new THREE.CylinderGeometry(.28, .34, 1.45, 20), 0x18343d, "core", [0, -2.5, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.1, -.8, 0] });
-    addPart(group, new THREE.SphereGeometry(.18, 16, 12), accent, "control", [.22, -2.15, .22], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [.8, 0, .8] });
-    addPart(group, new THREE.TorusGeometry(.46, .07, 8, 24), 0x789198, "wearable", [0, -3.25, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { explode: [0, -1.2, 0] });
+    const blade = plateGeometry([[-.42, -1.75], [-.32, 1.7], [0, 2.42], [.32, 1.7], [.42, -1.75]], .18, .035);
+    addPart(group, blade, 0x7e9298, "shell", [0, .55, 0], [0, 0, 0], [1, 1, 1], { metalness: .72, roughness: .27, clearcoat: .25, explode: [0, 1.0, 0] });
+    linePart(group, [[0, -.98, .13], [0, .35, .13], [0, 2.24, .13]], accent, "light", { radius: .055, electronic: true, emissive: true, explode: [.7, .65, .7] });
+    linePart(group, [[-1.2, -1.2, 0], [-.58, -1.05, 0], [0, -.92, 0], [.58, -1.05, 0], [1.2, -1.2, 0]], 0x52666c, "sensor", { radius: .13, metalness: .48, explode: [-1.05, -.4, 0] });
+    addPart(group, new THREE.CylinderGeometry(.27, .31, 1.55, 24), 0x172d34, "core", [0, -2.05, 0], [0, 0, 0], [1, 1, 1], { roughness: .76, electronic: true, explode: [1.0, -.72, 0] });
+    for (let y = -2.65; y < -1.4; y += .22) linePart(group, [[-.28, y, -.02], [.28, y + .12, .02]], 0x65777a, "wearable", { radius: .035, explode: [0, -1.0, 0] });
+    addPart(group, new THREE.SphereGeometry(.14, 20, 14), accent, "control", [.24, -1.68, .25], [0, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [.75, 0, .75] });
+    addPart(group, new THREE.OctahedronGeometry(.38, 1), 0x435960, "wearable", [0, -3.02, 0], [0, 0, Math.PI / 4], [1, 1, .65], { metalness: .42, explode: [0, -1.15, 0] });
     return finishModel(group);
   }
   function buildBow(accent) {
     const group = new THREE.Group();
-    linePart(group, [[-1.2, 2.5, 0], [-2, 0, 0], [-1.2, -2.5, 0]], 0x264047, "shell", { radius: .18, explode: [-.8, 0, 0] });
-    linePart(group, [[1.2, 2.5, 0], [2, 0, 0], [1.2, -2.5, 0]], 0x264047, "shell", { radius: .18, explode: [.8, 0, 0] });
-    linePart(group, [[-1.2, 2.5, 0], [0, 0, 0], [-1.2, -2.5, 0]], accent, "light", { radius: .035, electronic: true, explode: [0, 0, .8] });
-    linePart(group, [[1.2, 2.5, 0], [0, 0, 0], [1.2, -2.5, 0]], 0xc8d9dd, "wearable", { radius: .035, explode: [0, 0, -.8] });
-    addPart(group, new THREE.BoxGeometry(.55, 1.75, .5), 0x18343d, "core", [0, 0, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.2, 0, 0] });
-    addPart(group, new THREE.SphereGeometry(.2, 16, 12), accent, "sensor", [0, .55, .35], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [-1.2, .6, .5] });
-    addPart(group, new THREE.CylinderGeometry(.14, .14, .34, 18), 0x7057d9, "control", [0, -.45, .38], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, explode: [.8, -.6, .8] });
+    const upper = [[1.05, 3.05, 0], [.55, 2.92, 0], [-.52, 2.05, 0], [-.78, 1.25, 0], [-.35, .62, 0]];
+    const lower = [[-.35, -.62, 0], [-.78, -1.25, 0], [-.52, -2.05, 0], [.55, -2.92, 0], [1.05, -3.05, 0]];
+    linePart(group, upper, 0x2d4249, "shell", { radius: .16, segments: 64, metalness: .34, roughness: .44, explode: [-.58, .42, 0] });
+    linePart(group, lower, 0x2d4249, "shell", { radius: .16, segments: 64, metalness: .34, roughness: .44, explode: [-.58, -.42, 0] });
+    linePart(group, [[.98, 2.95, .08], [.18, 2.58, .12], [-.62, 1.55, .12], [-.36, .74, .12]], accent, "light", { radius: .045, electronic: true, emissive: true, explode: [-.25, .2, .85] });
+    linePart(group, [[-.36, -.74, .12], [-.62, -1.55, .12], [.18, -2.58, .12], [.98, -2.95, .08]], accent, "light", { radius: .045, electronic: true, emissive: true, explode: [-.25, -.2, .85] });
+    linePart(group, [[1.05, 3.05, 0], [1.12, 0, 0], [1.05, -3.05, 0]], 0xd7e2e2, "wearable", { radius: .025, segments: 28, roughness: .35, explode: [.88, 0, 0] });
+    addPart(group, plateGeometry([[-.38, -.78], [-.62, -.35], [-.55, .52], [-.22, .82], [.18, .62], [.13, -.64]], .42, .08), 0x172d34, "core", [-.1, 0, 0], [0, 0, 0], [1, 1, 1], { electronic: true, roughness: .72, explode: [.75, 0, -.45] });
+    addPart(group, new THREE.CylinderGeometry(.19, .22, .84, 24), 0x58696c, "wearable", [-.25, -.06, .05], [0, 0, .08], [1, 1, 1], { roughness: .88, explode: [-.5, 0, -.5] });
+    addPart(group, new THREE.BoxGeometry(.34, .28, .32), 0x31525a, "sensor", [-.32, .46, .28], [0, 0, .1], [1, 1, 1], { electronic: true, explode: [-1.0, .6, .6] });
+    addPart(group, new THREE.CylinderGeometry(.12, .12, .24, 18), 0x7057d9, "control", [-.03, -.34, .32], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [.7, -.55, .75] });
+    addRivet(group, [-.43, .71, .24]); addRivet(group, [-.38, -.68, .24]);
     return finishModel(group);
   }
   function buildDaggers(accent) {
     const group = new THREE.Group();
     [-1, 1].forEach(side => {
-      addPart(group, new THREE.BoxGeometry(.58, 3.2, .16), 0x2b3942, "shell", [side * .85, .65, 0], [0, 0, side * .08], [1, 1, 1], { explode: [side * 1.1, .6, 0] });
-      addPart(group, new THREE.BoxGeometry(.12, 2.7, .22), accent, "light", [side * .85, .72, .14], [0, 0, side * .08], [1, 1, 1], { electronic: true, explode: [side * 1.5, .8, .7] });
-      addPart(group, new THREE.CylinderGeometry(.24, .28, 1.35, 18), 0x18343d, side < 0 ? "core" : "sensor", [side * .85, -1.72, 0], [0, 0, side * .08], [1, 1, 1], { electronic: true, explode: [side * 1.3, -.8, 0] });
+      const blade = plateGeometry([[-.33, -1.1], [-.45, .72], [-.18, 1.7], [0, 2.15], [.24, 1.48], [.38, .55], [.3, -1.1]], .15, .035);
+      addPart(group, blade, 0x657a81, "shell", [side * .78, .42, 0], [0, 0, side * .16], [1, 1, 1], { metalness: .68, roughness: .3, explode: [side * 1.0, .55, 0] });
+      linePart(group, [[side * .78, -.5, .12], [side * .78, .72, .12], [side * .78, 1.85, .08]], accent, "light", { radius: .04, electronic: true, emissive: true, explode: [side * 1.35, .75, .65] });
+      linePart(group, [[side * .4, -.7, 0], [side * .78, -.58, 0], [side * 1.15, -.7, 0]], 0x4e6267, "sensor", { radius: .11, metalness: .45, explode: [side * 1.1, -.3, 0] });
+      addPart(group, new THREE.CylinderGeometry(.22, .26, 1.25, 20), 0x172d34, side < 0 ? "core" : "sensor", [side * .78, -1.35, 0], [0, 0, side * .16], [1, 1, 1], { electronic: true, roughness: .78, explode: [side * 1.25, -.78, 0] });
+      addPart(group, new THREE.OctahedronGeometry(.24, 1), 0x4a5d62, "wearable", [side * .96, -2.03, 0], [0, 0, side * .16], [1, 1, .7], { metalness: .42, explode: [side * 1.2, -1.1, 0] });
     });
-    addPart(group, new THREE.SphereGeometry(.17, 16, 12), accent, "control", [-.62, -1.5, .3], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [0, -.5, 1] });
-    addPart(group, new THREE.TorusGeometry(.42, .06, 8, 24), 0x789198, "wearable", [.85, -2.45, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { explode: [0, -1.2, 0] });
+    addPart(group, new THREE.SphereGeometry(.13, 18, 12), accent, "control", [-.61, -1.08, .25], [0, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [0, -.45, .9] });
     return finishModel(group);
   }
   function buildStaff(accent) {
     const group = new THREE.Group();
-    addPart(group, new THREE.CylinderGeometry(.18, .22, 5.5, 18), 0x294249, "shell", [0, -.3, 0], [0, 0, 0], [1, 1, 1], { explode: [0, -1, 0] });
-    addPart(group, new THREE.IcosahedronGeometry(.85, 2), accent, "light", [0, 2.75, 0], [0, 0, 0], [1, 1, 1], { electronic: true, opacity: .72, explode: [0, 1.2, 0] });
-    addPart(group, new THREE.TorusGeometry(1.05, .1, 10, 36), 0x789198, "sensor", [0, 2.75, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, explode: [-1, .5, 0] });
-    addPart(group, new THREE.BoxGeometry(.55, 1.25, .45), 0x175b55, "core", [0, -.9, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.2, 0, 0] });
-    addPart(group, new THREE.SphereGeometry(.16, 16, 12), accent, "control", [.23, .2, .24], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [.8, .5, .8] });
-    addPart(group, new THREE.TorusGeometry(.38, .08, 8, 24), 0x52666c, "wearable", [0, -3.2, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { explode: [0, -1, 0] });
+    addPart(group, new THREE.CylinderGeometry(.15, .22, 5.05, 24), 0x293f45, "shell", [0, -.48, 0], [0, 0, 0], [1, 1, 1], { metalness: .25, roughness: .55, explode: [0, -1, 0] });
+    for (let y = -2.35; y < .65; y += .42) addPart(group, new THREE.TorusGeometry(.22, .035, 8, 20), 0x5b6f72, "wearable", [0, y, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { metalness: .35, explode: [0, -.75, 0] });
+    linePart(group, [[0, .55, 0], [-.78, 1.25, 0], [-.82, 2.2, 0], [-.45, 2.72, 0]], 0x425960, "shell", { radius: .13, metalness: .42, explode: [-.8, .42, 0] });
+    linePart(group, [[0, .55, 0], [.78, 1.25, 0], [.82, 2.2, 0], [.45, 2.72, 0]], 0x425960, "shell", { radius: .13, metalness: .42, explode: [.8, .42, 0] });
+    addPart(group, new THREE.IcosahedronGeometry(.65, 2), accent, "light", [0, 2.32, 0], [0, 0, 0], [1, 1, 1], { electronic: true, opacity: .68, transmission: .16, emissive: true, explode: [0, 1.15, .45] });
+    [[Math.PI / 2, 0, 0], [0, Math.PI / 2, 0], [Math.PI / 3, Math.PI / 4, 0]].forEach((rotation, index) => addPart(group, new THREE.TorusGeometry(.83 + index * .05, .055, 10, 42), 0x74898e, "sensor", [0, 2.32, 0], rotation, [1, 1, 1], { electronic: true, metalness: .6, explode: [index - 1, .45, 0] }));
+    addPart(group, new THREE.BoxGeometry(.45, .92, .4), 0x146258, "core", [0, -.65, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.08, 0, 0] });
+    addPart(group, new THREE.SphereGeometry(.13, 18, 12), accent, "control", [.2, .05, .2], [0, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [.7, .45, .7] });
+    addPart(group, new THREE.ConeGeometry(.28, .7, 24), 0x4e6267, "wearable", [0, -3.35, 0], [0, 0, 0], [1, 1, 1], { metalness: .42, explode: [0, -1.0, 0] });
     return finishModel(group);
   }
   function buildBoss(accent) {
     const group = new THREE.Group();
-    addPart(group, new THREE.BoxGeometry(3.15, 1.55, 1.2), 0x3a2c30, "shell", [0, 1.45, 0], [0, 0, 0], [1, 1, 1], { explode: [0, 1.2, 0] });
-    addPart(group, new THREE.CylinderGeometry(.25, .3, 4.7, 18), 0x293b40, "wearable", [0, -1.3, 0], [0, 0, 0], [1, 1, 1], { explode: [0, -1.1, 0] });
-    addPart(group, new THREE.BoxGeometry(2.6, .2, 1.0), accent, "light", [0, 1.45, .68], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [0, .4, 1.1] });
-    addPart(group, new THREE.BoxGeometry(.7, .55, .45), 0x175b55, "core", [0, -2.25, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.2, -.6, 0] });
-    addPart(group, new THREE.SphereGeometry(.22, 16, 12), accent, "sensor", [0, -.15, .4], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [-1.2, 0, .6] });
-    addPart(group, new THREE.CylinderGeometry(.15, .15, .35, 18), 0x7057d9, "control", [.28, -1.45, .32], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, explode: [.8, -.5, .8] });
+    addPart(group, new THREE.BoxGeometry(3.35, 1.34, 1.22, 4, 2, 2), 0x3d2d32, "shell", [0, 1.48, 0], [0, 0, 0], [1, 1, 1], { metalness: .46, roughness: .38, explode: [0, 1.08, 0] });
+    addPart(group, new THREE.CylinderGeometry(.72, .72, 1.36, 8), 0x596c70, "shell", [-1.72, 1.48, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { metalness: .58, explode: [-1.1, .5, 0] });
+    addPart(group, new THREE.CylinderGeometry(.72, .72, 1.36, 8), 0x596c70, "shell", [1.72, 1.48, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { metalness: .58, explode: [1.1, .5, 0] });
+    addPart(group, new THREE.CylinderGeometry(.23, .31, 4.65, 24), 0x273b40, "wearable", [0, -1.35, 0], [0, 0, 0], [1, 1, 1], { roughness: .76, explode: [0, -1.08, 0] });
+    for (let y = -2.65; y < -.15; y += .4) addPart(group, new THREE.TorusGeometry(.29, .035, 8, 20), 0x6a797b, "wearable", [0, y, 0], [Math.PI / 2, 0, 0], [1, 1, 1], { explode: [0, -.85, 0] });
+    addPart(group, new THREE.BoxGeometry(2.55, .16, 1.27), accent, "light", [0, 1.48, .68], [0, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [0, .36, 1.04] });
+    addPart(group, new THREE.CylinderGeometry(.48, .48, .22, 28), accent, "sensor", [0, 1.48, .72], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [-1.0, .15, .72] });
+    addPart(group, new THREE.BoxGeometry(.62, .52, .4), 0x146258, "core", [0, -2.36, 0], [0, 0, 0], [1, 1, 1], { electronic: true, explode: [1.1, -.55, 0] });
+    addPart(group, new THREE.CylinderGeometry(.13, .13, .3, 18), 0x7057d9, "control", [.27, -1.55, .29], [Math.PI / 2, 0, 0], [1, 1, 1], { electronic: true, emissive: true, explode: [.72, -.45, .75] });
+    for (const x of [-1.35, 1.35]) for (const y of [1.08, 1.88]) addRivet(group, [x, y, .64], "shell", 0x9badb1);
     return finishModel(group);
   }
   const builders = { guardian: buildGuardian, warrior: buildSword, archer: buildBow, assassin: buildDaggers, mage: buildStaff, boss: buildBoss };
 
   function setupRenderer(root, cameraPosition, target) {
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x061219, .035);
+    scene.fog = new THREE.FogExp2(0x061219, .027);
     const camera = new THREE.PerspectiveCamera(36, 1, .1, 100);
     camera.position.set(...cameraPosition);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); renderer.shadowMap.enabled = true;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
     root.prepend(renderer.domElement);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.enablePan = false; controls.minDistance = 6; controls.maxDistance = 16; controls.target.set(...target);
-    scene.add(new THREE.HemisphereLight(0xbdefff, 0x102028, 2.2));
-    const key = new THREE.DirectionalLight(0xffffff, 3); key.position.set(5, 8, 7); key.castShadow = true; scene.add(key);
-    const rim = new THREE.PointLight(0x16a6c9, 28, 16); rim.position.set(-5, 2, 4); scene.add(rim);
+    scene.add(new THREE.HemisphereLight(0xc9f3ff, 0x071015, 1.8));
+    const key = new THREE.DirectionalLight(0xffffff, 4.2); key.position.set(5, 8, 7); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); scene.add(key);
+    const rim = new THREE.PointLight(0x16a6c9, 32, 18); rim.position.set(-5, 2, 4); scene.add(rim);
+    const fill = new THREE.PointLight(0x7057d9, 18, 15); fill.position.set(4, -1, -3); scene.add(fill);
     const resize = () => { const rect = root.getBoundingClientRect(); if (!rect.width || !rect.height) return; camera.aspect = rect.width / rect.height; camera.updateProjectionMatrix(); renderer.setSize(rect.width, rect.height, false); };
     new ResizeObserver(resize).observe(root); resize();
     return { scene, camera, renderer, controls, resize };
   }
 
   const propRoot = $("#threePropStage");
-  const propWorld = setupRenderer(propRoot, [0, 1, 10], [0, 0, 0]);
+  const propWorld = setupRenderer(propRoot, [0, .7, 10.8], [0, 0, 0]);
   const propPlatform = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.9, .25, 64), material(0x0c2027, .2));
   propPlatform.position.y = -3.35; propPlatform.receiveShadow = true; propWorld.scene.add(propPlatform);
   const propGrid = new THREE.GridHelper(8, 16, 0x16a6c9, 0x17303a); propGrid.position.y = -3.21; propWorld.scene.add(propGrid);
@@ -150,7 +208,7 @@ function startThreeLab(THREE, OrbitControls) {
     propModel.traverse(object => {
       if (!object.isMesh || !object.material.emissive) return;
       object.material.emissive.setHex(object.userData.partKey === key ? palette[currentProp] : object.userData.baseEmissive || 0);
-      object.material.emissiveIntensity = object.userData.partKey === key ? .32 : 0;
+      object.material.emissiveIntensity = object.userData.partKey === key ? Math.max(.62, object.userData.baseEmissiveIntensity || 0) : object.userData.baseEmissiveIntensity || 0;
     });
     document.querySelectorAll("#twinPartButtons button").forEach(button => button.classList.toggle("is-active", button.dataset.twinPart === key));
     const entry = copy[key];
