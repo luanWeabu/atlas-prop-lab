@@ -1094,7 +1094,7 @@ function renderGuardianPurchaseSummary(purchases, gates) {
   $("#guardianPurchaseSummary").innerHTML = `
     <div><span>${vi ? "BƯỚC HIỆN TẠI" : "CURRENT STEP"}</span><strong>${fitPass ? (vi ? "FIT PASS · CHỐT ĐIỆN TỬ" : "FIT PASS · SELECT ELECTRONICS") : (vi ? "MUA 5 MÓN LÀM MẪU" : "BUY 5 MOCK-UP ITEMS")}</strong><small>${fitPass ? (vi ? "G1 đã đạt; mua mỗi linh kiện điện tử 1 chiếc để thử bàn." : "G1 passed; buy one of each electronic part for the bench proof.") : (vi ? "Chưa mua ESP32/LED. Làm khiên carton và thử 3 người trước." : "Do not buy ESP32/LED yet. Fit the cardboard shield on three users first.")}</small></div>
     <div><span>${vi ? "MẪU THỬ" : "MOCK-UP"}</span><strong>80K–280K</strong><small>${buyNowSelected}/5 ${vi ? "món đã chốt" : "items selected"}</small></div>
-    <div><span>${vi ? "ĐIỆN TỬ SAU FIT" : "ELECTRONICS AFTER FIT"}</span><strong>460K–680K</strong><small>${electronicsSelected}/5 ${vi ? "món đã chốt" : "items selected"}</small></div>`;
+    <div><span>${vi ? "ĐIỆN TỬ SAU FIT" : "ELECTRONICS AFTER FIT"}</span><strong>435K–655K</strong><small>${electronicsSelected}/5 ${vi ? "món đã chốt" : "items selected"}</small></div>`;
   $$(".purchase-group[data-gate='after-fit']").forEach(section => {
     section.classList.toggle("is-locked", !fitPass);
     const badge = section.querySelector(".purchase-stage-badge");

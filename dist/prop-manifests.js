@@ -71,11 +71,11 @@
           ]
         },
         {
-          id: "mke-k01-esp32-s3", gate: "after-fit", state: "reference", priceVnd: [255000, 255000], checkedAt: "2026-10-04",
-          specEn: "Exact reference: MKE-K01 ESP32-S3 Dev Kit, USB-C, ESP32-S3-WROOM-1.",
-          specVi: "Mẫu tham chiếu chính xác: MKE-K01 ESP32-S3 Dev Kit, USB-C, ESP32-S3-WROOM-1.",
-          checkEn: "Confirm the product title and USB-C connector. Buy one board only for the first bench proof.",
-          checkVi: "Đối chiếu đúng tên sản phẩm và cổng USB-C. Chỉ mua 1 board cho lần thử bàn đầu tiên.",
+          id: "mke-k01-esp32-s3", gate: "after-fit", state: "reference", priceVnd: [230000, 230000], checkedAt: "2026-10-04",
+          specEn: "Exact reference: MKE-K01 ESP32-S3 Dev Kit, N4 (4 MB, no PSRAM), USB-C version, ESP32-S3-WROOM-1.",
+          specVi: "Mẫu tham chiếu chính xác: MKE-K01 ESP32-S3 Dev Kit, bản N4 (4 MB, không PSRAM), cổng USB-C, ESP32-S3-WROOM-1.",
+          checkEn: "Select N4 and confirm the pictured unit has USB-C because the listing notes connector variants. Buy one board only.",
+          checkVi: "Chọn N4 và xác nhận board giao thực tế có USB-C vì trang bán ghi có nhiều biến thể cổng. Chỉ mua 1 board.",
           sources: [{ labelEn: "Open exact Hshop SKU", labelVi: "Mở đúng SKU tại Hshop", kind: "exact", url: "https://hshop.vn/mach-phat-trien-mke-k01-esp32-s3-dev-kit" }]
         },
         {

@@ -18,13 +18,13 @@ Fit-mock-up subtotal: **80k–280k**.
 
 | Item | Reference | Observed price | Selection check |
 | --- | --- | ---: | --- |
-| MKE-K01 ESP32-S3 Dev Kit | [Hshop](https://hshop.vn/mach-phat-trien-mke-k01-esp32-s3-dev-kit) | 255k | Confirm board dimensions, USB connector and pin map |
+| MKE-K01 ESP32-S3 Dev Kit | [Hshop](https://hshop.vn/mach-phat-trien-mke-k01-esp32-s3-dev-kit) | 230k | Select N4 and confirm the pictured unit has USB-C; the listing notes connector variants |
 | GY-521 MPU6050 | [Hshop](https://hshop.vn/cam-bien-6-dof-bac-tu-do-gy-521-mpu6050) | 85k | Confirm I2C board and physical dimensions |
 | PBS-11B 12 mm momentary button | [Hshop](https://hshop.vn/nut-nhan-nha-tron-pbs-11b-12mm-kem-cap) | 10k | Confirm momentary, not latching; verify mounting depth |
 | WS2812B strip, 1 m | [Exact variant search](https://shopee.vn/search?keyword=WS2812B%205V%2060LED%201m%20IP30) | 60k–180k | Select 5 V, 60 LED/m, 1 m, IP30; never substitute 12 V |
 | Flexible wire and quick connectors | [22 AWG + JST-SM 3P search](https://shopee.vn/search?keyword=d%C3%A2y%2022AWG%20gi%E1%BA%AFc%20JST%20SM%203P) | 50k–150k | Stranded 22–24 AWG wire and locking 3-pin pigtails; pull-test every crimp |
 
-Electronics subtotal: **460k–680k**. Current first-build planning total: **540k–960k**, excluding tools, shipping, final EVA sheets and paint.
+Electronics subtotal: **435k–655k**. Current first-build planning total: **515k–935k**, excluding tools, shipping, final EVA sheets and paint.
 
 ## State rules
 
