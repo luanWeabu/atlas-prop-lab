@@ -247,6 +247,23 @@ const staticTranslations = {
   "#prototype-title": ["ESP32 Electronics Lab", "Xưởng mạch ESP32"],
   "#prototype > .section-heading .eyebrow": ["ROLE ELECTRONICS / USB FIRST", "MẠCH THEO ROLE / USB TRƯỚC"],
   "#prototype > .section-heading .section-note": ["Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.", "Đạo cụ đã chọn ở Trang 1 tự đi theo sang đây, kèm linh kiện, sơ đồ GPIO, nút thử sự kiện và mạch bàn có thể tải."],
+  "#coreContractLabel": ["Atlas Core v1 · reusable cartridge", "Atlas Core v1 · lõi tháo lắp dùng chung"],
+  "#coreContractEyebrow": ["ONE CONTROLLER / SIX ROLE HARNESSES", "MỘT BỘ ĐIỀU KHIỂN / SÁU BỘ DÂY ROLE"],
+  "#coreContractTitle": ["Prove one removable core before duplicating it", "Chứng minh một lõi tháo rời trước khi nhân bản"],
+  "#coreContractText": ["The controller, USB power and event envelope stay common. Only the sensor, controls and feedback harness change with the selected prop.", "Bộ điều khiển, nguồn USB và khuôn event được dùng chung. Chỉ cảm biến, nút điều khiển và bộ dây phản hồi thay đổi theo đạo cụ."],
+  "#coreControllerLabel": ["Physical reference", "Board vật lý tham chiếu"],
+  "#coreControllerNote": ["Confirm the delivered USB connector and printed pin labels before wiring.", "Xác nhận cổng USB và nhãn chân in trên board nhận được trước khi đi dây."],
+  "#coreHarnessLabel": ["Selected role harness", "Bộ dây role đang chọn"],
+  "#corePowerLabel": ["First power path", "Nguồn cho lần thử đầu"],
+  "#corePowerValue": ["USB data + 5 V only", "Chỉ USB data + 5 V"],
+  "#corePowerNote": ["Battery charging and radio stay outside the first proof.", "Pin sạc và sóng chưa tham gia lần chứng minh đầu."],
+  "#coreProxyLabel": ["Simulation boundary", "Ranh giới mô phỏng"],
+  "#coreProxyValue": ["Wokwi DevKit V1 proxy", "Wokwi DevKit V1 làm proxy"],
+  "#coreProxyNote": ["It proves event logic, not the exact physical S3 pinout.", "Nó chứng minh logic event, không chứng minh pinout S3 vật lý chính xác."],
+  "#coreProofLabel": ["Core proof ladder", "Thang chứng minh Core"],
+  "#clearCoreProof": ["Clear physical checks", "Xóa các kiểm tra vật lý"],
+  "#downloadCoreProofPack": ["Download Core proof pack", "Tải bộ chứng minh Core"],
+  "#coreBuyLink": ["Open controller source", "Mở nguồn mua board"],
   "#prototype .controls-panel > .panel-label": ["Device configuration", "Cấu hình thiết bị"],
   "label[for='roleSelect']": ["Selected prop", "Đạo cụ đã chọn"],
   "label[for='transportSelect']": ["Event transport", "Kênh truyền sự kiện"],
@@ -323,6 +340,29 @@ const electronicsProfiles = {
   boss: { label: "BOSS", name: "Titan Warden", color: "#ef6b68", deviceId: "boss-hammer-01", parts: ["ESP32-S3", "MPU6050", "Primary trigger", "Secondary trigger", "Hammer + armour LEDs"], pins: [["GPIO21/20", "MPU6050 SDA / SCL", "MPU6050 SDA / SCL"], ["GPIO25", "Primary trigger", "Cò chính"], ["GPIO26", "Secondary trigger", "Cò phụ"], ["GPIO18", "Hammer LED data", "Dữ liệu LED đầu búa"], ["GPIO16/17", "Armour receiver UART2", "Bộ nhận áo giáp UART2"]], events: ["SWEEP", "SLAM", "MARK", "PHASE_SKILL"] }
 };
 
+const coreProofSteps = {
+  en: [
+    ["Controller reference locked", "MKE-K01 ESP32-S3 N4 is the physical reference; Wokwi DevKit V1 remains a logic proxy."],
+    ["Board received and inspected", "Photograph both sides; confirm USB connector, printed labels, dimensions, and the exact module variant."],
+    ["USB boot and serial ready", "Upload a minimal build and capture a stable 115200-baud ready message with no reset loop."],
+    ["Role input passes 100 cycles", "The selected role emits each intended event once, with misses and duplicates recorded."],
+    ["Feedback, current and heat pass", "Run LEDs and secondary feedback for 10 minutes; record peak current and touch temperature."],
+    ["Unity serial bridge receives events", "Unity accepts the versioned event envelope and remains authoritative for hits, cooldowns, and damage."],
+    ["Core passes enclosure fit gate", "Connectors remain accessible, cables have strain relief, and no rigid edge reaches the player."]
+  ],
+  vi: [
+    ["Đã khóa board tham chiếu", "MKE-K01 ESP32-S3 N4 là board vật lý tham chiếu; Wokwi DevKit V1 chỉ là proxy logic."],
+    ["Đã nhận và kiểm tra board", "Chụp hai mặt; xác nhận cổng USB, nhãn chân, kích thước và đúng biến thể module."],
+    ["USB boot và serial ổn định", "Nạp bản tối thiểu và lưu log sẵn sàng ở 115200 baud, không lặp reset."],
+    ["Input role đạt 100 chu kỳ", "Role đang chọn phát mỗi event đúng một lần; ghi lại mọi lần hụt hoặc lặp."],
+    ["Phản hồi, dòng và nhiệt đạt", "Chạy LED cùng phản hồi phụ 10 phút; ghi dòng đỉnh và nhiệt độ khi chạm."],
+    ["Unity serial bridge nhận event", "Unity nhận event có version và vẫn quyết định trúng đòn, hồi chiêu và sát thương."],
+    ["Core đạt cổng lắp vỏ", "Đầu nối vẫn tiếp cận được, dây có chống kéo và không cạnh cứng nào chạm người chơi."]
+  ]
+};
+
+const coreProofStorageKey = "atlas-core-proof-v1";
+
 const guardianProduction = {
   en: {
     layers: [
@@ -381,7 +421,7 @@ const pinNamesVi = {
 };
 
 const bom = [
-  ["ESP32 DevKit V1, 30 pin", "1", "Bench"], ["WS2812B 16 LED ring", "1", "Bench"],
+  ["MKE-K01 ESP32-S3 N4 reference", "1", "Bench"], ["WS2812B 16 LED ring", "1", "Bench"],
   ["12 mm momentary button", "2", "Bench"], ["Passive piezo buzzer", "1", "Bench"],
   ["74AHCT125 level shifter", "1", "Bench"], ["330 Ω resistor", "1", "Bench"],
   ["1000 µF capacitor", "1", "Bench"], ["Half size breadboard", "1", "Bench"],
@@ -391,9 +431,9 @@ const bom = [
 ];
 
 const guideSteps = [
-  "Check every item against the bill of materials.", "Confirm the ESP32 is a 30 pin DevKit V1 board.",
+  "Check every item against the bill of materials.", "Photograph both sides of the delivered MKE-K01 and record its module, USB connector, printed pin labels, and dimensions.",
   "Use USB power only for the first build.", "Keep the ESP32 disconnected while wiring.",
-  "Place the ESP32 across the breadboard center gap.", "Identify VIN, 3V3, GND, GPIO18, GPIO25, GPIO26, and GPIO27.",
+  "Place the delivered board across the breadboard center gap only if its spacing fits without force.", "Using the board labels and vendor documentation, identify power, GND, and the candidate GPIO contract before attaching any wire.",
   "Mark the CAST and SPECIAL buttons.", "Place both buttons across the breadboard center gap.",
   "Connect one CAST contact to GPIO25.", "Connect the opposite CAST contact to GND.",
   "Connect one SPECIAL contact to GPIO26.", "Connect the opposite SPECIAL contact to GND.",
@@ -403,16 +443,16 @@ const guideSteps = [
   "Connect level shifter VCC to VIN and GND to GND.", "Tie the selected channel enable pin low.",
   "Connect GPIO18 to the selected level shifter input.", "Connect its matching output through 330 Ω to LED ring DIN.",
   "Connect LED ring VCC to VIN.", "Connect LED ring GND to GND.",
-  "Place the 1000 µF capacitor across ring VCC and GND, matching polarity.", "Compare every wire with the pin table before connecting USB.",
+  "Place the 1000 µF capacitor across ring VCC and GND, matching polarity.", "Compare every wire with the candidate pin table and the delivered board labels before connecting USB.",
   "Check for loose strands and accidental shorts.", "Connect the ESP32 with a data capable USB cable.",
   "Build and upload firmware/spell-orb with PlatformIO.", "Open serial monitor at 115200 baud and wait for ATLAS_PROP_READY.",
   "Press CAST, then SPECIAL; verify JSON, light, sound, and cooldown.", "Disconnect USB, label the revision, and record any difference before enclosure work."
 ];
 
 const guideStepsVi = [
-  "Đối chiếu từng món với bảng vật tư.", "Xác nhận ESP32 là board DevKit V1 loại 30 chân.",
+  "Đối chiếu từng món với bảng vật tư.", "Chụp hai mặt MKE-K01 nhận được; ghi module, cổng USB, nhãn chân in trên board và kích thước.",
   "Chỉ dùng nguồn USB cho bản lắp đầu tiên.", "Ngắt ESP32 khỏi nguồn trong lúc đi dây.",
-  "Đặt ESP32 bắc qua rãnh giữa breadboard.", "Xác định VIN, 3V3, GND, GPIO18, GPIO25, GPIO26 và GPIO27.",
+  "Chỉ đặt board thực nhận qua rãnh giữa breadboard nếu khoảng chân vừa mà không phải ép.", "Dùng nhãn trên board và tài liệu nhà bán để xác định nguồn, GND và hợp đồng GPIO ứng viên trước khi nối dây.",
   "Đánh dấu nút CAST và SPECIAL.", "Đặt hai nút bắc qua rãnh giữa breadboard.",
   "Nối một chân CAST vào GPIO25.", "Nối chân CAST đối diện vào GND.",
   "Nối một chân SPECIAL vào GPIO26.", "Nối chân SPECIAL đối diện vào GND.",
@@ -422,7 +462,7 @@ const guideStepsVi = [
   "Nối VCC của IC chuyển mức vào VIN và GND vào GND.", "Kéo chân enable của kênh được chọn xuống mức thấp.",
   "Nối GPIO18 vào đầu vào kênh đã chọn.", "Nối đầu ra tương ứng qua điện trở 330 Ω tới DIN của vòng LED.",
   "Nối VCC vòng LED vào VIN.", "Nối GND vòng LED vào GND.",
-  "Đặt tụ 1000 µF giữa VCC và GND của vòng LED, đúng cực.", "So từng dây với bảng chân trước khi cắm USB.",
+  "Đặt tụ 1000 µF giữa VCC và GND của vòng LED, đúng cực.", "So từng dây với bảng chân ứng viên và nhãn trên board thực nhận trước khi cắm USB.",
   "Kiểm tra sợi dây lỏng và nguy cơ chập mạch.", "Kết nối ESP32 bằng cáp USB có truyền dữ liệu.",
   "Build và nạp firmware/spell-orb bằng PlatformIO.", "Mở Serial Monitor 115200 baud và đợi ATLAS_PROP_READY.",
   "Nhấn CAST rồi SPECIAL; kiểm tra JSON, ánh sáng, âm thanh và cooldown.", "Rút USB, dán nhãn phiên bản và ghi lại sai khác trước khi làm vỏ."
@@ -950,6 +990,57 @@ function testElectronicsEvent(action) {
   toast(currentLanguage === "vi" ? `Đã mô phỏng ${action} từ ${profile.name}` : `${action} simulated from ${profile.name}`);
 }
 
+function getCoreProofChecks() {
+  return readStoredIndexes(coreProofStorageKey, coreProofSteps.en.length).filter(index => index > 0);
+}
+
+function updateCoreProofProgress() {
+  const checks = [0, ...$$('#coreProofList input:not(:disabled):checked').map(input => Number(input.dataset.coreProof))];
+  localStorage.setItem(coreProofStorageKey, JSON.stringify(checks.filter(index => index > 0)));
+  const count = checks.length;
+  $("#coreProofCount").textContent = `${count} / ${coreProofSteps.en.length}`;
+  $("#coreProofProgress").style.width = `${(count / coreProofSteps.en.length) * 100}%`;
+}
+
+function renderCoreOverview() {
+  const profile = electronicsProfiles[activeProp];
+  const checks = getCoreProofChecks();
+  $("#coreRoleName").textContent = `${profile.label} · ${profile.name}`;
+  $("#coreRoleParts").textContent = profile.parts.slice(1).join(" · ");
+  $("#coreProofList").innerHTML = coreProofSteps[currentLanguage].map(([title, note], index) => `
+    <li class="${index === 0 ? "is-locked" : ""}">
+      <label><input type="checkbox" data-core-proof="${index}" ${index === 0 || checks.includes(index) ? "checked" : ""} ${index === 0 ? "disabled" : ""}/><span><strong>${title}</strong><small>${note}</small></span></label>
+    </li>`).join("");
+  $("#coreProxyWarning").innerHTML = currentLanguage === "vi"
+    ? "<strong>Proxy logic Wokwi:</strong> hướng dẫn breadboard 32 bước bên dưới dùng bố cục ESP32 DevKit V1. Không chuyển vị trí chân đó sang MKE-K01 trước khi kiểm tra board thực nhận và nhãn in trên board."
+    : "<strong>Wokwi logic proxy:</strong> the 32-step breadboard guide below uses an ESP32 DevKit V1 layout. Do not transfer its pin positions to the MKE-K01 until the delivered board and its labels have been inspected.";
+  updateCoreProofProgress();
+}
+
+function downloadCoreProofPack() {
+  const profile = electronicsProfiles[activeProp];
+  const checked = new Set([0, ...getCoreProofChecks()]);
+  const vi = currentLanguage === "vi";
+  const steps = coreProofSteps[currentLanguage];
+  const markdown = `# Atlas Core v1 · ${profile.name}\n\n` +
+    `- ${vi ? "Board vật lý tham chiếu" : "Physical controller reference"}: MKE-K01 ESP32-S3 N4\n` +
+    `- ${vi ? "Proxy mô phỏng" : "Simulation proxy"}: Wokwi ESP32 DevKit V1 (${vi ? "chỉ logic, không phải pinout vật lý" : "logic only, not a physical pinout"})\n` +
+    `- ${vi ? "Nguồn thử đầu" : "First proof power"}: USB data + 5 V\n` +
+    `- ${vi ? "Thiết bị" : "Device"}: ${profile.deviceId}\n` +
+    `- ${vi ? "Bộ dây role" : "Role harness"}: ${profile.parts.slice(1).join(", ")}\n` +
+    `- ${vi ? "Event" : "Events"}: ${profile.events.join(", ")}\n\n` +
+    `## ${vi ? "Ứng viên GPIO — phải xác nhận trên board thực" : "GPIO candidates — verify on delivered hardware"}\n\n` +
+    profile.pins.map(pin => `- ${pin[0]} — ${vi ? pin[2] : pin[1]}`).join("\n") +
+    `\n\n## ${vi ? "Thang chứng minh" : "Proof ladder"}\n\n` +
+    steps.map(([title, note], index) => `- [${checked.has(index) ? "x" : " "}] ${title} — ${note}`).join("\n") +
+    `\n\n> ${vi ? "Chưa PASS các bước vật lý thì chưa được xem là thiết bị đã sẵn sàng mang ra sự kiện." : "The device is not event-ready until the physical gates pass."}\n`;
+  const blob = new Blob([markdown], { type: "text/markdown" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob); link.download = `atlas-core-v1-${activeProp}.md`; link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 500);
+  toast(vi ? "Đã tạo bộ chứng minh Core" : "Core proof pack generated");
+}
+
 function renderConfig() {
   const profile = electronicsProfiles[activeProp];
   document.documentElement.style.setProperty("--role", profile.color);
@@ -972,6 +1063,7 @@ function renderConfig() {
   $("#electronicsLimitText").textContent = vi ? "Luồng chân GPIO, cấu trúc payload, trạng thái nút và phản hồi LED/âm/rung ở mức logic." : "GPIO flow, payload shape, button states, and LED/sound/vibration feedback logic.";
   $("#electronicsNextTitle").textContent = vi ? "Bắt buộc thử ngoài đời" : "Required real-world proof";
   $("#electronicsNextText").textContent = vi ? "Ngưỡng IMU/Hall, nhiễu, nhiệt, dòng LED, độ bền dây, tầm sóng và cảm giác khi mặc/cầm. Wokwi ở đây dùng nút làm proxy cho cảm biến chưa được mô phỏng chính xác." : "IMU/Hall thresholds, noise, heat, LED current, cable durability, radio range, and human fit. Wokwi uses buttons as proxies for sensors it cannot reproduce exactly here.";
+  renderCoreOverview();
   $$(".hero-token").forEach(token => token.classList.toggle("is-selected", token.dataset.role === state.role));
 }
 
@@ -1341,6 +1433,9 @@ function init() {
   $("#buzzerToggle").addEventListener("change", event => { state.buzzer = event.target.checked; renderConfig(); });
   $("#downloadDiagram").addEventListener("click", () => downloadJson("diagram.json", currentDiagram()));
   $("#downloadConfig").addEventListener("click", () => { const profile = electronicsProfiles[activeProp]; downloadJson("atlas-prop-config.json", { version: 1, deviceId: profile.deviceId, role: profile.label, prop: activeProp, transport: state.transport, features: { ledFeedback: state.led, secondaryFeedback: state.buzzer }, parts: profile.parts, pins: profile.pins, events: profile.events }); });
+  $("#coreProofList").addEventListener("change", updateCoreProofProgress);
+  $("#clearCoreProof").addEventListener("click", () => { localStorage.removeItem(coreProofStorageKey); renderCoreOverview(); });
+  $("#downloadCoreProofPack").addEventListener("click", downloadCoreProofPack);
   $("#electronicsEventButtons").addEventListener("click", event => { const button = event.target.closest("[data-electronics-event]"); if (button) testElectronicsEvent(button.dataset.electronicsEvent); });
   $$(".hero-token").forEach(token => token.addEventListener("click", () => { state.role = token.dataset.role; renderConfig(); }));
   window.addEventListener("atlas-select-field-role", event => { if (roles[event.detail?.role]) { state.role = event.detail.role; renderConfig(); } });

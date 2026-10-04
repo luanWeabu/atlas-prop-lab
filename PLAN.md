@@ -9,12 +9,13 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 1. **Affordable feedback proof:** validate `CHARGE → FIRE → HIT` with bow LEDs, Unity screen feedback, sound, and three-zone Boss armour without a projector or camera.
 2. **Role digital-twin lab:** six synchronized, silhouette-correct 3D prop profiles with PBR detail, exploded assembly layers, GPIO diagrams, event tests, Wokwi proxy, firmware baseline, browser arena replay, and build guide.
 3. **Guardian production readiness:** fit-derived cardboard dimensions, five physical layers, staged purchases, 3D step synchronization, and evidence-gated release before final material spend.
-4. **Hardware proof:** assemble one real unit and record power, input, feedback, range, heat, and disconnect results.
-5. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
-6. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
-7. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour. Completed at concept and wiring-contract level; physical proof remains.
-8. **Role hardware proofs:** build and verify each prop from the shared USB-first electronics contract.
-9. **Event kit:** enclosures, charging, spare parts, pairing workflow, operator dashboard, and recovery procedures.
+4. **Reusable Atlas Core v1:** controller/proxy boundary, role harness contract, USB-first proof ladder, downloadable evidence pack, and one removable-core design are complete at planning level.
+5. **Hardware proof:** receive one MKE-K01 reference unit and record its exact variant, pin labels, power, input, feedback, heat, and disconnect results.
+6. **Unity bridge:** translate the serial or network event envelope into the existing Atlas command layer.
+7. **Wireless proof:** test WiFi/WebSocket first, then test ESP-NOW if direct prop to hub communication is valuable.
+8. **Role design packs:** Guardian shield, Warrior sword, Archer bow, Assassin daggers, Mage staff, and Titan Warden boss hammer/armour. Completed at concept and wiring-contract level; physical proof remains.
+9. **Role hardware proofs:** build and verify each prop from the shared USB-first electronics contract.
+10. **Event kit:** enclosures, charging, spare parts, pairing workflow, operator dashboard, and recovery procedures.
 
 ## Event Kit v1 target
 
@@ -38,6 +39,7 @@ Prove the complete path from a physical action on an ESP32 prop to a game event 
 - The bill of materials separates required and optional items.
 - A first-time visitor can simulate draw, release, Unity validation, and one-zone Boss armour feedback without assuming a projector or camera.
 - The planner clearly blocks stage-equipment spending until the physical feedback loop passes a real playtest.
+- Atlas Core exposes a seven-gate evidence ladder and never presents the Wokwi DevKit proxy as the exact MKE-K01 physical pinout.
 
 ## Decisions held for real hardware testing
 

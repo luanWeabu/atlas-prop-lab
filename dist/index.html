@@ -378,6 +378,35 @@
           <p class="section-note">Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.</p>
         </div>
 
+        <div class="core-overview-grid">
+          <section class="panel core-contract-panel">
+            <div class="panel-toolbar"><span class="panel-label" id="coreContractLabel">Atlas Core v1 · reusable cartridge</span><span class="mono-pill">USB FIRST</span></div>
+            <div class="core-contract-body">
+              <div class="core-contract-intro">
+                <p class="eyebrow" id="coreContractEyebrow">ONE CONTROLLER / SIX ROLE HARNESSES</p>
+                <h2 id="coreContractTitle">Prove one removable core before duplicating it</h2>
+                <p id="coreContractText">The controller, USB power and event envelope stay common. Only the sensor, controls and feedback harness change with the selected prop.</p>
+              </div>
+              <div class="core-contract-cards">
+                <article><span id="coreControllerLabel">Physical reference</span><strong>MKE-K01 ESP32-S3 N4</strong><small id="coreControllerNote">Confirm the delivered USB connector and printed pin labels before wiring.</small></article>
+                <article><span id="coreHarnessLabel">Selected role harness</span><strong id="coreRoleName">Aegis Shield</strong><small id="coreRoleParts">MPU6050 · trigger · LEDs · vibration</small></article>
+                <article><span id="corePowerLabel">First power path</span><strong id="corePowerValue">USB data + 5 V only</strong><small id="corePowerNote">Battery charging and radio stay outside the first proof.</small></article>
+                <article><span id="coreProxyLabel">Simulation boundary</span><strong id="coreProxyValue">Wokwi DevKit V1 proxy</strong><small id="coreProxyNote">It proves event logic, not the exact physical S3 pinout.</small></article>
+              </div>
+            </div>
+          </section>
+
+          <aside class="panel core-proof-panel">
+            <div class="panel-toolbar"><span class="panel-label" id="coreProofLabel">Core proof ladder</span><button id="clearCoreProof" class="text-button">Clear physical checks</button></div>
+            <div class="progress-row"><div class="progress-track"><i id="coreProofProgress"></i></div><strong id="coreProofCount">1 / 7</strong></div>
+            <ol id="coreProofList" class="core-proof-list"></ol>
+            <div class="core-proof-actions">
+              <button class="button primary" id="downloadCoreProofPack">Download Core proof pack</button>
+              <a class="button ghost" href="https://hshop.vn/products/mach-mke-k01-esp32-s3-n4" target="_blank" rel="noreferrer" id="coreBuyLink">Open controller source</a>
+            </div>
+          </aside>
+        </div>
+
         <div class="workbench-grid">
           <aside class="panel controls-panel">
             <div class="panel-label">Device configuration</div>
@@ -452,6 +481,7 @@
           <div><p class="eyebrow">COMMON ESP32 CORE / ONE UNIT</p><h2 id="core-build-title">32-step bench build</h2></div>
           <p class="section-note">Complete the reusable electronics core here, then mount it into the selected prop using Page 1.</p>
         </div>
+        <div class="core-proxy-warning" id="coreProxyWarning"><strong>Wokwi logic proxy:</strong> the 32-step breadboard guide below uses an ESP32 DevKit V1 layout. Do not transfer its pin positions to the MKE-K01 until the delivered board and its labels have been inspected.</div>
         <div class="build-grid">
           <section class="panel bom-panel">
             <div class="panel-toolbar"><span class="panel-label">Bill of materials</span><span class="mono-pill">BENCH: 251K–575K VND</span></div>
