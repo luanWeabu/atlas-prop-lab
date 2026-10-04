@@ -887,6 +887,7 @@ function renderGuidedAssembly() {
 
 function renderPropKit() {
   const kit = localizedKit();
+  window.AtlasCad.render(activeProp, currentLanguage, kit);
   document.documentElement.style.setProperty("--kit-accent", activeProp === "boss" ? "#ef6b68" : activeProp === "mage" ? "#39cc93" : activeProp === "guardian" ? "#f0b44d" : "#16a6c9");
   $("#propBlueprint").innerHTML = blueprintSvg(kit.kind);
   $("#propSize").textContent = kit.size;

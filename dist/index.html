@@ -243,6 +243,16 @@
           </div>
         </section>
 
+        <section class="panel cad-panel" aria-label="Dimensioned design sheets">
+          <div class="panel-toolbar"><span class="panel-label" id="cadTitle">Bản vẽ kích thước · cm</span><span class="mono-pill">DESIGN / NOT CUT-READY</span></div>
+          <div class="cad-controls"><label id="cadViewLabel" for="cadView">Mặt nhìn</label><select id="cadView"><option value="front">Mặt trước</option><option value="rear">Mặt sau / vị trí module</option><option value="side">Mặt cạnh / độ dày</option></select><label><input id="cadGrid" type="checkbox" checked/> <span id="cadGridLabel">Lưới 1 cm</span></label><button id="cadDownload" class="button secondary">Tải SVG vector</button></div>
+          <p id="cadBoundary" class="cad-note"></p>
+          <div class="cad-scroll"><div id="cadDrawing"></div></div>
+          <div id="cadDimensions" class="table-wrap"></div>
+          <div id="cadInstructions" class="cad-instructions"></div>
+          <figure id="cadRenderFigure" class="cad-render" hidden><img src="assets/guardian-cad-render-v1.webp" alt="Guardian shield concept matching the dimensioned design" width="1400" height="933"/><figcaption id="cadRenderCaption"></figcaption></figure>
+        </section>
+
         <div class="kit-workspace">
           <section class="panel blueprint-panel">
             <div class="panel-toolbar">
@@ -571,6 +581,7 @@
     <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.10 · Reusable ESP32 Core plan, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="prop-manifests.js"></script>
+    <script src="cad-lab.js"></script>
     <script src="app.js"></script>
     <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
     <script type="module" src="three-lab.js"></script>
