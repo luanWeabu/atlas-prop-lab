@@ -204,7 +204,19 @@ function startThreeLab(THREE, OrbitControls) {
   const propGrid = new THREE.GridHelper(8, 16, 0x16a6c9, 0x17303a); propGrid.position.y = -3.21; propWorld.scene.add(propGrid);
   const initialHeight = Number($("#playerHeight")?.value || 168);
   let currentProp = "guardian", propModel, selectedKey = null, currentAssemblyStep = 0, guardianDiameter = Math.round(Math.max(45, Math.min(55, initialHeight * .3)));
-  const selectedByProp = {};
+  let twinStateByProp = {};
+  try { twinStateByProp = JSON.parse(localStorage.getItem("atlas-twin-state-v1") || "{}"); } catch { twinStateByProp = {}; }
+  const selectedByProp = Object.fromEntries(Object.entries(twinStateByProp).map(([prop, value]) => [prop, value?.selectedKey]).filter(([, key]) => key));
+
+  function persistTwinState() {
+    twinStateByProp[currentProp] = {
+      selectedKey,
+      explode: Number($("#explodeRange")?.value || 0),
+      electronics: Boolean($("#electronicsLayerToggle")?.checked),
+      sync: Boolean($("#syncTwinToggle")?.checked)
+    };
+    localStorage.setItem("atlas-twin-state-v1", JSON.stringify(twinStateByProp));
+  }
 
   function partLabel(key) { return copy[key]?.[isVi() ? 1 : 0] || key; }
   function modelKeys() {
@@ -234,14 +246,19 @@ function startThreeLab(THREE, OrbitControls) {
       if (!object.isMesh || !object.material.emissive) return;
       const selected = object.userData.partKey === key;
       object.material.emissive.setHex(selected ? palette[currentProp] : object.userData.baseEmissive || 0);
-      object.material.emissiveIntensity = selected ? Math.max(1.85, object.userData.baseEmissiveIntensity || 0) : object.userData.baseEmissiveIntensity || 0;
-      object.renderOrder = selected ? 4 : 0;
+      object.material.emissiveIntensity = selected ? Math.max(2.6, object.userData.baseEmissiveIntensity || 0) : object.userData.baseEmissiveIntensity || 0;
+      object.renderOrder = selected ? 10 : 0;
     });
     updateExplode();
     updateElectronicLayer();
-    document.querySelectorAll("#twinPartButtons button").forEach(button => button.classList.toggle("is-active", button.dataset.twinPart === key));
+    document.querySelectorAll("#twinPartButtons button").forEach(button => {
+      const active = button.dataset.twinPart === key;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
     const entry = copy[key];
     $("#twinPartInfo").innerHTML = `<strong>${entry[isVi() ? 1 : 0]}</strong><p>${entry[isVi() ? 3 : 2]}</p><p><b>${isVi() ? "Cần kiểm tra:" : "Build check:"}</b> ${entry[isVi() ? 5 : 4]}</p>`;
+    persistTwinState();
   }
   function updateExplode() {
     if (!propModel) return;
@@ -252,17 +269,21 @@ function startThreeLab(THREE, OrbitControls) {
       const vector = object.userData.explode || [0, 0, 0];
       object.position.copy(object.userData.basePosition).add(new THREE.Vector3(...vector).multiplyScalar(amount));
     });
+    if (propModel) persistTwinState();
   }
   function updateElectronicLayer() {
     const show = $("#electronicsLayerToggle").checked;
     propModel?.traverse(object => {
       if (!object.isMesh) return;
       if (object.userData.electronic) object.visible = show;
-      const ghostShell = show && object.userData.partKey === "shell" && selectedKey !== "shell";
-      object.material.opacity = ghostShell ? Math.min(.22, object.userData.baseOpacity ?? 1) : object.userData.baseOpacity ?? 1;
-      object.material.transparent = ghostShell || object.userData.baseTransparent;
-      object.material.depthWrite = ghostShell ? false : object.userData.baseDepthWrite;
+      const ghostShell = selectedKey !== "shell" && object.userData.partKey === "shell";
+      const ghostOther = selectedKey && selectedKey !== "shell" && object.userData.partKey !== selectedKey && object.userData.partKey !== "shell";
+      const baseOpacity = object.userData.baseOpacity ?? 1;
+      object.material.opacity = ghostShell ? Math.min(.18, baseOpacity) : ghostOther ? Math.min(.34, baseOpacity) : baseOpacity;
+      object.material.transparent = ghostShell || ghostOther || object.userData.baseTransparent;
+      object.material.depthWrite = ghostShell || ghostOther ? false : object.userData.baseDepthWrite;
     });
+    if (propModel) persistTwinState();
   }
   function rebuildProp(prop = currentProp) {
     if (!builders[prop]) return;
@@ -277,8 +298,11 @@ function startThreeLab(THREE, OrbitControls) {
     if (prop === "guardian") propModel.scale.setScalar(guardianDiameter / 50);
     propWorld.scene.add(propModel);
     const keys = modelKeys();
+    const savedState = twinStateByProp[prop] || {};
     selectedKey = keys.includes(selectedByProp[prop]) ? selectedByProp[prop] : keys[0];
-    $("#explodeRange").value = "0";
+    $("#explodeRange").value = String(Number.isFinite(savedState.explode) ? savedState.explode : 0);
+    $("#electronicsLayerToggle").checked = savedState.electronics !== false;
+    if (typeof savedState.sync === "boolean") $("#syncTwinToggle").checked = savedState.sync;
     refreshPropLabels();
     if ($("#syncTwinToggle")?.checked) applyGuidedStep(prop, currentAssemblyStep);
     else selectPart(selectedKey, { autoReveal: false });
@@ -293,7 +317,7 @@ function startThreeLab(THREE, OrbitControls) {
   }
   $("#explodeRange").addEventListener("input", updateExplode);
   $("#electronicsLayerToggle").addEventListener("change", updateElectronicLayer);
-  $("#syncTwinToggle").addEventListener("change", () => applyGuidedStep(currentProp, currentAssemblyStep));
+  $("#syncTwinToggle").addEventListener("change", () => { persistTwinState(); applyGuidedStep(currentProp, currentAssemblyStep); });
   function selectPartManually(key) {
     $("#syncTwinToggle").checked = false;
     selectPart(key);
