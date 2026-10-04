@@ -135,7 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.9 AFFORDABLE MVP", "V0.9 MVP TIẾT KIỆM"],
+  "#headerStatusText": ["V0.10 ESP32 CORE", "V0.10 LÕI ESP32"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -248,6 +248,7 @@ const staticTranslations = {
   "#prototype > .section-heading .eyebrow": ["ROLE ELECTRONICS / USB FIRST", "MẠCH THEO ROLE / USB TRƯỚC"],
   "#prototype > .section-heading .section-note": ["Your Page 1 prop follows you here with its own parts, GPIO map, event tests, and downloadable bench circuit.", "Đạo cụ đã chọn ở Trang 1 tự đi theo sang đây, kèm linh kiện, sơ đồ GPIO, nút thử sự kiện và mạch bàn có thể tải."],
   "#coreContractLabel": ["Atlas Core v1 · reusable cartridge", "Atlas Core v1 · lõi tháo lắp dùng chung"],
+  "#coreImageCaption": ["Concept appearance only — use the circuit map and inspected board labels for wiring.", "Chỉ minh họa hình thái — khi đi dây phải dùng sơ đồ mạch và nhãn đã kiểm tra trên board thực."],
   "#coreContractEyebrow": ["ONE CONTROLLER / SIX ROLE HARNESSES", "MỘT BỘ ĐIỀU KHIỂN / SÁU BỘ DÂY ROLE"],
   "#coreContractTitle": ["Prove one removable core before duplicating it", "Chứng minh một lõi tháo rời trước khi nhân bản"],
   "#coreContractText": ["The controller, USB power and event envelope stay common. Only the sensor, controls and feedback harness change with the selected prop.", "Bộ điều khiển, nguồn USB và khuôn event được dùng chung. Chỉ cảm biến, nút điều khiển và bộ dây phản hồi thay đổi theo đạo cụ."],
@@ -283,7 +284,7 @@ const staticTranslations = {
   "[data-arena-view='logic']": ["Logic map", "Bản đồ logic"],
   ".arena-stats span": ["Boss HP", "Máu Boss"],
   "#resetSim": ["Reset", "Đặt lại"],
-  "footer span:nth-child(2)": ["Planner revision 0.9 · Affordable MVP and production readiness, not field certification", "Bản kế hoạch 0.9 · MVP tiết kiệm và sẵn sàng chế tác, chưa phải chứng nhận thực địa"],
+  "footer span:nth-child(2)": ["Planner revision 0.10 · Reusable ESP32 Core plan, not field certification", "Bản kế hoạch 0.10 · Lõi ESP32 dùng chung, chưa phải chứng nhận thực địa"],
   ".telemetry-panel > .panel-label": ["Network conditions", "Điều kiện mạng"],
   "label[for='latencyRange'] span": ["Latency", "Độ trễ"],
   "label[for='lossRange'] span": ["Packet loss", "Mất gói"],
@@ -307,7 +308,7 @@ const staticTranslations = {
   ".download-row a:nth-child(1)": ["Wokwi circuit", "Mạch Wokwi"],
   ".download-row a:nth-child(2)": ["ESP32 firmware", "Firmware ESP32"],
   ".download-row a:nth-child(3)": ["Assembly guide", "Hướng dẫn lắp"],
-  "footer span:nth-child(2)": ["Planner revision 0.8.1 · build planning, not field certification", "Bản 0.8.1 · kế hoạch chế tác, chưa phải chứng nhận thực địa"]
+  "footer span:nth-child(2)": ["Planner revision 0.10 · Reusable ESP32 Core plan, not field certification", "Bản kế hoạch 0.10 · Lõi ESP32 dùng chung, chưa phải chứng nhận thực địa"]
 };
 
 const roleCardTranslations = {

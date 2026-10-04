@@ -93,6 +93,12 @@ h1, h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3.45rem); line-height: .98; le
 
 .core-overview-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(330px, .7fr); gap: 14px; margin-bottom: 14px; }
 .core-contract-panel, .core-proof-panel { overflow: hidden; }
+.core-product-figure { position: relative; margin: 0; min-height: 310px; overflow: hidden; border-bottom: 1px solid var(--line); background: #071117; }
+.core-product-figure::after { content: ""; position: absolute; inset: 45% 0 0; pointer-events: none; background: linear-gradient(transparent, rgba(5, 15, 21, .93)); }
+.core-product-figure img { display: block; width: 100%; height: clamp(310px, 34vw, 470px); object-fit: cover; object-position: center 49%; filter: saturate(.9) contrast(1.05); }
+.core-visual-badges { position: absolute; z-index: 2; left: 18px; top: 17px; display: flex; flex-wrap: wrap; gap: 6px; }
+.core-visual-badges span { padding: 6px 9px; color: var(--cyan-soft); border: 1px solid rgba(139, 228, 244, .3); border-radius: 999px; background: rgba(4, 14, 20, .76); backdrop-filter: blur(8px); font: 700 .58rem ui-monospace, monospace; letter-spacing: .08em; }
+.core-product-figure figcaption { position: absolute; z-index: 2; left: 18px; right: 18px; bottom: 14px; color: #b8cbd0; font-size: .68rem; line-height: 1.45; }
 .core-contract-body { padding: 22px; }
 .core-contract-intro { max-width: 760px; }
 .core-contract-intro h2 { font-size: clamp(1.55rem, 3vw, 2.55rem); line-height: 1.04; }
@@ -647,6 +653,8 @@ footer { max-width: 1600px; margin: 0 auto; padding: 22px clamp(18px,4vw,56px); 
   .workbench-grid { grid-template-columns: 230px 1fr; }.map-panel { grid-column: 1 / -1; }.pin-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 0 18px; }.download-stack { grid-template-columns: repeat(3,1fr); }.sim-grid { grid-template-columns: 1fr; }.telemetry-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }.metric-grid { grid-row: 1 / 4; grid-column: 2; }.log-label, .event-log { grid-column: 1 / -1; }.build-grid { grid-template-columns: 1fr; }.guide-list { height: 460px; }
 }
 @media (max-width: 760px) {
+  .core-product-figure, .core-product-figure img { min-height: 250px; height: 250px; }
+  .core-product-figure img { object-position: 56% center; }
   .core-contract-body { padding: 17px; }
   .core-contract-cards { grid-template-columns: 1fr; }
   .core-contract-cards article { min-height: 0; }
