@@ -203,6 +203,7 @@ const staticTranslations = {
   "#fitWarningText": ["Print or draw this diameter on cardboard. Test three users and adjust it before transferring the outline to EVA.", "In hoặc vẽ đường kính này lên carton. Thử với ba người rồi điều chỉnh trước khi chuyển biên dạng sang EVA."],
   ".layer-panel .panel-label": ["Physical layer stack", "Cấu trúc lớp vật lý"],
   ".buy-gate-panel .panel-label": ["Purchase gates", "Cổng mua đồ"],
+  ".buy-gate-panel > .fine-print": ["“Buy later” protects the budget: do not order electronics until the cardboard fit gate passes.", "“Mua sau” là khóa bảo vệ ngân sách: chưa đặt điện tử cho tới khi mẫu carton đạt FIT PASS."],
   ".readiness-panel .panel-label": ["Release gates", "Cổng cho phép chế tác"],
   "#clearGuardianGates": ["Clear checks", "Xóa đánh dấu"],
   "#downloadGuardianProductionPack": ["Download Guardian production pack", "Tải bộ chế tác Guardian"],
@@ -1080,6 +1081,27 @@ function readStoredIndexes(key, max) {
   } catch { return []; }
 }
 
+function formatPlanningPrice([low, high]) {
+  const format = value => `${Math.round(value / 1000)}K`;
+  return low === high ? format(low) : `${format(low)}–${format(high)}`;
+}
+
+function renderGuardianPurchaseSummary(purchases, gates) {
+  const vi = currentLanguage === "vi";
+  const fitPass = gates.includes(1);
+  const buyNowSelected = purchases.filter(index => index < 5).length;
+  const electronicsSelected = purchases.filter(index => index >= 5).length;
+  $("#guardianPurchaseSummary").innerHTML = `
+    <div><span>${vi ? "BƯỚC HIỆN TẠI" : "CURRENT STEP"}</span><strong>${fitPass ? (vi ? "FIT PASS · CHỐT ĐIỆN TỬ" : "FIT PASS · SELECT ELECTRONICS") : (vi ? "MUA 5 MÓN LÀM MẪU" : "BUY 5 MOCK-UP ITEMS")}</strong><small>${fitPass ? (vi ? "G1 đã đạt; mua mỗi linh kiện điện tử 1 chiếc để thử bàn." : "G1 passed; buy one of each electronic part for the bench proof.") : (vi ? "Chưa mua ESP32/LED. Làm khiên carton và thử 3 người trước." : "Do not buy ESP32/LED yet. Fit the cardboard shield on three users first.")}</small></div>
+    <div><span>${vi ? "MẪU THỬ" : "MOCK-UP"}</span><strong>80K–280K</strong><small>${buyNowSelected}/5 ${vi ? "món đã chốt" : "items selected"}</small></div>
+    <div><span>${vi ? "ĐIỆN TỬ SAU FIT" : "ELECTRONICS AFTER FIT"}</span><strong>460K–680K</strong><small>${electronicsSelected}/5 ${vi ? "món đã chốt" : "items selected"}</small></div>`;
+  $$(".purchase-group[data-gate='after-fit']").forEach(section => {
+    section.classList.toggle("is-locked", !fitPass);
+    const badge = section.querySelector(".purchase-stage-badge");
+    if (badge) badge.textContent = fitPass ? (vi ? "ĐƯỢC MUA" : "RELEASED") : (vi ? "XEM TRƯỚC · CHƯA MUA" : "RESEARCH · DO NOT BUY");
+  });
+}
+
 function renderGuardianProduction() {
   const content = guardianProduction[currentLanguage];
   const procurement = propManifests.guardian.procurement;
@@ -1087,19 +1109,36 @@ function renderGuardianProduction() {
   const gates = readStoredIndexes(guardianGateKey(), 5);
   $("#guardianLayerStack").innerHTML = content.layers.map(([title, detail, material], index) => `<li><b>${String(index + 1).padStart(2, "0")}</b><div><strong>${title}</strong><p>${detail}</p></div><span>${material}</span></li>`).join("");
   let itemIndex = 0;
-  $("#guardianPurchaseList").innerHTML = content.groups.map(group => `<section class="purchase-group"><h3>${group.title}</h3>${group.items.map(([title, detail]) => {
-    const index = itemIndex++; const item = procurement[index];
-    const [low, high] = item.priceVnd; const price = low === high ? `${Math.round(low / 1000)}K` : `${Math.round(low / 1000)}–${Math.round(high / 1000)}K`;
-    const state = currentLanguage === "vi" ? "THAM KHẢO" : "REFERENCE";
-    const source = item.supplierUrl ? `<a href="${item.supplierUrl}" target="_blank" rel="noreferrer">${item.supplier} · ${price}</a>` : `<em>${price}</em>`;
-    return `<label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small><span class="purchase-meta"><b>${state}</b>${source}</span></span></label>`;
-  }).join("")}</section>`).join("");
+  const vi = currentLanguage === "vi";
+  $("#guardianPurchaseList").innerHTML = content.groups.map((group, groupIndex) => {
+    const gate = groupIndex === 0 ? "fit" : "after-fit";
+    const groupItems = procurement.slice(groupIndex * 5, groupIndex * 5 + 5);
+    const subtotalLow = groupItems.reduce((sum, item) => sum + item.priceVnd[0], 0);
+    const subtotalHigh = groupItems.reduce((sum, item) => sum + item.priceVnd[1], 0);
+    return `<section class="purchase-group" data-gate="${gate}">
+      <div class="purchase-group-heading"><div><h3>${group.title}</h3><small>${vi ? "Tạm tính" : "Planning subtotal"} · ${formatPlanningPrice([subtotalLow, subtotalHigh])}</small></div><b class="purchase-stage-badge">${gate === "fit" ? (vi ? "MUA NGAY" : "BUY NOW") : (vi ? "XEM TRƯỚC · CHƯA MUA" : "RESEARCH · DO NOT BUY")}</b></div>
+      ${group.items.map(([title, detail]) => {
+        const index = itemIndex++; const item = procurement[index];
+        const price = formatPlanningPrice(item.priceVnd);
+        const spec = vi ? item.specVi : item.specEn;
+        const check = vi ? item.checkVi : item.checkEn;
+        const sources = (item.sources || []).map((source, sourceIndex) => `<a class="purchase-source ${source.kind || ""}" href="${source.url}" target="_blank" rel="noreferrer"><span>${source.kind === "exact" ? "✓" : source.kind === "local" ? "⌖" : "↗"}</span>${vi ? source.labelVi : source.labelEn}${sourceIndex === 0 && source.kind === "exact" ? ` · ${price}` : ""}</a>`).join("");
+        return `<article class="purchase-item ${purchases.includes(index) ? "is-selected" : ""}">
+          <div class="purchase-item-title"><label><input type="checkbox" data-purchase-index="${index}" ${purchases.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label><em>${price}</em></div>
+          <p class="purchase-spec"><b>${vi ? "CHỌN ĐÚNG" : "SELECT"}</b>${spec}</p>
+          <div class="purchase-actions">${sources}</div>
+          <p class="purchase-check"><b>${vi ? "KIỂM TRA" : "CHECK"}</b>${check}</p>
+          <small class="purchase-checked">${item.checkedAt ? `${vi ? "Link kiểm tra" : "Link checked"}: ${item.checkedAt}` : (vi ? "Giá kế hoạch · kiểm lại tại nơi bán" : "Planning price · recheck with seller")}</small>
+        </article>`;
+      }).join("")}</section>`;
+  }).join("");
   $("#guardianGateList").innerHTML = content.gates.map(([title, detail], index) => `<li><label><input type="checkbox" data-guardian-gate="${index}" ${gates.includes(index) ? "checked" : ""}/><span><strong>${title}</strong><small>${detail}</small></span></label></li>`).join("");
   try {
     const fit = JSON.parse(localStorage.getItem(guardianFitKey()) || "{}");
     if (Number.isFinite(fit.height)) $("#playerHeight").value = String(fit.height);
     if (Number.isFinite(fit.forearm)) $("#forearmLength").value = String(fit.forearm);
   } catch {}
+  renderGuardianPurchaseSummary(purchases, gates);
   updateGuardianProductionProgress(false);
   updateGuardianFit();
 }
@@ -1121,9 +1160,11 @@ function updateGuardianProductionProgress(save = true) {
   const purchases = $$("#guardianPurchaseList input:checked").map(input => Number(input.dataset.purchaseIndex));
   const gates = $$("#guardianGateList input:checked").map(input => Number(input.dataset.guardianGate));
   if (save) { localStorage.setItem(guardianPurchaseKey(), JSON.stringify(purchases)); localStorage.setItem(guardianGateKey(), JSON.stringify(gates)); }
-  $("#purchaseGateCount").textContent = currentLanguage === "vi" ? `${purchases.length} / 10 SẴN SÀNG` : `${purchases.length} / 10 READY`;
+  $("#purchaseGateCount").textContent = currentLanguage === "vi" ? `${purchases.length} / 10 ĐÃ CHỐT` : `${purchases.length} / 10 SELECTED`;
   $("#guardianGateCount").textContent = `${gates.length} / 5 PASS`;
   $("#guardianGateProgress").style.width = `${gates.length / 5 * 100}%`;
+  $$("#guardianPurchaseList .purchase-item").forEach(item => item.classList.toggle("is-selected", item.querySelector("input").checked));
+  renderGuardianPurchaseSummary(purchases, gates);
 }
 
 function downloadGuardianProductionPack() {
@@ -1139,7 +1180,8 @@ function downloadGuardianProductionPack() {
     `## ${vi ? "Cổng mua đồ" : "Purchase gates"}`, "", ...content.groups.flatMap((group, groupIndex) => [`### ${group.title}`, ...group.items.map((item, itemIndex) => {
       const procurementIndex = groupIndex * 5 + itemIndex; const source = propManifests.guardian.procurement[procurementIndex]; const [low, high] = source.priceVnd;
       const price = low === high ? `${Math.round(low / 1000)}k VND` : `${Math.round(low / 1000)}–${Math.round(high / 1000)}k VND`;
-      return `- [ ] **${item[0]}** — ${item[1]} · ${vi ? "Tham khảo" : "Reference"} · ${price}${source.supplierUrl ? ` · ${source.supplierUrl}` : ""}`;
+      const primarySource = source.sources?.[0];
+      return `- [ ] **${item[0]}** — ${item[1]} · ${price}\n  - ${vi ? "Chọn đúng" : "Select"}: ${vi ? source.specVi : source.specEn}\n  - ${vi ? "Kiểm tra" : "Check"}: ${vi ? source.checkVi : source.checkEn}${primarySource ? `\n  - ${vi ? "Mua tại" : "Buy at"}: ${vi ? primarySource.labelVi : primarySource.labelEn} — ${primarySource.url}` : ""}`;
     }), ""]),
     `## ${vi ? "Cổng cho phép chế tác" : "Release gates"}`, "", ...content.gates.map((gate, index) => `${index + 1}. [ ] **${gate[0]}** — ${gate[1]}`), "",
     `## ${vi ? "Giới hạn" : "Boundary"}`, "", vi ? "Phải xác minh độ vừa, cạnh mềm, nhiệt, nguồn, ngưỡng IMU, độ bền dây và không tiếp xúc cơ thể trên thiết bị thật trước khi dùng tại sự kiện." : "Verify fit, soft edges, heat, power, IMU thresholds, cable durability, and no-contact play on real hardware before event use.", ""
