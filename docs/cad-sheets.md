@@ -22,3 +22,7 @@ This pass adds deterministic SVG sheets to Page 1 for all six props. These are d
 - Fit, mass, electrical, thermal, and physical safety validation.
 
 Do not describe this revision as cut-ready. Use it to mark a full-size cardboard envelope, locate the proposed electronics and find fit problems cheaply.
+
+## Appearance asset
+
+`dist/assets/guardian-cad-render-v1.webp` is generated with the built-in image-generation tool. Prompt: two matching front/rear studio views of a hand-buildable matte charcoal EVA Guardian shield, 50 cm diameter / 5.5 cm envelope, amber LED ring at radius 23 cm, provisional 9 × 6 cm rear service core, 2.5 cm padded straps with 15 cm centre spacing; no text or rigid spikes. AI proportions are not authoritative; all measurements must come from the vector sheets and physical verification.
