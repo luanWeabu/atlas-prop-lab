@@ -2,7 +2,14 @@
 
 Atlas Prop Lab is a mobile friendly design and simulation workspace for the physical ESP32 props used by Project Atlas.
 
-Revision 0.8 adds a **recognizable prop detail pass** on top of the production-readiness pack and role-aware ESP32 lab:
+Revision 0.9 adds an **affordable physical-feedback proof** on top of the recognizable prop detail pass, production-readiness pack, and role-aware ESP32 lab:
+
+- an interactive `CHARGE → FIRE → HIT` proof at the top of the planner
+- selectable left-shoulder, chest, and right-shoulder Boss armour feedback
+- a clear three-level investment boundary: build now, optional event upgrade, and deferred stage edition
+- an explicit no-projector/no-camera MVP contract before stage spending
+- persistent per-prop 3D module selection, exploded-view level, electronics visibility, and assembly-sync preference
+- stronger isolation and highlighting for every selectable 3D module
 
 - five selectable hero builds: Guardian shield, Warrior sword, Archer bow, Assassin daggers, and Mage staff
 - one Titan Warden boss build with a two-handed foam hammer and three-zone LED armour
@@ -46,6 +53,7 @@ The Wokwi/firmware baseline remains a reusable bench proxy while each physical r
 | `docs/event-kit-v1.md` | Full event-kit target, role roster, Boss contract, and verification gates |
 | `docs/role-build-contract.md` | Required output contract for every role-specific build pack |
 | `docs/model-pipeline.md` | Free Blender-to-GLB upgrade contract and mobile model budgets |
+| `docs/affordable-mvp-feedback-loop.md` | Camera-free Arc Bow to Boss armour feedback contract and purchase gate |
 | `scripts/validate-project.mjs` | Fast repository consistency checks |
 | `.github/workflows/` | Firmware build, web validation, and optional Wokwi CI |
 
