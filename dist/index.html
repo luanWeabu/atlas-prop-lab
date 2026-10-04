@@ -20,7 +20,7 @@
         <button type="button" data-language="vi">VI</button>
         <button type="button" data-language="en" class="is-active">EN</button>
       </div>
-      <div class="header-status"><i></i><span id="headerStatusText">V0.7 GUARDIAN PACK</span></div>
+      <div class="header-status"><i></i><span id="headerStatusText">V0.9 AFFORDABLE MVP</span></div>
     </header>
 
     <nav class="mode-tabs" aria-label="Lab views">
@@ -46,6 +46,113 @@
           <div><strong>6 ESP32</strong><span>MVP: five players + hub</span></div>
         </div>
 
+        <section class="panel mvp-feedback-panel" aria-labelledby="mvp-feedback-title">
+          <div class="panel-toolbar mvp-feedback-toolbar">
+            <div>
+              <span class="panel-label" id="mvpFeedbackLabel">AFFORDABLE MVP / NO CAMERA</span>
+              <strong id="mvp-feedback-title">Prove the feeling before buying stage equipment</strong>
+            </div>
+            <span class="mono-pill mvp-cost-pill" id="mvpCostPill">LOW-COST FIRST PROOF</span>
+          </div>
+
+          <div class="mvp-feedback-grid">
+            <section class="mvp-demo" aria-label="Bow to armour feedback simulator">
+              <div class="mvp-demo-head">
+                <div>
+                  <p class="eyebrow" id="mvpDemoEyebrow">ONE ACTION → ONE VISIBLE CONSEQUENCE</p>
+                  <h2 id="mvpDemoTitle">Arc Bow feedback loop</h2>
+                </div>
+                <span class="mvp-state-badge" id="mvpStateBadge" data-state="idle">READY</span>
+              </div>
+
+              <div class="mvp-signal-stage" id="mvpSignalStage" data-state="idle" data-zone="chest">
+                <div class="mvp-device mvp-bow-device">
+                  <span class="mvp-device-index">1</span>
+                  <strong id="mvpBowTitle">Bow LEDs</strong>
+                  <small id="mvpBowHint">Hall sensor detects draw and release</small>
+                  <div class="mvp-bow-meter" aria-hidden="true"><i></i><b></b><i></i></div>
+                  <span class="mvp-device-status" id="mvpBowStatus">Waiting for draw</span>
+                </div>
+
+                <div class="mvp-signal-link" aria-hidden="true">
+                  <i class="mvp-packet"></i>
+                  <span>FIRE</span>
+                </div>
+
+                <div class="mvp-device mvp-unity-device">
+                  <span class="mvp-device-index">2</span>
+                  <strong id="mvpUnityTitle">Unity authority</strong>
+                  <small id="mvpUnityHint">Checks cooldown, target zone and damage</small>
+                  <div class="mvp-unity-screen"><span>FIRE</span><i></i><span>HIT</span></div>
+                  <span class="mvp-device-status" id="mvpUnityStatus">Ready to validate</span>
+                </div>
+
+                <div class="mvp-signal-link return-link" aria-hidden="true">
+                  <i class="mvp-packet"></i>
+                  <span>HIT</span>
+                </div>
+
+                <div class="mvp-device mvp-armour-device">
+                  <span class="mvp-device-index">3</span>
+                  <strong id="mvpArmourTitle">Boss armour</strong>
+                  <small id="mvpArmourHint">Only the confirmed zone flashes</small>
+                  <div class="mvp-armour-map" aria-hidden="true">
+                    <i class="armour-zone left" data-armour-zone="left"></i>
+                    <i class="armour-zone chest" data-armour-zone="chest"></i>
+                    <i class="armour-zone right" data-armour-zone="right"></i>
+                  </div>
+                  <span class="mvp-device-status" id="mvpArmourStatus">Armour linked</span>
+                </div>
+              </div>
+
+              <div class="mvp-demo-controls">
+                <div class="mvp-target-control">
+                  <span id="mvpTargetLabel">Target zone</span>
+                  <div class="segmented-control" id="mvpTargetButtons" role="group" aria-label="Boss target zone">
+                    <button type="button" data-mvp-zone="left">Left</button>
+                    <button type="button" data-mvp-zone="chest" class="is-active">Chest</button>
+                    <button type="button" data-mvp-zone="right">Right</button>
+                  </div>
+                </div>
+                <button type="button" class="button primary mvp-fire-button" id="mvpFireButton">
+                  <span id="mvpFireMain">Hold to charge</span>
+                  <small id="mvpFireSub">Release to fire</small>
+                </button>
+              </div>
+
+              <ol class="mvp-event-log" id="mvpEventLog" aria-live="polite">
+                <li><time>00.000</time><span id="mvpInitialLog">System ready · no projector or camera required</span></li>
+              </ol>
+            </section>
+
+            <aside class="mvp-boundary">
+              <p class="eyebrow" id="mvpBoundaryEyebrow">SPEND ONLY AFTER THE LOOP FEELS GOOD</p>
+              <h3 id="mvpBoundaryTitle">Three investment levels</h3>
+              <div class="mvp-tier-list">
+                <article class="is-now">
+                  <span>01</span>
+                  <div><strong id="mvpTierOneTitle">Build now</strong><p id="mvpTierOneText">Bow LED + Hall sensor, Unity screen, one three-zone armour receiver and sound.</p></div>
+                  <b id="mvpTierOneBadge">NO CAMERA</b>
+                </article>
+                <article>
+                  <span>02</span>
+                  <div><strong id="mvpTierTwoTitle">Upgrade after playtest</strong><p id="mvpTierTwoText">Add fixed floor zones or rent one overhead projector for a special event.</p></div>
+                  <b id="mvpTierTwoBadge">OPTIONAL</b>
+                </article>
+                <article>
+                  <span>03</span>
+                  <div><strong id="mvpTierThreeTitle">Stage edition</strong><p id="mvpTierThreeText">Camera tracking, projection mapping and haze only after the event model is proven.</p></div>
+                  <b id="mvpTierThreeBadge">DEFER</b>
+                </article>
+              </div>
+              <div class="mvp-proof-gate">
+                <strong id="mvpProofGateTitle">MVP purchase gate</strong>
+                <p id="mvpProofGateText">Do not buy a projector. First prove that release, screen VFX, armour flash and sound feel like one event.</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
         <div class="role-picker" role="list" aria-label="Choose a prop build">
           <button class="role-card is-active" data-prop="guardian" role="listitem"><span class="role-glyph">⬡</span><strong>Guardian</strong><small>Shield</small></button>
           <button class="role-card" data-prop="warrior" role="listitem"><span class="role-glyph">†</span><strong>Warrior</strong><small>Sword</small></button>
@@ -58,7 +165,7 @@
         <section class="panel twin-panel" aria-labelledby="twin-title">
           <div class="panel-toolbar twin-toolbar">
             <div><span class="panel-label">Interactive digital twin</span><strong id="twin-title">Guardian Shield · 3D assembly model</strong></div>
-            <span class="mono-pill" id="twinStatus">DETAIL PASS V0.8</span>
+            <span class="mono-pill" id="twinStatus">DETAIL PASS V0.9</span>
           </div>
           <div class="twin-grid">
             <div class="twin-stage" id="threePropStage">
@@ -425,7 +532,7 @@
 
     </main>
 
-    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.7 · Guardian production readiness, not field certification</span></footer>
+    <footer><span>ATLAS / PROP SYSTEMS</span><span>Planner revision 0.9 · Affordable MVP and production readiness, not field certification</span></footer>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="prop-manifests.js"></script>
     <script src="app.js"></script>

@@ -14,6 +14,7 @@ const required = [
   "docs/arc-bow-production-pack.md", "dist/downloads/arc-bow-template-900mm.svg", "dist/downloads/arc-bow-riser-layout.svg",
   "docs/guardian-electronics.md", "wokwi/guardian-diagram.json", "wokwi/scenarios/guardian-block.yaml", "wokwi-guardian.toml",
   "docs/unity-bridge.md", "unity/Runtime/AtlasPropEvent.cs", "unity/Runtime/AtlasPropLineParser.cs", "unity/Runtime/AtlasPropIntentRouter.cs"
+  , "docs/affordable-mvp-feedback-loop.md"
 ];
 
 for (const file of required) await access(resolve(root, file), constants.R_OK);
@@ -84,14 +85,20 @@ for (const id of ["threePropStage", "explodeRange", "electronicsLayerToggle", "t
 for (const id of ["guardianProductionPack", "playerHeight", "forearmLength", "shieldDiameterResult", "guardianPurchaseList", "guardianGateList", "downloadGuardianProductionPack"]) {
   if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing Guardian production control: ${id}`);
 }
+for (const id of ["mvpSignalStage", "mvpStateBadge", "mvpTargetButtons", "mvpFireButton", "mvpEventLog"]) {
+  if (!html.includes(`id="${id}"`)) throw new Error(`HTML is missing affordable MVP control: ${id}`);
+}
 for (const asset of ["downloads/guardian-template-500mm.svg", "downloads/guardian-rear-layout.svg"]) {
   if (!html.includes(asset)) throw new Error(`HTML is missing Guardian fabrication asset: ${asset}`);
 }
 for (const token of ["const guardianProduction", "function renderGuardianProduction", "function updateGuardianFit", "function downloadGuardianProductionPack", "atlas-guided-step-change"]) {
   if (!app.includes(token)) throw new Error(`Missing Guardian production feature: ${token}`);
 }
+for (const token of ["const mvpFeedbackCopy", "function beginMvpCharge", "function releaseMvpShot", "function selectMvpZone", "HIT_CONFIRMED"]) {
+  if (!app.includes(token)) throw new Error(`Missing affordable MVP feedback feature: ${token}`);
+}
 const threeLab = await readFile(resolve(root, "dist/three-lab.js"), "utf8");
-for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "plateGeometry", "ACESFilmicToneMapping", "atlas-field-action", "atlas-prop-change", "selectedByProp", "refreshPropLabels", "selectPartManually", "baseOpacity"]) {
+for (const token of ["buildGuardian", "buildSword", "buildBow", "buildDaggers", "buildStaff", "buildBoss", "plateGeometry", "ACESFilmicToneMapping", "atlas-field-action", "atlas-prop-change", "selectedByProp", "twinStateByProp", "persistTwinState", "refreshPropLabels", "selectPartManually", "baseOpacity"]) {
   if (!threeLab.includes(token)) throw new Error(`Missing Three.js digital-twin feature: ${token}`);
 }
 const unityParser = await readFile(resolve(root, "unity/Runtime/AtlasPropLineParser.cs"), "utf8");

@@ -135,7 +135,7 @@ const propKitVi = {
 
 const staticTranslations = {
   ".brand-copy span": ["ESP32 prototype workspace", "Không gian thử nghiệm ESP32"],
-  "#headerStatusText": ["V0.8.1 PROP LAB", "V0.8.1 XƯỞNG ĐẠO CỤ"],
+  "#headerStatusText": ["V0.9 AFFORDABLE MVP", "V0.9 MVP TIẾT KIỆM"],
   ".mode-tabs [data-view='event-kit']": ["01 Event kit", "01 Bộ thiết bị"],
   ".mode-tabs [data-view='prototype']": ["02 ESP32 lab", "02 Xưởng ESP32"],
   ".mode-tabs [data-view='field']": ["03 Field simulator", "03 Mô phỏng trận"],
@@ -146,8 +146,37 @@ const staticTranslations = {
   ".kit-status-grid div:nth-child(2) span": ["minimum play zone", "khu chơi tối thiểu"],
   ".kit-status-grid div:nth-child(3) span": ["match target", "thời lượng trận"],
   ".kit-status-grid div:nth-child(4) span": ["MVP: five players + hub", "MVP: năm người + hub"],
+  "#mvpFeedbackLabel": ["AFFORDABLE MVP / NO CAMERA", "MVP TIẾT KIỆM / KHÔNG CAMERA"],
+  "#mvp-feedback-title": ["Prove the feeling before buying stage equipment", "Chứng minh cảm giác chơi trước khi mua thiết bị sân khấu"],
+  "#mvpCostPill": ["LOW-COST FIRST PROOF", "THỬ RẺ TRƯỚC"],
+  "#mvpDemoEyebrow": ["ONE ACTION → ONE VISIBLE CONSEQUENCE", "MỘT HÀNH ĐỘNG → MỘT KẾT QUẢ NHÌN THẤY"],
+  "#mvpDemoTitle": ["Arc Bow feedback loop", "Vòng phản hồi Cung Arc"],
+  "#mvpBowTitle": ["Bow LEDs", "LED trên cung"],
+  "#mvpBowHint": ["Hall sensor detects draw and release", "Cảm biến Hall nhận kéo và thả dây"],
+  "#mvpUnityTitle": ["Unity authority", "Unity quyết định"],
+  "#mvpUnityHint": ["Checks cooldown, target zone and damage", "Kiểm tra hồi chiêu, vùng đích và sát thương"],
+  "#mvpArmourTitle": ["Boss armour", "Giáp Boss"],
+  "#mvpArmourHint": ["Only the confirmed zone flashes", "Chỉ vùng được xác nhận mới phát sáng"],
+  "#mvpTargetLabel": ["Target zone", "Vùng nhắm"],
+  "[data-mvp-zone='left']": ["Left", "Trái"],
+  "[data-mvp-zone='chest']": ["Chest", "Ngực"],
+  "[data-mvp-zone='right']": ["Right", "Phải"],
+  "#mvpInitialLog": ["System ready · no projector or camera required", "Hệ thống sẵn sàng · không cần máy chiếu hoặc camera"],
+  "#mvpBoundaryEyebrow": ["SPEND ONLY AFTER THE LOOP FEELS GOOD", "CHỈ CHI TIỀN SAU KHI VÒNG PHẢN HỒI ĐỦ ĐÃ"],
+  "#mvpBoundaryTitle": ["Three investment levels", "Ba mức đầu tư"],
+  "#mvpTierOneTitle": ["Build now", "Làm ngay"],
+  "#mvpTierOneText": ["Bow LED + Hall sensor, Unity screen, one three-zone armour receiver and sound.", "LED cung + cảm biến Hall, màn hình Unity, một bộ nhận giáp ba vùng và âm thanh."],
+  "#mvpTierOneBadge": ["NO CAMERA", "KHÔNG CAMERA"],
+  "#mvpTierTwoTitle": ["Upgrade after playtest", "Nâng cấp sau playtest"],
+  "#mvpTierTwoText": ["Add fixed floor zones or rent one overhead projector for a special event.", "Thêm vùng sàn cố định hoặc thuê một máy chiếu trên cao cho sự kiện đặc biệt."],
+  "#mvpTierTwoBadge": ["OPTIONAL", "TÙY CHỌN"],
+  "#mvpTierThreeTitle": ["Stage edition", "Bản sân khấu"],
+  "#mvpTierThreeText": ["Camera tracking, projection mapping and haze only after the event model is proven.", "Camera tracking, projection mapping và haze chỉ dùng sau khi mô hình sự kiện đã được chứng minh."],
+  "#mvpTierThreeBadge": ["DEFER", "ĐỂ SAU"],
+  "#mvpProofGateTitle": ["MVP purchase gate", "Cổng mua đồ MVP"],
+  "#mvpProofGateText": ["Do not buy a projector. First prove that release, screen VFX, armour flash and sound feel like one event.", "Chưa mua máy chiếu. Trước hết phải chứng minh thả dây, VFX trên màn hình, giáp chớp sáng và âm thanh tạo cảm giác như một sự kiện duy nhất."],
   ".twin-panel .panel-label": ["Interactive digital twin", "Bản sao số tương tác"],
-  "#twinStatus": ["DETAIL PASS V0.8", "BẢN CHI TIẾT V0.8"],
+  "#twinStatus": ["DETAIL PASS V0.9", "BẢN CHI TIẾT V0.9"],
   ".twin-controls .eyebrow": ["EXPLORE BEFORE BUILDING", "KHẢO SÁT TRƯỚC KHI CHẾ TÁC"],
   "#twinIntro": ["Rotate the model, separate its layers, and select a component to inspect where it belongs.", "Xoay mô hình, tách các lớp và chọn linh kiện để xem vị trí lắp."],
   "#explodeLabel": ["Exploded view", "Mức tách lớp"],
@@ -236,6 +265,7 @@ const staticTranslations = {
   "[data-arena-view='logic']": ["Logic map", "Bản đồ logic"],
   ".arena-stats span": ["Boss HP", "Máu Boss"],
   "#resetSim": ["Reset", "Đặt lại"],
+  "footer span:nth-child(2)": ["Planner revision 0.9 · Affordable MVP and production readiness, not field certification", "Bản kế hoạch 0.9 · MVP tiết kiệm và sẵn sàng chế tác, chưa phải chứng nhận thực địa"],
   ".telemetry-panel > .panel-label": ["Network conditions", "Điều kiện mạng"],
   "label[for='latencyRange'] span": ["Latency", "Độ trễ"],
   "label[for='lossRange'] span": ["Packet loss", "Mất gói"],
@@ -461,8 +491,109 @@ const state = {
   latencyTotal: 0, sequence: 0, cooldown: { CAST: false, SPECIAL: false }
 };
 
+const mvpFeedbackCopy = {
+  en: {
+    zone: { left: "left shoulder", chest: "chest", right: "right shoulder" },
+    badge: { idle: "READY", charge: "CHARGING", fire: "IN FLIGHT", hit: "HIT" },
+    bow: { idle: "Waiting for draw", charge: "Draw detected · LEDs filling", fire: "Release detected · FIRE sent", hit: "Shot acknowledged" },
+    unity: { idle: "Ready to validate", charge: "Awaiting release", fire: "Validating target and cooldown", hit: "HIT_CONFIRMED emitted" },
+    armour: { idle: "Armour linked", charge: "Listening for confirmed hit", fire: "Packet incoming", hit: zone => `${zone} flashing red-white` },
+    button: { idle: ["Hold to charge", "Release to fire"], charge: ["Charging…", "Release now"], busy: ["Resolving shot", "Unity remains authoritative"] },
+    log: { charge: "DRAW_READY · limb LEDs charged", fire: zone => `FIRE · requested zone: ${zone}`, hit: zone => `HIT_CONFIRMED · ${zone} armour feedback`, ready: "READY · next shot available" }
+  },
+  vi: {
+    zone: { left: "vai trái", chest: "ngực", right: "vai phải" },
+    badge: { idle: "SẴN SÀNG", charge: "ĐANG NẠP", fire: "ĐANG BAY", hit: "TRÚNG" },
+    bow: { idle: "Chờ kéo dây", charge: "Đã nhận lực kéo · LED đang nạp", fire: "Đã nhận thả dây · gửi FIRE", hit: "Cung đã nhận xác nhận" },
+    unity: { idle: "Sẵn sàng kiểm tra", charge: "Chờ thả dây", fire: "Đang kiểm tra mục tiêu và hồi chiêu", hit: "Đã phát HIT_CONFIRMED" },
+    armour: { idle: "Giáp đã kết nối", charge: "Đang chờ hit được xác nhận", fire: "Đang nhận gói tin", hit: zone => `${zone} chớp đỏ-trắng` },
+    button: { idle: ["Giữ để nạp", "Thả để bắn"], charge: ["Đang nạp…", "Thả tay để bắn"], busy: ["Đang xử lý đòn", "Unity giữ quyền quyết định"] },
+    log: { charge: "DRAW_READY · LED cánh cung đã nạp", fire: zone => `FIRE · yêu cầu vùng: ${zone}`, hit: zone => `HIT_CONFIRMED · giáp ${zone} phản hồi`, ready: "READY · có thể bắn tiếp" }
+  }
+};
+
+const mvpFeedbackState = { phase: "idle", zone: "chest", startedAt: performance.now(), timers: [], ignoreClick: false };
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+function mvpCopy() { return mvpFeedbackCopy[currentLanguage]; }
+
+function setMvpButtonCopy(mode) {
+  const copy = mvpCopy().button[mode];
+  $("#mvpFireMain").textContent = copy[0];
+  $("#mvpFireSub").textContent = copy[1];
+}
+
+function setMvpPhase(phase) {
+  const copy = mvpCopy();
+  const zone = copy.zone[mvpFeedbackState.zone];
+  mvpFeedbackState.phase = phase;
+  $("#mvpSignalStage").dataset.state = phase;
+  $("#mvpSignalStage").dataset.zone = mvpFeedbackState.zone;
+  $("#mvpStateBadge").dataset.state = phase;
+  $("#mvpStateBadge").textContent = copy.badge[phase];
+  $("#mvpBowStatus").textContent = copy.bow[phase];
+  $("#mvpUnityStatus").textContent = copy.unity[phase];
+  $("#mvpArmourStatus").textContent = typeof copy.armour[phase] === "function" ? copy.armour[phase](zone) : copy.armour[phase];
+  const button = $("#mvpFireButton");
+  button.classList.toggle("is-charging", phase === "charge");
+  button.disabled = phase === "fire" || phase === "hit";
+  setMvpButtonCopy(phase === "idle" ? "idle" : phase === "charge" ? "charge" : "busy");
+}
+
+function addMvpLog(message) {
+  const elapsed = Math.max(0, performance.now() - mvpFeedbackState.startedAt);
+  const seconds = (elapsed / 1000).toFixed(3).padStart(6, "0");
+  const item = document.createElement("li");
+  item.innerHTML = `<time>${seconds}</time><span>${message}</span>`;
+  $("#mvpEventLog").prepend(item);
+  while ($$("#mvpEventLog li").length > 4) $("#mvpEventLog li:last-child").remove();
+}
+
+function clearMvpTimers() {
+  mvpFeedbackState.timers.forEach(timer => clearTimeout(timer));
+  mvpFeedbackState.timers = [];
+}
+
+function beginMvpCharge() {
+  if (mvpFeedbackState.phase !== "idle") return;
+  clearMvpTimers();
+  mvpFeedbackState.startedAt = performance.now();
+  setMvpPhase("charge");
+  addMvpLog(mvpCopy().log.charge);
+}
+
+function releaseMvpShot() {
+  if (mvpFeedbackState.phase !== "charge") return;
+  const copy = mvpCopy();
+  const zone = copy.zone[mvpFeedbackState.zone];
+  setMvpPhase("fire");
+  addMvpLog(copy.log.fire(zone));
+  mvpFeedbackState.timers.push(setTimeout(() => {
+    const hitCopy = mvpCopy();
+    const hitZone = hitCopy.zone[mvpFeedbackState.zone];
+    setMvpPhase("hit");
+    addMvpLog(hitCopy.log.hit(hitZone));
+  }, 520));
+  mvpFeedbackState.timers.push(setTimeout(() => {
+    setMvpPhase("idle");
+    addMvpLog(mvpCopy().log.ready);
+  }, 1450));
+}
+
+function selectMvpZone(zone) {
+  if (!["left", "chest", "right"].includes(zone) || mvpFeedbackState.phase !== "idle") return;
+  mvpFeedbackState.zone = zone;
+  $("#mvpSignalStage").dataset.zone = zone;
+  $$("[data-mvp-zone]").forEach(button => button.classList.toggle("is-active", button.dataset.mvpZone === zone));
+  setMvpPhase("idle");
+}
+
+function renderMvpFeedbackCopy() {
+  if (!$("#mvpSignalStage")) return;
+  setMvpPhase(mvpFeedbackState.phase);
+}
 
 const blueprintFocus = {
   guardian: { 1: [190, 82], 2: [310, 220], 3: [310, 174], 4: [390, 198], 5: [434, 174], 6: [245, 226] },
@@ -664,6 +795,7 @@ function applyStaticTranslations() {
   };
   for (const option of $$("#transportSelect option")) option.textContent = transportOptions[option.value][index];
   localStorage.setItem("atlas-language", currentLanguage);
+  renderMvpFeedbackCopy();
 }
 
 function guidedStorageKey() { return `atlas-guided-${activeProp}`; }
@@ -1080,6 +1212,48 @@ function registerWebMcp() {
 function init() {
   buildRingDots(); applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack(); updateMetrics();
   $$(".tab").forEach(tab => tab.addEventListener("click", () => showView(tab.dataset.view)));
+  $("#mvpTargetButtons").addEventListener("click", event => {
+    const button = event.target.closest("[data-mvp-zone]");
+    if (button) selectMvpZone(button.dataset.mvpZone);
+  });
+  const mvpFireButton = $("#mvpFireButton");
+  let mvpPointerActive = false;
+  mvpFireButton.addEventListener("pointerdown", event => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    mvpPointerActive = true;
+    mvpFireButton.setPointerCapture?.(event.pointerId);
+    beginMvpCharge();
+  });
+  mvpFireButton.addEventListener("pointerup", event => {
+    if (!mvpPointerActive) return;
+    event.preventDefault();
+    mvpPointerActive = false;
+    mvpFeedbackState.ignoreClick = true;
+    releaseMvpShot();
+    setTimeout(() => { mvpFeedbackState.ignoreClick = false; }, 0);
+  });
+  mvpFireButton.addEventListener("pointercancel", () => {
+    mvpPointerActive = false;
+    if (mvpFeedbackState.phase === "charge") setMvpPhase("idle");
+  });
+  mvpFireButton.addEventListener("keydown", event => {
+    if (![" ", "Enter"].includes(event.key) || event.repeat) return;
+    event.preventDefault();
+    beginMvpCharge();
+  });
+  mvpFireButton.addEventListener("keyup", event => {
+    if (![" ", "Enter"].includes(event.key)) return;
+    event.preventDefault();
+    mvpFeedbackState.ignoreClick = true;
+    releaseMvpShot();
+    setTimeout(() => { mvpFeedbackState.ignoreClick = false; }, 0);
+  });
+  mvpFireButton.addEventListener("click", () => {
+    if (mvpFeedbackState.ignoreClick || mvpFeedbackState.phase !== "idle") return;
+    beginMvpCharge();
+    mvpFeedbackState.timers.push(setTimeout(releaseMvpShot, 560));
+  });
   $$(".language-switch button").forEach(button => button.addEventListener("click", () => {
     currentLanguage = button.dataset.language;
     applyStaticTranslations(); renderGuardianProduction(); renderPropKit(); renderConfig(); renderBuildPack();
