@@ -45,7 +45,24 @@ for (const requiredPart of ["esp", "imu", "trigger", "rim", "vibrationProxy"]) {
   if (!guardianPartIds.has(requiredPart)) throw new Error(`Guardian Wokwi diagram is missing ${requiredPart}`);
 }
 
+// Validate the actual S3 board boundary, not just the existence of role files.
+const s3HeaderPins = new Set([1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 38, 39, 40, 41, 42, 47, 48]);
+const firmwarePins = Object.fromEntries([...guardianFirmware.matchAll(/constexpr uint8_t (\w+) = (\d+);/g)].map(([, name, pin]) => [name, Number(pin)]));
+const usedPins = Object.values(firmwarePins);
+if (new Set(usedPins).size !== usedPins.length) throw new Error("Guardian GPIO collision");
+for (const pin of usedPins) if (!s3HeaderPins.has(pin)) throw new Error(`Unsupported/reserved Guardian S3 GPIO${pin}`);
+for (const [name, endpoint] of Object.entries({Sda: "imu:SDA", Scl: "imu:SCL", Trigger: "trigger:1.l", LedRim: "rim:DIN", VibrationDriver: "vibrationProxy:A"})) {
+  if (!guardianDiagram.connections.some(([from, to]) => from === `esp:${firmwarePins[name]}` && to === endpoint)) throw new Error(`Guardian circuit/firmware mismatch: ${name}`);
+}
+
 const app = await readFile(resolve(root, "dist/app.js"), "utf8");
+const profiles = app.match(/const electronicsProfiles = \{([\s\S]*?)\n\};/)?.[1];
+if (!profiles) throw new Error("Missing electronics profiles");
+for (const [, pinList] of profiles.matchAll(/GPIO([\d/]+)/g)) {
+  for (const pin of pinList.split("/").map(Number)) if (!s3HeaderPins.has(pin)) throw new Error(`Unsupported/reserved role S3 GPIO${pin}`);
+}
+if (!profiles.includes('"GPIO8/9", "MPU6050 SDA / SCL"')) throw new Error("Role I2C map differs from Guardian firmware");
+
 for (const role of ["guardian", "warrior", "archer", "assassin", "mage", "boss"]) {
   if (!app.includes("  " + role + ": {")) throw new Error("Missing role build pack: " + role);
 }

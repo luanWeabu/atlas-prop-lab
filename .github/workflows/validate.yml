@@ -17,3 +17,5 @@ jobs:
       - name: Check project consistency
         run: node scripts/validate-project.mjs
 
+      - name: Check CAD sheets
+        run: node scripts/validate-cad.mjs
